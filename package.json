@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:lib": "ng build formkit",
+    "build:lib": "ng build formkit --prod",
     "test": "npm run test:lib && npm run build:lib && npm run test:app",
     "test:lib": "jest --config ./jest.lib.config.js",
     "test:app": "jest --config ./jest.app.config.js --passWithNoTests",
