@@ -85,6 +85,6 @@ import { FormFieldDirective } from './directives/form-field/form-field.directive
   ],
   providers: []
 })
-export class FormkitModule {
+export class FormKitModule {
   constructor() { }
 }
