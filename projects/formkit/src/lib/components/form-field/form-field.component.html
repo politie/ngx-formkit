@@ -1,0 +1,26 @@
+<header *ngIf="field.description || field.title" class="formkit-field-header">
+  <div class="formkit-field-header-inner">
+    <span *ngIf="field.title" class="formkit-field-title">{{ field.title }}</span>
+
+    <span
+      *ngIf="field.tooltip"
+      class="formkit-field-tooltip"
+      [matTooltip]="field.tooltip">
+      <mat-icon class="formkit-field-tooltip-icon">info</mat-icon>
+    </span>
+  </div>
+
+  <p *ngIf="field.description" class="formkit-field-description">{{ field.description }}</p>
+</header>
+
+<!-- Field component will be rendered here -->
+<ng-template libFbFormField></ng-template>
+
+<!-- Field messages -->
+<div
+  *ngFor="let message of messages$ | async"
+  class="formkit-field-notification"
+  cy-formkit-field-notification
+  [ngClass]="FieldMessageType[message.type].toLowerCase()">
+  <p>{{ message.text }}</p>
+</div>

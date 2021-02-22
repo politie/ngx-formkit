@@ -1,0 +1,7 @@
+<ng-container [formGroup]="formGroup" *ngIf="field">
+  <mat-radio-group [formControlName]="name">
+    <mat-radio-button color="primary" *ngFor="let option of field.options" [value]="option.id">
+      {{ option.label }}
+    </mat-radio-button>
+  </mat-radio-group>
+</ng-container>

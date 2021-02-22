@@ -1,0 +1,225 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ComponentFactoryResolver,
+  HostBinding,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FieldMessage, FieldMessageType, FieldType, IField, IConfig } from '../../models/field.model';
+import { Observable, Subject } from 'rxjs';
+import { extractEvents } from '../../helpers/extract-events.helpers';
+import { FormEventType, FormValues } from '../../models/form.model';
+import { delay, filter, take, takeUntil } from 'rxjs/operators';
+import { FormFieldDirective } from '../../directives';
+
+@Component({
+  selector: 'formkit-form-field',
+  templateUrl: './form-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class FormFieldComponent implements OnInit, OnDestroy {
+
+  @HostBinding('class') get fieldClasses(): string {
+    return [
+      this.field.type === FieldType.Array ? 'space-y-2': '',
+      this.field.width ? 'is-constrained w-' + this.field.width : 'w-full',
+      (this.field.type === FieldType.Hidden || this.field.hide) ? 'hidden' : ''
+    ].filter(Boolean).join(' ');
+  }
+
+  @ViewChild(FormFieldDirective, { static: true }) fieldHost!: FormFieldDirective;
+  @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
+  @Input() form!: Required<IConfig<any>>;
+  @Input() field!: IField<any, any>;
+  @Input() name!: string[];
+  @Input() formGroup!: FormGroup;
+
+  destroy$ = new Subject<boolean>();
+  messages$!: Observable<FieldMessage[]>;
+
+  FieldType = FieldType;
+  FieldMessageType = FieldMessageType;
+
+  private messagesSubject$ = new Subject<FieldMessage[]>();
+
+  constructor(private resolver: ComponentFactoryResolver) { }
+
+  get fieldNameMapped() {
+    return this.name.join('.');
+  }
+
+  /**
+   * Create a component by getting a specific defined component for this field, or get it from the list of global components
+   * defined in the form
+   */
+  renderFieldComponent() {
+    const factory = this.resolver.resolveComponentFactory(this.field.component || this.form.components[this.field.type]);
+    const ref = this.fieldHost.viewContainerRef;
+    ref.clear();
+
+    const compRef = ref.createComponent<any>(factory);
+    compRef.instance.control = this.control;
+    compRef.instance.form = this.form;
+    compRef.instance.formGroup = this.formGroup;
+    compRef.instance.field = this.field;
+    compRef.instance.name = this.name.slice().pop();
+  }
+
+  ngOnInit(): void {
+    if (!this.field || !this.control) {
+      return;
+    }
+
+    this.renderFieldComponent();
+    this.setupOneTimeFormControlEventListener();
+    this.setupFormEventListener();
+  }
+
+  /**
+   * Sets up a event listener for the form events$ observable.
+   */
+  setupFormEventListener() {
+    this.form.events$.pipe(
+      filter(event => (event.type === FormEventType.OnAfterUpdateChecks || event.type === FormEventType.OnFirstAfterUpdateChecks )),
+      takeUntil(this.destroy$)
+    ).subscribe(event => {
+
+      if (event.type === FormEventType.OnFirstAfterUpdateChecks) {
+        this.onAfterUpdateChecks(event.values, true);
+      }
+
+      if (event.type === FormEventType.OnAfterUpdateChecks) {
+        this.onAfterUpdateChecks(event.values);
+      }
+    });
+  }
+
+  /**
+   * Sets up a one time control listener to match messages with the current control state
+   */
+  setupOneTimeFormControlEventListener() {
+    this.messages$ = this.messagesSubject$.asObservable();
+
+    extractEvents(this.control).pipe(
+      take(1),
+      delay(10),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      if (this.field.messages) {
+        this.updateMessages(this.formGroup.getRawValue());
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+  }
+
+  /**
+   * Checks to run after one of the fields in the form has changed.
+   *
+   * @param values the current (raw) values in the form
+   * @param firstUpdateCycle boolean to determine if this is the first cycle. If so, we run the onInit hook.
+   */
+  onAfterUpdateChecks(values: FormValues<any>, firstUpdateCycle: boolean = false) {
+    if (typeof this.field.transform !== 'undefined') {
+      const value = this.field.transform(values);
+      if (typeof value !== 'undefined') {
+        this.control.setValue(value, { emitEvent: false, onlySelf: true });
+      }
+    }
+
+    /**
+     * Dispatch the onInit hook in the first AfterUpdate cycle
+     * so that the formGroup values are filled with the default or passed values
+     * in the create() method.
+     */
+    if (firstUpdateCycle && this.field.hooks?.onInit) {
+      this.field.hooks.onInit({
+        control: this.control as FormControl | FormArray | FormGroup,
+        errors: this.control.errors,
+        values
+      });
+    }
+
+    if (this.field.disabled) {
+      this.updateDisabledState(typeof this.field.disabled === 'boolean' ? this.field.disabled : this.field.disabled(values));
+    }
+
+    if (this.field.hidden) {
+      this.updateHiddenState(typeof this.field.hidden === 'boolean' ? this.field.hidden : this.field.hidden(values));
+    }
+
+    if (this.field.required) {
+      this.updateRequiredState(typeof this.field.required === 'boolean' ? this.field.required : this.field.required(values));
+    }
+
+    if (this.field.messages) {
+      this.updateMessages(values);
+    }
+  }
+
+  updateDisabledState(match: boolean) {
+    if (match && this.control.enabled) {
+      this.control.disable({ onlySelf: true, emitEvent: false });
+    } else if (!match && this.control.disabled) {
+      this.control.enable({ onlySelf: true, emitEvent: false });
+    }
+  }
+
+  updateHiddenState(match: boolean) {
+    if (this.field && this.field.hide !== match) {
+      this.field.hide = match;
+    }
+  }
+
+  updateRequiredState(match: boolean) {
+    this.control.setErrors(match ? Validators.required(this.control) : null);
+  }
+
+  updateMessages(values: FormValues<any>) {
+    if (!this.field.messages) {
+      return;
+    }
+
+    const messages: FieldMessage[] = [];
+
+    /**
+     * Payload for the show function parameter
+     */
+    const payload = {
+      control: this.control as FormControl | FormArray | FormGroup,
+      errors: this.control.errors || {},
+      values
+    };
+
+    for (const item of this.field.messages) {
+      let show = false;
+
+      if (typeof item.show === 'boolean') {
+        show = item.show;
+      } else if (typeof item.show === 'function') {
+        show = item.show(payload);
+      }
+
+      /**
+       * If the specific message should show, push it in the messages array
+       */
+      if (show) {
+        messages.push({
+          type: item.type || FieldMessageType.Information,
+          text: (typeof item.text === 'string') ? item.text : item.text(payload)
+        });
+      }
+    }
+
+    /**
+     * Emit a new value to the messagesSubject$ Subject
+     */
+    this.messagesSubject$.next(messages);
+  }
+}

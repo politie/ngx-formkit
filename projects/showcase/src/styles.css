@@ -1,0 +1,141 @@
+@import 'tailwindcss/base';
+
+@import 'tailwindcss/components';
+
+@import 'tailwindcss/utilities';
+
+html, body {
+  @apply h-full;
+  @apply bg-gray-300;
+}
+
+.fb-form-notification {
+  @apply text-sm;
+}
+
+.fb-form-notification.error {
+  @apply text-red-500;
+}
+
+.fb-form-notification.disabled,
+.fb-form-notification.information {
+  @apply text-gray-500;
+}
+
+.mat-form-field {
+  @apply w-full;
+}
+
+.mat-form-field-wrapper {
+  @apply pb-0;
+}
+
+fb-form-wrapper .mat-radio-group .mat-radio-button:not(:last-child) {
+  @apply mr-4;
+}
+
+/**
+ * FormKit styling
+ */
+.fb-form-wrapper {
+  @apply w-2/3;
+  @apply flex;
+  @apply flex-row;
+  @apply flex-wrap;
+  @apply justify-between;
+  @apply -ml-3;
+  @apply space-y-8;
+}
+
+.fb-array-field-group {
+  @apply flex;
+  @apply justify-between;
+  @apply items-start;
+}
+
+.fb-array-field-group-fields {
+  @apply flex-1;
+  @apply flex;
+  @apply flex-row;
+  @apply flex-wrap;
+  @apply justify-between;
+  @apply -ml-3;
+  @apply space-y-3;
+}
+
+.fb-group-field-wrapper {
+  @apply -ml-3;
+  @apply space-y-3;
+}
+
+.fb-array-field-delete {
+  @apply p-3;
+  @apply mt-2;
+  @apply text-xl;
+}
+
+.button.fb-array-field-add {
+  @apply bg-white;
+  @apply text-black;
+}
+
+.fb-array-field-wrapper lib-form-field {
+  @apply pt-4;
+}
+
+.fb-form-wrapper lib-form-field {
+  @apply px-3;
+  @apply space-y-2;
+}
+
+.fb-form-notification {
+  @apply text-sm;
+}
+
+.fb-form-notification.error {
+  @apply text-red-500;
+}
+
+.fb-form-notification.disabled,
+.fb-form-notification.information {
+  @apply text-gray-500;
+}
+
+.fb-form-notification.loading {
+  @apply bg-gray-100;
+}
+
+.fb-form-input-loader {
+  @apply absolute;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fb-form-tooltip-icon.mat-icon {
+  @apply w-4;
+  @apply h-4;
+
+  font-size: 1rem;
+}
+
+.type-radio:checked + label {
+  @apply bg-gray-100;
+  @apply border-blue-500;
+  @apply text-blue-500;
+}
+
+.type-radio:disabled + label {
+  @apply opacity-50;
+  @apply cursor-not-allowed;
+}
+
+.button.primary {
+  @apply bg-blue-500 text-white py-3 px-4 font-medium tracking-tight;
+}
+
+.button[disabled] {
+  pointer-events: none;
+  opacity: .25;
+}

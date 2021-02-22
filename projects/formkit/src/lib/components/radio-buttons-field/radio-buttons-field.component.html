@@ -1,0 +1,24 @@
+<ng-container [formGroup]="formGroup" *ngIf="field">
+  <div class="formkit-radio-buttons-field">
+    <ng-container *ngFor="let option of field.options; let i = index">
+      <input
+        type="radio"
+        class="type-radio"
+        [name]="name"
+        [formControlName]="name"
+        [id]="name + '_' + option.id"
+        [value]="option.id">
+      <label
+        [for]="name + '_' + option.id"
+        class="formkit-radio-button-label"
+        [ngClass]="{'formkit-radio-button-label-next' : i > 0}">
+        <span class="formkit-radio-button-label-title">
+          {{ option.label }}
+        </span>
+        <p class="formkit-radio-button-label-description" *ngIf="option.description">
+          {{ option.description }}
+        </p>
+      </label>
+    </ng-container>
+  </div>
+</ng-container>

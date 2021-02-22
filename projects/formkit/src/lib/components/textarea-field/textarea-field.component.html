@@ -1,0 +1,17 @@
+<ng-container [formGroup]="formGroup" *ngIf="field">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ (field.label) ? field.label : name | humanize }}</mat-label>
+
+    <textarea
+      matInput
+      [formControlName]="name"
+      cdkTextareaAutosize
+      [cdkAutosizeMinRows]="field.minRows || 3"
+      [cdkAutosizeMaxRows]="field.maxRows || 10">
+    </textarea>
+
+    <mat-icon *ngIf="field.icon" matSuffix>{{ field.icon }}</mat-icon>
+  </mat-form-field>
+</ng-container>
+
+

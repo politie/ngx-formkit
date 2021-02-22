@@ -1,0 +1,35 @@
+<ng-container [formGroup]="formGroup" *ngIf="field">
+  <div class="formkit-array-field">
+    <ng-container [formArrayName]="name">
+      <div class="formkit-array-field-group" *ngFor="let child of control.controls; index as i">
+        <div class="formkit-array-field-group-fields">
+          <ng-container *ngFor="let childFieldBlueprint of field.blueprint | fieldIterator">
+            <formkit-form-field
+              [formGroup]="$any(child)"
+              [form]="form"
+              [control]="control.controls[i].get(childFieldBlueprint.key)!"
+              [name]="[name, (i + ''), childFieldBlueprint.key]"
+              [field]="$any(childFieldBlueprint.value)">
+            </formkit-form-field>
+          </ng-container>
+        </div>
+
+        <button
+          class="formkit-array-field-delete"
+          type="button"
+          [disabled]="control.controls.length === 1"
+          (click)="onRemove(i)">
+          &times;
+        </button>
+      </div>
+
+      <button
+        class="button formkit-array-field-add"
+        type="button"
+        *ngIf="(!field.maxLength) || (field.maxLength && control.controls.length < field.maxLength)"
+        (click)="onAdd()">
+        {{ field.buttonLabel || '+' }}
+      </button>
+    </ng-container>
+  </div>
+</ng-container>

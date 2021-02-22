@@ -1,0 +1,25 @@
+<ng-container *ngIf="root">
+  <form cy-formkit-form [formGroup]="root" class="formkit-form" (ngSubmit)="_onSubmitClick()">
+
+    <!-- Form description -->
+    <ng-content *ngIf="!config.readonly" select="[formDescription]"></ng-content>
+
+    <!-- Readonly form description -->
+    <ng-content *ngIf="config.readonly" select="[formDescriptionReadOnly]"></ng-content>
+
+    <div class="formkit-fields-wrapper">
+      <ng-container *ngFor="let field of config.fields | fieldIterator">
+        <formkit-form-field
+          [form]="config"
+          [formGroup]="root"
+          [control]="root.get(field.key)!"
+          [name]="[field.key]"
+          [field]="$any(field.value)">
+        </formkit-form-field>
+      </ng-container>
+    </div>
+
+    <ng-content select="[footer]"></ng-content>
+    <ng-content select="[submitButton]"></ng-content>
+  </form>
+</ng-container>
