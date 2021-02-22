@@ -1,8 +1,6 @@
 # ngx-FormKit
 
-{{TOC}}
-
-FormKit is an Angular Library built to make form handling in Angular a breeze. It's built on top of [Angular Reactive Forms](https://angular.io/guide/reactive-forms) and allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormKitForm` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the FormComponent as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
+FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
 Since the FormKit library is built on top of [Angular Reactive Forms](https://angular.io/guide/reactive-forms), you can use all the built in [Validators](https://angular.io/api/forms/Validators) as well as [custom validator functions](https://angular.io/guide/form-validation#adding-custom-validators-to-reactive-forms). FormKit has dynamic and conditional callback functions per defined `Field`, like:
 
@@ -24,7 +22,7 @@ This will install the FormKit library as a dependency in your project. You can n
 Add this component to your host component. This component renders a `<form>` component and `FormFieldComponent` components for every defined field in your `FormKitForm` configuration.
 
 ## `FormFieldComponent`
-This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormKitFormComponent` to handle these updates and will call all logic in your field configuration, from state management (required, disabled, hidden, loading) to hooks (onInit, onAfterUpdateValue).
+This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormComponent` to handle these updates and will call all logic in your field configuration, from state management (required, disabled, hidden, loading) to hooks (onInit).
 
 ## `FormKitForm<T>`
 This type is used to create objects for `FormKit`. In a `FormKitForm`, you define the settings for the form and the fields that the form should render.
@@ -68,7 +66,7 @@ The Form component has a `@Output() EventEmitter` set for the `ngSubmit` event w
   <button
     type="button"
     (click)="onSubmit()"
-    [disabled]="myFormKitForm.root?.invalid">
+    [disabled]="myFormKitForm.root.invalid">
     Save
   </button>
 </formkit-form>
@@ -158,15 +156,19 @@ Below is a rundown of each option per field object.
 |:---|:---|:---|
 | type* | `FieldType` | The type of field. See [Field Types](#field-types) for available field types. |
 | control* | `() => FormControl(value?, [Validator]?)` | A function that returns a `FormControl`. You can add a default value as the first parameter, [Validator functions](https://angular.io/api/forms/Validator) as optional second parameter. If you use multiple validator functions, add them as an array. |
-| hooks | `{}` | Object with hook definitions for this field. See ['Hooks'](hooks) for example usage. |
-| component | `undefined` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
-| required | `boolean` / `((values: T) => boolean)` | Should the field be required based on values of other fields. See ['Required fields'](#required-fields) for example usage.  |
+| component | `any` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
+| description | `string` | Description to display above the field |
 | disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
+| hooks | `{}` | Object with hook definitions for this field. See ['Hooks'](hooks) for example usage. |
 | hidden | `boolean` / `((values: T) => boolean)` | Should the field be hidden based on values of other fields. See ['Hide fields'](#hide-fields) for example usage. |
-| transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
-| resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. |
-| component | `any` | Override the default component to render with the one provided in the component property. |
+| label | `string` | Label for this field |
 | messages | `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
+| required | `boolean` / `((values: T) => boolean)` | Should the field be required based on values of other fields. See ['Required fields'](#required-fields) for example usage.  |
+| resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. |
+| title | `string` | Title to display above the field |
+| tooltip | `string` | Tooltip to display above the field |
+| transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
+| width | `1/2`, `1/3`, `2/3` | If you want to limit the with of the field, add the `width` property to your field. |
 
 ### Hooks
 You can use hooks to hook into the lifecycle of a `field`. You can use the following hooks:
