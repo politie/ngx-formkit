@@ -1,15 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ComponentFactoryResolver,
-  HostBinding,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, ComponentFactoryResolver, HostBinding, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldMessage, FieldMessageType, FieldType, IField, IConfig } from '../../models/field.model';
+import { FieldMessage, FieldMessageType, FieldType, IConfig, IField } from '../../models/field.model';
 import { Observable, Subject } from 'rxjs';
 import { extractEvents } from '../../helpers/extract-events.helpers';
 import { FormEventType, FormValues } from '../../models/form.model';
@@ -18,8 +9,7 @@ import { FormFieldDirective } from '../../directives';
 
 @Component({
   selector: 'formkit-form-field',
-  templateUrl: './form-field.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './form-field.component.html'
 })
 export class FormFieldComponent implements OnInit, OnDestroy {
 

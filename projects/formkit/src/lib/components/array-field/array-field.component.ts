@@ -1,15 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import {
-  IConfig,
-  IArrayField,
-  ISingleField
-} from '../../models/field.model';
+import { IArrayField, IConfig, ISingleField } from '../../models/field.model';
 
 @Component({
   selector: 'formkit-array-field',
-  templateUrl: './array-field.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './array-field.component.html'
 })
 export class ArrayFieldComponent {
   @Input() control!: FormArray;
