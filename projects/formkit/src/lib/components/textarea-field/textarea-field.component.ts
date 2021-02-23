@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IConfig, ITextareaField } from '../../models';
+import { FormEvent, ITextareaField } from '../../models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'formkit-textarea-field',
@@ -9,7 +10,7 @@ import { IConfig, ITextareaField } from '../../models';
 })
 export class TextareaFieldComponent {
   @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ITextareaField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

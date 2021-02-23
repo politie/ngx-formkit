@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IConfig, ICheckboxField } from '../../models/field.model';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ICheckboxField } from '../../models/field.model';
+import { Subject } from 'rxjs';
+import { FormEvent } from '../../models';
 
 @Component({
   selector: 'formkit-checkbox-field',
@@ -8,8 +10,8 @@ import { IConfig, ICheckboxField } from '../../models/field.model';
   styles: [':host { display: block; }']
 })
 export class CheckboxFieldComponent {
-  @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() control!: FormControl;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ICheckboxField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

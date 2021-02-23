@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IConfig, IPasswordField } from '../../models';
+import { FormEvent, IPasswordField } from '../../models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'formkit-password-field',
@@ -9,7 +10,7 @@ import { IConfig, IPasswordField } from '../../models';
 })
 export class PasswordFieldComponent {
   @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IPasswordField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

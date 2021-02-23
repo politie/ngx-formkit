@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { IConfig, ISelectField, Options } from '../../models';
+import { FormEvent, ISelectField, Options } from '../../models';
 import { isObservable, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class SelectFieldComponent implements OnInit, OnDestroy {
   @Input() control!: FormControl;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ISelectField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

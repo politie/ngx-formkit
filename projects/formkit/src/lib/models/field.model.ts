@@ -139,7 +139,7 @@ export type ICustomField<T, K extends keyof T> = IFieldBase<T, K> & {
   control: () => FormControl;
 }
 
-type ISingleFields<T, K extends keyof T> =
+export type ISingleFieldConfig<T, K extends keyof T> =
   ITextField<T, K> |
   ITextareaField<T, K> |
   IHiddenField<T, K> |
@@ -150,7 +150,7 @@ type ISingleFields<T, K extends keyof T> =
   ICustomField<T, K>
 ;
 
-export type ISingleField<T, K extends keyof T> = ISingleFields<T, K> & {
+export type ISingleField<T, K extends keyof T> = ISingleFieldConfig<T, K> & {
   control: () => FormControl;
 }
 

@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IConfig, IHiddenField } from '../../models';
+import { FormEvent, IHiddenField } from '../../models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'formkit-hidden-field',
@@ -8,7 +9,7 @@ import { IConfig, IHiddenField } from '../../models';
 })
 export class HiddenFieldComponent {
   @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IHiddenField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
