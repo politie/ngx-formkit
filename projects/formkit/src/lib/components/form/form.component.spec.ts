@@ -2,10 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FieldIteratorPipe } from '../../pipes';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
-import { IFormGroup } from '../../models';
+import { FieldType, IFormGroup } from '../../models';
 
 type FormType = {
   value1: string;
@@ -27,7 +26,6 @@ describe('FormComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [
-        FieldIteratorPipe,
         MockComponent(FormFieldComponent),
         FormComponent
       ]
@@ -38,6 +36,22 @@ describe('FormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance;
+
+    component.fields = {
+      value1: {
+        type: FieldType.Text,
+        control: () => new FormControl()
+      }
+    };
+
+    component.form = new FormGroup({
+      value1: new FormControl('123'),
+      value2: new FormControl('456'),
+      value3: new FormArray([new FormGroup({
+        input: new FormControl('123')
+      })])
+    }) as IFormGroup<any>;
+
     fixture.detectChanges();
   });
 
@@ -46,15 +60,7 @@ describe('FormComponent', () => {
   });
 
   it('should transform values and keys of the rawValues', () => {
-    component.root = new FormGroup({
-      value1: new FormControl('123'),
-      value2: new FormControl('456'),
-      value3: new FormArray([new FormGroup({
-        input: new FormControl('123')
-      })])
-    }) as IFormGroup<any>;
-
-    const spy = spyOn(component.root, 'getRawValue').and.callFake(() => ({
+    const spy = spyOn(component.form, 'getRawValue').and.callFake(() => ({
       value1: '123',
       value2: '456',
       value3: [{
@@ -84,11 +90,5 @@ describe('FormComponent', () => {
       value1: '123456',
       value3edit: ['123']
     });
-  });
-
-  it('should emit event on submit', () => {
-    const spy = spyOn(component.ngSubmit, 'emit').and.callFake(() => {});
-    component._onSubmitClick();
-    expect(spy).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@ import { Directive, ViewContainerRef } from '@angular/core';
  * components used by fields in the template.
  */
 @Directive({
-  selector: '[libFbFormField]'
+  selector: '[formkitFormField]'
 })
 export class FormFieldDirective {
   constructor(public viewContainerRef: ViewContainerRef) { }

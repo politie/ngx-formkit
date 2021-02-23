@@ -1,16 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormFieldComponent } from './form-field.component';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
-import { FieldMessageType, FieldType, FormEvent, ISingleField } from '../../models';
+import { FieldMessageType, FieldType, FormEvent, FormEventType, ISingleField } from '../../models';
 import { Subject } from 'rxjs';
 import { RadioFieldComponent } from '../radio-field/radio-field.component';
 import { MockProvider } from 'ng-mocks';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormFieldDirective } from '../../directives';
+import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config';
+import { FormKitModule } from '../../formkit.module';
 
 const field: ISingleField<any, any> = {
   type: FieldType.Radio,
@@ -40,6 +42,8 @@ const field: ISingleField<any, any> = {
 describe('FieldComponent', () => {
   let component: FormFieldComponent;
   let fixture: ComponentFixture<FormFieldComponent>;
+  let events$: Subject<FormEvent>;
+  let control: FormControl;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,38 +51,40 @@ describe('FieldComponent', () => {
         BrowserDynamicTestingModule,
         FormsModule,
         ReactiveFormsModule,
+        FormKitModule,
         MatTooltipModule,
         MatIconModule,
         MatRadioModule
       ],
-      declarations: [
-        RadioFieldComponent,
-        FormFieldComponent
-      ],
       providers: [
+        {
+          provide: FORMKIT_MODULE_CONFIG_TOKEN,
+          useFactory: () => ({
+            components: {
+              [FieldType.Radio]: RadioFieldComponent,
+            },
+            text: {
+              loading: 'loading'
+            }
+          })
+        },
         MockProvider(FormFieldDirective)
       ]
     })
-    .overrideModule(BrowserDynamicTestingModule, { set: { entryComponents: [RadioFieldComponent] }})
     .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FormFieldComponent);
     component = fixture.componentInstance;
-    component.control = new FormControl('initial-value');
+    events$ = new Subject<FormEvent>();
+    control = new FormControl('initial-value');
+
+    component.formGroup = new FormGroup({ 'field-name': control });
+    component.control = control;
+    component.formEvents$ = events$;
+    component.name = ['field-name'];
     component.field = field as any;
-    component.form = {
-      components: {
-        [FieldType.Radio]: RadioFieldComponent
-      },
-      fields: {},
-      readonly: false,
-      text: {
-        loading: 'loading'
-      },
-      events$: new Subject<FormEvent>()
-    };
     fixture.detectChanges();
   });
 
@@ -129,9 +135,20 @@ describe('FieldComponent', () => {
     expect(component.control.errors).toEqual(null);
   });
 
-  it('should run onUpdateCompleted checks', () => {
+  it('should run onAfterUpdate checks', () => {
     component.onAfterUpdateChecks({ testValue: 'test'});
     // Should have the transformed value
     expect(component.control.value).toEqual('new-value');
+  });
+
+  it('should run checks after subject has emitted', () => {
+    const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
+
+    events$.next({
+      type: FormEventType.OnAfterUpdateChecks,
+      values: {}
+    });
+
+    expect(spy).toHaveBeenCalled();
   });
 });
