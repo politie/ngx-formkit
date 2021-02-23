@@ -1,16 +1,19 @@
 <div class="space-y-4">
   <header class="text-2xl">{{ title | titlecase }}</header>
 
-  <div>
-    <formkit-form #form [form]="config" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <formkit-form #FormKitForm [autoCreate]="true" [form]="form" [fields]="fields">
+
+      <p beforeCreated>Hoiiii!!</p>
+
       <button
         submitButton
         type="button"
         class="button primary"
-        [disabled]="form.root.invalid"
+        [disabled]="form.invalid"
         (click)="onSubmit()" >
         Save
       </button>
     </formkit-form>
-  </div>
+  </form>
 </div>

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { basicFormConfig } from './inputs/e2e.basic.inputs';
-import { FormKitForm } from 'formkit';
-import { messagesFormConfig } from './inputs/e2e.messages.inputs';
-import { hiddenFormConfig } from './inputs/e2e.hidden.inputs';
-import { requiredFormConfig } from './inputs/e2e.required.inputs';
+import { basicFormFields } from './inputs/e2e.basic.inputs';
+import { FormFields } from 'formkit';
+import { messagesFormFields } from './inputs/e2e.messages.inputs';
+import { hiddenFormFields } from './inputs/e2e.hidden.inputs';
+import { requiredFormFields } from './inputs/e2e.required.inputs';
 
 @Component({
   selector: 'app-e2e',
@@ -13,18 +13,18 @@ import { requiredFormConfig } from './inputs/e2e.required.inputs';
 export class E2eComponent {
 
   /** Configs **/
-  configs: { config: FormKitForm<any>, title: string }[] = [
+  fieldSets: { fields: FormFields<any>, title: string }[] = [
     {
-      title: 'basic',  config: basicFormConfig
+      title: 'basic',  fields: basicFormFields
     },
     {
-      title: 'messages', config: messagesFormConfig
+      title: 'messages', fields: messagesFormFields
     },
     {
-      title: 'hidden', config: hiddenFormConfig
+      title: 'hidden', fields: hiddenFormFields
     },
     {
-      title: 'required',  config: requiredFormConfig
+      title: 'required',  fields: requiredFormFields
     }
   ];
 }

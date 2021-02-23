@@ -1,6 +1,6 @@
-<div *ngFor="let config of configs" class="bg-white shadow-lg p-8">
+<div *ngFor="let config of fieldSets" class="bg-white shadow-lg p-8">
   <app-e2e-form-creator
-    [config]="config.config"
+    [fields]="config.fields"
     [title]="config.title">
   </app-e2e-form-creator>
 </div>

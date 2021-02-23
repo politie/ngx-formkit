@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormComponent, FormKitForm } from 'formkit';
+import { FormComponent, FormFields } from 'formkit';
+import { BasicForm } from '../e2e/inputs/e2e.basic.inputs';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-e2e-form-creator',
@@ -7,9 +9,10 @@ import { FormComponent, FormKitForm } from 'formkit';
   styleUrls: ['./e2e-form-creator.component.css']
 })
 export class E2eFormCreatorComponent implements OnInit {
-  @ViewChild('form', { static: true }) formComponent!: FormComponent<any>;
+  @ViewChild('FormKitForm', { static: true }) formComponent!: FormComponent<BasicForm>;
+  form = new FormGroup({});
 
-  @Input() config!: FormKitForm<any>;
+  @Input() fields!: FormFields<BasicForm>;
   @Input() title!: string;
 
   constructor() { }
