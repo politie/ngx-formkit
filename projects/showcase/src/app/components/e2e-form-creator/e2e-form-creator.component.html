@@ -2,7 +2,7 @@
   <header class="text-2xl">{{ title | titlecase }}</header>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <formkit-form #FormKitForm [autoCreate]="true" [form]="form" [fields]="fields">
+    <formkit-form #FormKitForm [form]="form" [fields]="fields">
 
       <p beforeCreated>Hoiiii!!</p>
 

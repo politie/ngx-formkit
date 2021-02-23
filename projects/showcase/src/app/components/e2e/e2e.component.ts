@@ -17,14 +17,14 @@ export class E2eComponent {
     {
       title: 'basic',  fields: basicFormFields
     },
-    {
-      title: 'messages', fields: messagesFormFields
-    },
-    {
-      title: 'hidden', fields: hiddenFormFields
-    },
-    {
-      title: 'required',  fields: requiredFormFields
-    }
+    // {
+    //   title: 'messages', fields: messagesFormFields
+    // },
+    // {
+    //   title: 'hidden', fields: hiddenFormFields
+    // },
+    // {
+    //   title: 'required',  fields: requiredFormFields
+    // }
   ];
 }

@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import {
   FieldType,
   FormEvent,
   FormEventType,
-  FormFields, FormKitFormFieldListItem,
+  FormFields,
+  FormKitFormFieldListItem,
   FormValues,
   IAbstractControl,
   IField,
@@ -18,7 +19,8 @@ import { debounceTime, delay, filter, map, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'formkit-form',
-  templateUrl: './form.component.html'
+  templateUrl: './form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent<T> implements OnInit, OnDestroy {
   @Input() form!: FormGroup;
@@ -71,6 +73,8 @@ export class FormComponent<T> implements OnInit, OnDestroy {
      * If the FormKitForm isn't the root form, stop right here.
      */
     if (!this.root) {
+      this.created = true;
+
       return;
     }
 
@@ -89,7 +93,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     /**
      * Trigger a event emit for the first time checks
      */
-    // this.afterValueUpdateScheduler$.next(this.form.getRawValue());
+    this.afterValueUpdateScheduler$.next(this.form.getRawValue());
 
     /**
      * Watch form changes and apply the AfterValueChangesChecks on changes
@@ -116,14 +120,14 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     );
 
     /**
-     * Run change detection
-     */
-    this.cd.detectChanges();
-
-    /**
      * Everything done, update the created prop
      */
     this.created = true;
+
+    /**
+     * Run change detection
+     */
+    this.cd.detectChanges();
   }
 
   /**

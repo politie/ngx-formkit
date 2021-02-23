@@ -4,7 +4,7 @@ describe('E2E Messages', () => {
     cy.get('[ng-reflect-title="messages"]').as('container');
 
     cy.get('@container').within(() => {
-      cy.get('form[cy-formkit-form]').as('form');
+      cy.get('div[cy-formkit-form]').as('form');
       cy.get('button[submitbutton]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('inputField');
       cy.get('input[ng-reflect-name="input"]').as('input');

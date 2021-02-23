@@ -13,3 +13,7 @@ Run `npm run test:lib` to execute the unit tests with Jest.
 ## Running ESLint
 
 Run `npm run eslint`. If you'd like to autofix the problems, use `npm run eslint:fix`.
+
+## Running E2E tests
+
+Run `npm run e2e` to run headless. Run `npm run e2e:watch` to run in browser and watch for file changes.

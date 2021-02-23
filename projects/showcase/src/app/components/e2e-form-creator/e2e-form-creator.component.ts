@@ -17,7 +17,7 @@ export class E2eFormCreatorComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onSubmit() {
     console.log(`Form "${this.title}" has been submitted.`);

@@ -4,7 +4,7 @@ describe('Basic fields', () => {
     cy.get('[ng-reflect-title="basic"]').as('container');
 
     cy.get('@container').within(() => {
-      cy.get('form[cy-formkit-form]').as('form');
+      cy.get('div[cy-formkit-form]').as('form');
       cy.get('button[submitbutton]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('textField');
       cy.get('formkit-form-field[ng-reflect-name="checkbox"]').as('checkboxField');

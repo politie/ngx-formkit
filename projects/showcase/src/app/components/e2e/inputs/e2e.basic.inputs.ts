@@ -131,7 +131,18 @@ export const basicFormFields: FormFields<BasicForm> = {
     }),
     label: 'Select an option',
     title: 'Select',
-    options: []
+    options: [
+      {
+        id: 1,
+        label: 'Label 1',
+        description: 'Description 1'
+      },
+      {
+        id: 2,
+        label: 'Label 2',
+        description: 'Description 2'
+      }
+    ]
   },
 
   textarea: {
