@@ -9,8 +9,9 @@ import {
   FormFields,
   FormKitFormFieldListItem,
   FormValues,
-  IAbstractControl,
+  IArrayField,
   IField,
+  IGroupField,
   ISingleField,
   TransformValues
 } from '../../models';
@@ -234,6 +235,50 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   }
 
   /**
+   * Return the FormControl created by the control() function in the field config
+   *
+   * @param field Single field configuration
+   * @private
+   */
+  private createFormControl(field: ISingleField<T, any>): FormControl {
+    return field.control();
+  }
+
+  /**
+   * Return a FormGroup based on the given field configuration
+   *
+   * @param field Group field config
+   * @private
+   */
+  private createFormGroup(field: IGroupField<T, any>): FormGroup {
+    const obj: {[K in Extract<keyof T[any], string>]?: FormControl} = {};
+
+    for (const key of Object.keys(field.blueprint) as Extract<keyof T[any], string>[])  {
+      const childField: ISingleField<T, any> = field.blueprint[key] as ISingleField<T, any>;
+      obj[key] = childField.control();
+    }
+
+    return new FormGroup(obj as {[key: string]: FormControl});
+  }
+
+  /**
+   * Return a FormArray based on the given field configuration
+   *
+   * @param field Array field configuration
+   * @private
+   */
+  private createFormArray(field: IArrayField<T, any>): FormArray {
+    const obj: {[key: string]: FormControl} = {};
+
+    for (const key of Object.keys(field.blueprint))  {
+      const childField: ISingleField<T, any> = field.blueprint[key];
+      obj[key] = childField.control();
+    }
+
+    return new FormArray([new FormGroup(obj)]);
+  }
+
+  /**
    * Adds all fields to the root FormGroup by using the control() property.
    */
   private addFieldsToFormGroup() {
@@ -251,32 +296,11 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
        */
       if (field.type === FieldType.Array) {
-        const obj: {[key: string]: FormControl} = {};
-
-        for (const key of Object.keys(field.blueprint))  {
-          const childField: ISingleField<T, any> = field.blueprint[key];
-          obj[key] = childField.control();
-        }
-
-        this.form.addControl(
-          name,
-          new FormArray([
-            new FormGroup(obj as {[key: string]: FormControl})
-          ]) as IAbstractControl<T>
-        );
-
+        this.form.addControl(name, this.createFormArray(field));
       } else if (field.type === FieldType.Group) {
-        const obj: {[K in Extract<keyof T[any], string>]?: FormControl} = {};
-
-        for (const key of Object.keys(field.blueprint) as Extract<keyof T[any], string>[])  {
-          const childField: ISingleField<T, any> = field.blueprint[key] as ISingleField<T, any>;
-          obj[key] = childField.control();
-        }
-
-        this.form.addControl(name, new FormGroup(obj as {[key: string]: FormControl}));
-
+        this.form.addControl(name, this.createFormGroup(field));
       } else {
-        this.form.addControl(name, field.control());
+        this.form.addControl(name, this.createFormControl(field));
       }
 
       /**

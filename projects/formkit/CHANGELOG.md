@@ -1,3 +1,6 @@
+# 0.0.4
+- Fixed issue where a control lookup could return `undefined`.
+
 # 0.0.3
 - Added configuration options for `FormKitModule`.
 - Reworked configuration logic in `FormComponent` and `FormFieldComponent`.
