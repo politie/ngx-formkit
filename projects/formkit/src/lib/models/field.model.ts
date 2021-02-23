@@ -164,7 +164,7 @@ export type FormFields<T> = {
   [K in Extract<keyof T, string>]?: IField<T, K>;
 };
 
-export type FormKitFormFieldObservable<T> = {
+export type FormKitFormFieldListItem<T> = {
   name: Extract<keyof T, string>;
-  field$: BehaviorSubject<IField<T, any>>;
+  field: IField<T, any>;
 };

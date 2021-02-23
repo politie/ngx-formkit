@@ -22,7 +22,6 @@ import { TextareaFieldComponent } from './components/textarea-field/textarea-fie
 import { ArrayFieldComponent } from './components/array-field/array-field.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { GroupFieldComponent } from './components/group-field/group-field.component';
-import { FieldIteratorPipe } from './pipes/field-iterator.pipe';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CustomFieldComponent } from './components/custom-field/custom-field.component';
 import { CommonModule } from '@angular/common';
@@ -48,7 +47,6 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
   ],
   declarations: [
     HumanizePipe,
-    FieldIteratorPipe,
     TextFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,
@@ -79,7 +77,6 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
   exports: [
     MatButtonModule,
     HumanizePipe,
-    FieldIteratorPipe,
     FormComponent,
     TextareaFieldComponent,
     CustomFieldComponent,
