@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RadioFieldComponent } from './radio-field.component';
-import { FormkitModule } from '../../formkit.module';
+import { FormKitModule } from '../../formkit.module';
 import { FormGroupDirective } from '@angular/forms';
 
 describe('RadioFieldComponent', () => {
@@ -11,7 +11,7 @@ describe('RadioFieldComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        FormkitModule
+        FormKitModule
       ],
       providers: [
         FormGroupDirective

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GroupFieldComponent } from './group-field.component';
-import { FormkitModule } from '../../formkit.module';
+import { FormKitModule } from '../../formkit.module';
 
 describe('GroupFieldComponent', () => {
   let component: GroupFieldComponent;
@@ -10,7 +10,7 @@ describe('GroupFieldComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        FormkitModule
+        FormKitModule
       ]
     })
     .compileComponents();

@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TextareaFieldComponent } from './textarea-field.component';
-import { FormkitModule } from '../../formkit.module';
+import { FormKitModule } from '../../formkit.module';
 import { FormGroupDirective } from '@angular/forms';
 
 describe('TextareaFieldComponent', () => {
@@ -11,7 +11,7 @@ describe('TextareaFieldComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        FormkitModule
+        FormKitModule
       ],
       providers: [
         FormGroupDirective
