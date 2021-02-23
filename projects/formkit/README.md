@@ -19,27 +19,39 @@ This will install the FormKit library as a dependency in your project. You can n
 # Building blocks
 
 ## `FormComponent`
-Add this component to your host component. This component renders a `<form>` component and `FormFieldComponent` components for every defined field in your `FormKitForm` configuration.
+Add this component to your host component. This component renders a `<formkit-form>` component and `FormFieldComponent` components for every defined field in your `FormKitFields` list.
 
 ## `FormFieldComponent`
 This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormComponent` to handle these updates and will call all logic in your field configuration, from state management (required, disabled, hidden, loading) to hooks (onInit).
 
 ## `FormKitForm<T>`
-This type is used to create objects for `FormKit`. In a `FormKitForm`, you define the settings for the form and the fields that the form should render.
+This type is used to create objects for `FormKit`. In a `FormKitFields` list, you define the fields that the form should render.
 
-# Setup
+# Import the `FormKitModule`
 
-Add the following options to the component where you want to add a `FormKitForm`.
+Add the `FormKitModule` in your `AppModule` and call the `forRoot()` method. You can add configuration as a parameter. When you have multiple modules, you can omit the `forRoot()` method in modules other than `AppModule`.
 
 ```ts
-import { FormComponent } from '@politie/formkit';
+@NgModule({
+  imports: [
+    FormKitModule.forRoot()
+  ]
+})
+export class AppModule { }
+```
+
+
+# Setup
+Add the following options to the component where you want to add a `<formkit-form>`.
+
+```ts
+import { FormComponent, IFormGroup, FormKitFields } from '@politie/formkit';
 import { ViewChild } from '@angular/core';
 
 export class MyComponent {
-  config: FormKitForm<Type> = {
-    fields: {
-      ...
-    }
+  form = new FormGroup({}) as IFormGroup<Type>;
+  fields: FormKitFields<Type> = {
+    ...
   };
   /**
    * By using ViewChild, we can use the methods provided in the FormComponent
@@ -62,21 +74,23 @@ The Form component has a `@Output() EventEmitter` set for the `ngSubmit` event w
 
 ```angular2html
 
-<formkit-form #myFormKitForm [form]="formConfig" (ngSubmit)="onSubmit()">
-  <button
-    type="button"
-    (click)="onSubmit()"
-    [disabled]="myFormKitForm.root.invalid">
-    Save
-  </button>
-</formkit-form>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <formkit-form #myFormKitForm [fields]="fields" [form]="formGroup">
+    <button
+      type="button"
+      (click)="onSubmit()"
+      [disabled]="form.invalid">
+      Save
+    </button>
+  </formkit-form>
+</form>
 ```
 
 ## Create a form
-To create a form, you'll need to create a `FormKitForm`. This type expects an object with configuration, as wel as a `fields` object, with your field definitions.
+To create a form, you'll need to create a `FormKitFields` list and a `FormGroup`. The `FormKitFields` type expects an object with your field definitions.
 
 ```ts
-import { FormKitForm, FormComponent } from '@politie/formkit';
+import { FormKitFields, FormComponent } from '@politie/formkit';
 import { OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -85,32 +99,22 @@ type MyType = {
 }
 
 export class MyComponent implements OnInit {
+  formGroup = new FormGroup({});
 
   /* Use the static option if you'd like to use the form in the OnInit
    * lifecycle
    */
-  @ViewChild('form', {static: true}) form: FormComponent<Type>;
+  @ViewChild('form', { static: true }) form: FormComponent<Type>;
 
   /**
-   * The configuration for the form in this component. Add a type definition
+   * The fields for the form in this component. Add a type definition
    * to strongly type check field names in the configuration.
    */
-  formConfig: FormKitForm<MyType> = {
-    fields: {
-      username: {
-        type: FieldType.Text,
-        control: () => new FormControl()
-      }
+  fields: FormKitFields<MyType> = {
+    username: {
+      type: FieldType.Text,
+      control: () => new FormControl()
     }
-  }
-
-  ngOnInit() {
-    /**
-     * We can call the `create()` method on the form reference directly,
-     * to build our form. The method requires the config as first parameter,
-     * and a set of initial values as optional second parameter.
-     */
-    this.form.create(this.formConfig);
   }
 }
 
@@ -118,33 +122,8 @@ export class MyComponent implements OnInit {
 
 The above example will render with one field of type `TextField`, bind to the `username` name.
 
-## Available options for the `FormKitForm` configuration
-
-In the `FormKitForm`, the following properties are available:
-
-| Property | Type | Description | Default |
-|:---|:---|:---|:---|
-| readonly | boolean | Should the form render in 'readonly' mode (all controls will be disabled) | `false` |
-| text | object | Object with properties to override strings used in the form templates | `{ loading: 'loading' }` |
-| components.default | `{...}` | Object with `[FieldType.<name>]` properties to globally override components per `Field type` | `default set, see Field Types` |
-| fields* | object | object with your field definitions | `{}` |
-
-*= required
-
 ## `Field` properties
-The `fields` property in a `FormKitForm` configuration requires an object of field names with an object describing the field properties. Each field object should at least have a `type` option set:
-
-```ts
-import { FieldType } from '@politie/formkit';
-
-const form: FormKitForm<MyType> = {
-  fields: {
-    username: {
-      type: FieldType.Textfield,
-    }
-  }
-}
-```
+Each field object should at least have a `type` option set:
 
 > The object name should match a key in the provided Type definition. Following the example above, you can use `username` as name for a field object.
 
@@ -178,14 +157,12 @@ You can use hooks to hook into the lifecycle of a `field`. You can use the follo
 To use a hook, define a `hooks` property in the field object and add a function to the hook you want to use:
 
 ``` typescript
-const config: FormKitForm<Type> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      hooks: {
-        onInit: (payload): void => {
-          // do something
-        }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    hooks: {
+      onInit: (payload): void => {
+        // do something
       }
     }
   }
@@ -206,12 +183,10 @@ The `payload` object has the following properties:
 With conditional hiding, you can hide a field based on the value (or values) of other fields.
 
 ``` typescript
-const config: FormKitForm<Type> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      hidden: values => values.configuration !== 'local'
-    }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    hidden: values => values.configuration !== 'local'
   }
 }
 ```
@@ -222,30 +197,10 @@ In this example, the `myField` field will be hidden when the `configuration` fie
 With conditional required, you'll make the field `required` based on the `value` (or `values`) of other fields.
 
 ``` typescript
-const config: FormKitForm<Type> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      required: values => values.configuration !== 'local'
-    }
-  }
-}
-```
-
-In this example, the `myField` field will be required when the `configuration` field `value` isn't equal to `local`.
-
-> If you want to make a field that's always required, use the `validators` property with Angular's built in `Validators.required` method.
-
-### Required fields
-With conditional required, you'll make the field `required` based on the `value` (or `values`) of other fields.
-
-``` typescript
-const config: FormKitForm<Type> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      required: values => values.configuration !== 'local'
-    }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    required: values => values.configuration !== 'local'
   }
 }
 ```
@@ -258,12 +213,10 @@ In this example, the `myField` field will be required when the `configuration` f
 You can disable fields based on the values of other fields.
 
 ``` typescript
-const config: FormKitForm<Type> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      disabled: values => values.configuration !== 'local'
-    }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    disabled: values => values.configuration !== 'local'
   }
 }
 ```
@@ -282,17 +235,15 @@ To add messages, create an array with `FieldMessage` type objects in it. Each me
 #### Always show a message
 
 ```ts
-const config: FormKitForm<T> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      messages: [
-        {
-          show: true,
-          text: 'Hello world'
-        }
-      ]
-    }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    messages: [
+      {
+        show: true,
+        text: 'Hello world'
+      }
+    ]
   }
 }
 ```
@@ -300,22 +251,37 @@ const config: FormKitForm<T> = {
 #### Use in combination with a Validator
 
 ```ts
-const config: FormKitForm<T> = {
-  fields: {
-    myField: {
-      type: FieldType.Text,
-      messages: [
-        {
-          show: ({ control, errors }) => (control.value && errors.minlength),
-          text: ({errors}) => {
-            return `Input length: ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
-          }
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    messages: [
+      {
+        show: ({ control, errors }) => (control.value && errors.minlength),
+        text: ({errors}) => {
+          return `Input length: ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
         }
-      ]
-    }
+      }
+    ]
   }
 }
 ```
+
+## `FormComponent` `@Input()` properties
+
+Example:
+
+```angular2html
+<formkit-form [fields]="fields"></formkit-form>
+```
+
+| Property | Type | Description | Default |
+|:---|:---|:---|:---|
+| form* | `FormGroup` | The FormGroup to use for this form. | |
+| fields* | `FormFields<T>` | The fields configuration for this form | |
+| readonly | `boolean` | Render the form in readonly mode | `false` |
+| autoCreate | `boolean` | Should the form call the `create()` method automatically? If you set this property to `false`, you must call the `create()` method yourself. This is useful if you need to wait for e.g. API calls to complete before rendering the form. | `true` |
+
+*required
 
 ## `FormComponent` properties
 
@@ -327,10 +293,9 @@ this.myFormKitForm.value$.subscribe();
 
 | Property | Type | Description |
 |:---|:---|:---|
-| fields | `FormKitForm` | the object with fields configurations |
 | events$ | `Subject<FormEvent>` | Subject for hooking into the `FormComponent` lifecycle |
 | value$ | `FormValues<T>` | Observable that emits each time the form is updated (and after update checks per field are completed). |
-| root | `FormGroup` | The 'root' `FormGroup`. You can use root to access controls and listen to `valueChanges` on specific controls.
+| created | boolean | Will be `true` if the `create()` method is called (automatically or manually). |
 
 ## `FormComponent` methods
 
@@ -342,6 +307,7 @@ this.myFormKitForm.setValues(...);
 
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
+| create | | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. | |
 | setValues | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties | `void` |
 | transformValues | `TransformValues<T>` | Get a object with the current form values and transform them. See ['Transforming form values'](#transform-form-values) for example usage. | `T` |
 
@@ -397,21 +363,36 @@ const values = myFormKitForm.transformValues({
 
 The transform property in the `transformValues` payload takes a function that receives the current form values. It should return an array with transforms. The `to` property can take either a `string` or `object`. If you pass a `string`, the value set in the property `from` is copied to the key you define in `to`. If you set a `object`, you define a new key / value pair. You can use the `values` to look up a specific value in the form values.
 
+## Available options for the `forRoot()` method
+
+In the `forRoot()`, you can add a configuration object with the following properties:
+
+| Property | Type | Description | Default |
+|:---|:---|:---|:---|
+| text | object | Object with properties to override strings used in the form templates | `{ loading: 'loading' }` |
+| components | `{...}` | Object with `[FieldType.<name>]` properties to globally override components per `Field type` | `default set, see Field Types` |
+
+*= required
+
 ## Custom components
 
 By default, the FormKit uses a set of prebuilt components to build your form. You can add your own custom components. You can choose between updating all fields that match a certain `FieldType` to render your custom component by customising the default set. If you need to update a specific field without changing other fields with the same `FieldType`, you can customise a specific field.
 
 ### Customising the default set
 
-Add the `components` property to your `FormConfig` object and add components that you want to override per `FieldType`:
+Add the `components` property to the `forRoot()` payload object and add components that you want to override per `FieldType`:
 
 ```ts
-const formConfig: FormKitForm<Type> = {
-  fields: { ... },
-  components: {
-    [FieldType.Text]: CustomTextInputComponent
-  }
-}
+@NgModule({
+  imports: [
+    FormKitModule.forRoot({
+      components: {
+        [FieldType.Text]: CustomTextInputComponent
+      }
+    })
+  ]
+})
+export class AppModule { }
 ```
 
 > This will update all fields that use the `FieldType.Text` type as field `type` property to use the `CustomTextInputComponent`.
@@ -419,17 +400,16 @@ const formConfig: FormKitForm<Type> = {
 ### Customising a component for a specific field
 
 ```ts
-const formConfig: FormKitForm<Type> = {
-  fields: { ... },
-  components: {
-    field: {
-      'field-name': CustomTextInputComponent
-    }
+const formConfig: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.TextField,
+    control: () => new FormControl(),
+    component: CustomTextInputComponent.
   }
 }
 ```
 
-> This will make sure that field `field-name` uses the `CustomTextInputComponent`.
+> This will make sure that field `myField` uses the `CustomTextInputComponent`.
 
 ### Creating your custom component
 
@@ -438,7 +418,7 @@ You can extend the `CustomFieldComponent`. This component has all `@Input()` pro
 You must add a HTML element that has the `[formGroup]` attribute that will be filled with the `formGroup` `@Input()` property. The `[formControlName]` property **must** be mapped to the `name` `@Input()` property in order to get your custom component to work.
 
 ```ts
-import { CustomFieldComponent, ICustomField, FormKitForm } from '@politie/formkit';
+import { CustomFieldComponent, ISingleFieldConfig, FormKitForm } from '@politie/formkit';
 
 @Component({
   selector: 'app-custom-text-input-component',
@@ -447,8 +427,8 @@ import { CustomFieldComponent, ICustomField, FormKitForm } from '@politie/formki
 export class CustomTextInputComponent extends CustomFieldComponent implements OnInit {
 
   @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() form!: Required<FormKitForm<any>>;
-  @Input() field!: ICustomField<any>;
+  @Input() events$!: Subject<FormEvent>;
+  @Input() field!: ISingleFieldConfig<any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
 
