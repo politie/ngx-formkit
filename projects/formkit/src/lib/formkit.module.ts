@@ -29,7 +29,6 @@ import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
 import { FormKitModuleConfig } from './models/config.model';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
-import { FORM_EVENTS, FormKitService } from './services';
 
 @NgModule({
   imports: [

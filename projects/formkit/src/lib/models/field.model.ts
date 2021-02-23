@@ -1,6 +1,6 @@
-import { FormEvent, FormValues, Options } from './form.model';
+import { FormValues, Options } from './form.model';
 import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export enum FieldType {
   Hidden,
@@ -43,15 +43,16 @@ export type FieldHookProperties<T> = {
   onInit?: (payload: FieldMessageFunctionPayload<T>) => void
 }
 
+type ConditionalFunction<T> = boolean | ((values: T) => boolean);
+
 type IFieldBase<T, K extends keyof T> = {
   type: FieldType;
   value?: T[K];
-  validators?: any[];
   hooks?: FieldHookProperties<T>;
   component?: any;
-  required?: boolean | ((values: T) => boolean);
-  disabled?: boolean | ((values: T) => boolean);
-  hidden?: boolean | ((values: T) => boolean);
+  required?: ConditionalFunction<T>;
+  disabled?: ConditionalFunction<T>;
+  hidden?: ConditionalFunction<T>;
   transform?: (values: T) => T[K] | undefined;
   resetFormOnChange?: boolean;
   hide?: boolean;
@@ -149,18 +150,6 @@ type ISingleFields<T, K extends keyof T> =
   ICustomField<T, K>
 ;
 
-type FormKitFormConfig<T> = {
-  text?: {
-    loading?: string;
-  }
-
-  components?: {
-    [key in FieldType]?: any;
-  }
-
-  readonly?: boolean;
-}
-
 export type ISingleField<T, K extends keyof T> = ISingleFields<T, K> & {
   control: () => FormControl;
 }
@@ -171,12 +160,11 @@ export type IField<T, K extends keyof T> =
   IGroupField<T, K>
 ;
 
-export type FormKitForm<T> = FormKitFormConfig<T> & {
-  fields: {
-    [K in Extract<keyof T, string>]?: IField<T, K>
-  }
-}
+export type FormFields<T> = {
+  [K in Extract<keyof T, string>]?: IField<T, K>;
+};
 
-export type IConfig<T> = FormKitForm<T> & {
-  events$: Subject<FormEvent>;
-}
+export type FormKitFormFieldObservable<T> = {
+  name: Extract<keyof T, string>;
+  field$: BehaviorSubject<IField<T, any>>;
+};
