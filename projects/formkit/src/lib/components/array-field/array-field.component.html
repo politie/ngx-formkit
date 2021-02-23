@@ -2,17 +2,14 @@
   <div class="formkit-array-field">
     <ng-container [formArrayName]="name">
       <div class="formkit-array-field-group" *ngFor="let child of control.controls; index as i">
-        <div class="formkit-array-field-group-fields">
-          <ng-container *ngFor="let childFieldBlueprint of field.blueprint | fieldIterator">
-            <formkit-form-field
-              [formGroup]="$any(child)"
-              [form]="form"
-              [control]="control.controls[i].get(childFieldBlueprint.key)!"
-              [name]="[name, (i + ''), childFieldBlueprint.key]"
-              [field]="$any(childFieldBlueprint.value)">
-            </formkit-form-field>
-          </ng-container>
-        </div>
+
+        <formkit-form
+          class="formkit-array-form"
+          [root]="false"
+          [rootFormEvents$]="formEvents$"
+          [form]="$any(child)"
+          [fields]="field.blueprint">
+        </formkit-form>
 
         <button
           class="formkit-array-field-delete"

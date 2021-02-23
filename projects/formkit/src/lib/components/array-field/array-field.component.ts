@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IArrayField, IConfig, ISingleField } from '../../models/field.model';
+import { IArrayField, ISingleField } from '../../models/field.model';
+import { Subject } from 'rxjs';
+import { FormEvent } from '../../models';
 
 @Component({
   selector: 'formkit-array-field',
@@ -8,7 +10,7 @@ import { IArrayField, IConfig, ISingleField } from '../../models/field.model';
 })
 export class ArrayFieldComponent {
   @Input() control!: FormArray;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IArrayField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

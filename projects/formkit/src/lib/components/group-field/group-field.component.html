@@ -1,15 +1,8 @@
 <ng-container [formGroup]="formGroup" *ngIf="field">
-  <div class="formkit-group-field">
-    <div class="formkit-group-field-wrapper">
-      <ng-container *ngFor="let childFieldBlueprint of field.blueprint | fieldIterator">
-        <formkit-form-field
-          [formGroup]="control"
-          [form]="form"
-          [control]="control.get(childFieldBlueprint.key)!"
-          [name]="[name, childFieldBlueprint.key]"
-          [field]="$any(childFieldBlueprint.value)">
-        </formkit-form-field>
-      </ng-container>
-    </div>
-  </div>
+  <formkit-form
+    [root]="false"
+    [rootFormEvents$]="formEvents$"
+    [form]="control"
+    [fields]="field.blueprint">
+  </formkit-form>
 </ng-container>
