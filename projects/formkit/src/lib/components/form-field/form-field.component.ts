@@ -1,18 +1,37 @@
-import { Component, ComponentFactoryResolver, HostBinding, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  HostBinding,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldMessage, FieldMessageType, FieldType, IConfig, IField } from '../../models/field.model';
+import { FieldMessage, FieldMessageType, FieldType, IField } from '../../models/field.model';
 import { Observable, Subject } from 'rxjs';
 import { extractEvents } from '../../helpers/extract-events.helpers';
-import { FormEventType, FormValues } from '../../models/form.model';
+import { FormEvent, FormEventType, FormValues } from '../../models/form.model';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
+import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
+import { FormKitModuleConfig } from '../../models/config.model';
 
 @Component({
   selector: 'formkit-form-field',
-  templateUrl: './form-field.component.html'
+  templateUrl: './form-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldComponent implements OnInit, OnDestroy {
 
+  /**
+   * Apply classes to the host component
+   */
   @HostBinding('class') get fieldClasses(): string {
     return [
       this.field.type === FieldType.Array ? 'space-y-2': '',
@@ -21,9 +40,13 @@ export class FormFieldComponent implements OnInit, OnDestroy {
     ].filter(Boolean).join(' ');
   }
 
+  /**
+   * Serves as host for rendering the field components
+   */
   @ViewChild(FormFieldDirective, { static: true }) fieldHost!: FormFieldDirective;
+
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
-  @Input() form!: Required<IConfig<any>>;
+  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IField<any, any>;
   @Input() name!: string[];
   @Input() formGroup!: FormGroup;
@@ -35,29 +58,14 @@ export class FormFieldComponent implements OnInit, OnDestroy {
   FieldMessageType = FieldMessageType;
 
   private messagesSubject$ = new Subject<FieldMessage[]>();
+  private firstUpdate = true;
+  private componentCdr!: ChangeDetectorRef;
 
-  constructor(private resolver: ComponentFactoryResolver) { }
-
-  get fieldNameMapped() {
-    return this.name.join('.');
-  }
-
-  /**
-   * Create a component by getting a specific defined component for this field, or get it from the list of global components
-   * defined in the form
-   */
-  renderFieldComponent() {
-    const factory = this.resolver.resolveComponentFactory(this.field.component || this.form.components[this.field.type]);
-    const ref = this.fieldHost.viewContainerRef;
-    ref.clear();
-
-    const compRef = ref.createComponent<any>(factory);
-    compRef.instance.control = this.control;
-    compRef.instance.form = this.form;
-    compRef.instance.formGroup = this.formGroup;
-    compRef.instance.field = this.field;
-    compRef.instance.name = this.name.slice().pop();
-  }
+  constructor(
+    private resolver: ComponentFactoryResolver,
+    private cd: ChangeDetectorRef,
+    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: FormKitModuleConfig
+  ) { }
 
   ngOnInit(): void {
     if (!this.field || !this.control) {
@@ -69,22 +77,38 @@ export class FormFieldComponent implements OnInit, OnDestroy {
     this.setupFormEventListener();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next(true);
+  }
+
+  /**
+   * Create a component by getting a specific defined component for this field, or get it from the list of global components
+   * defined in the form
+   */
+  renderFieldComponent() {
+    const factory = this.resolver.resolveComponentFactory(this.field.component || this.config.components[this.field.type]);
+    const ref = this.fieldHost.viewContainerRef;
+    ref.clear();
+
+    const compRef = ref.createComponent<any>(factory);
+    compRef.instance.control = this.control;
+    compRef.instance.formEvents$ = this.formEvents$;
+    compRef.instance.formGroup = this.formGroup;
+    compRef.instance.field = this.field;
+    compRef.instance.name = this.name.slice().pop();
+
+    this.componentCdr = compRef.injector.get(ChangeDetectorRef);
+  }
+
   /**
    * Sets up a event listener for the form events$ observable.
    */
   setupFormEventListener() {
-    this.form.events$.pipe(
-      filter(event => (event.type === FormEventType.OnAfterUpdateChecks || event.type === FormEventType.OnFirstAfterUpdateChecks )),
+    this.formEvents$.pipe(
+      filter(event => (event.type === FormEventType.OnAfterUpdateChecks)),
       takeUntil(this.destroy$)
     ).subscribe(event => {
-
-      if (event.type === FormEventType.OnFirstAfterUpdateChecks) {
-        this.onAfterUpdateChecks(event.values, true);
-      }
-
-      if (event.type === FormEventType.OnAfterUpdateChecks) {
-        this.onAfterUpdateChecks(event.values);
-      }
+      this.onAfterUpdateChecks(event.values);
     });
   }
 
@@ -105,21 +129,17 @@ export class FormFieldComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(true);
-  }
-
   /**
    * Checks to run after one of the fields in the form has changed.
    *
    * @param values the current (raw) values in the form
-   * @param firstUpdateCycle boolean to determine if this is the first cycle. If so, we run the onInit hook.
    */
-  onAfterUpdateChecks(values: FormValues<any>, firstUpdateCycle: boolean = false) {
+  onAfterUpdateChecks(values: FormValues<any>) {
     if (typeof this.field.transform !== 'undefined') {
       const value = this.field.transform(values);
+
       if (typeof value !== 'undefined') {
-        this.control.setValue(value, { emitEvent: false, onlySelf: true });
+        this.control.setValue(value, { emitEvent: false });
       }
     }
 
@@ -128,7 +148,9 @@ export class FormFieldComponent implements OnInit, OnDestroy {
      * so that the formGroup values are filled with the default or passed values
      * in the create() method.
      */
-    if (firstUpdateCycle && this.field.hooks?.onInit) {
+    if (this.firstUpdate && this.field.hooks?.onInit) {
+      this.firstUpdate = false;
+
       this.field.hooks.onInit({
         control: this.control as FormControl | FormArray | FormGroup,
         errors: this.control.errors,
@@ -150,6 +172,10 @@ export class FormFieldComponent implements OnInit, OnDestroy {
 
     if (this.field.messages) {
       this.updateMessages(values);
+    }
+
+    if (this.componentCdr) {
+      this.componentCdr.detectChanges();
     }
   }
 

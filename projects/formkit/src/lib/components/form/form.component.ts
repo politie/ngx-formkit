@@ -1,102 +1,84 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import {
   FieldType,
   FormEvent,
   FormEventType,
-  FormKitForm,
+  FormFields, FormKitFormFieldListItem,
   FormValues,
   IAbstractControl,
-  IConfig,
   IField,
-  IFormGroup,
   ISingleField,
   TransformValues
 } from '../../models';
 
 import { debounceTime, delay, filter, map, takeUntil } from 'rxjs/operators';
 
-import { ArrayFieldComponent } from '../array-field/array-field.component';
-import { CheckboxFieldComponent } from '../checkbox-field/checkbox-field.component';
-import { GroupFieldComponent } from '../group-field/group-field.component';
-import { HiddenFieldComponent } from '../hidden-field/hidden-field.component';
-import { PasswordFieldComponent } from '../password-field/password-field.component';
-import { RadioButtonsFieldComponent } from '../radio-buttons-field/radio-buttons-field.component';
-import { RadioFieldComponent } from '../radio-field/radio-field.component';
-import { SelectFieldComponent } from '../select-field/select-field.component';
-import { TextareaFieldComponent } from '../textarea-field/textarea-field.component';
-import { TextFieldComponent } from '../text-field/text-field.component';
-import { merge as mergeHelper } from '../../helpers/merge.helpers';
-
 @Component({
   selector: 'formkit-form',
   templateUrl: './form.component.html'
 })
 export class FormComponent<T> implements OnInit, OnDestroy {
-  @Input() form!: FormKitForm<T>;
-  @Output() ngSubmit = new EventEmitter<void>();
+  @Input() form!: FormGroup;
+  @Input() fields!: FormFields<T>;
+  @Input() readonly = false;
+  @Input() autoCreate = true;
+  @Input() root = true;
+  @Input() rootFormEvents$?: Subject<FormEvent>;
+
+  created = false;
 
   value$!: Observable<Partial<T>>;
-
   destroy$ = new Subject<boolean>();
-  root: IFormGroup<T> = new FormGroup({}) as IFormGroup<T>;
 
-  config!: Required<IConfig<T>>;
+  events$!: Subject<FormEvent>;
+  fieldList: FormKitFormFieldListItem<T>[] = [];
 
   private initialValues!: T;
   private firstUpdateCycle = true;
   private afterValueUpdateScheduler$ = new Subject<Partial<T>>();
   private updateByControlWithResetProperty = false;
 
-  private defaultFormConfig: IConfig<T> = {
-    components: {
-      [FieldType.Password]: PasswordFieldComponent,
-      [FieldType.Hidden]: HiddenFieldComponent,
-      [FieldType.Radio]: RadioFieldComponent,
-      [FieldType.RadioButton]: RadioButtonsFieldComponent,
-      [FieldType.Select]: SelectFieldComponent,
-      [FieldType.Text]: TextFieldComponent,
-      [FieldType.Textarea]: TextareaFieldComponent,
-      [FieldType.Checkbox]: CheckboxFieldComponent,
-      [FieldType.Array]: ArrayFieldComponent,
-      [FieldType.Group]: GroupFieldComponent
-    },
-    events$: new Subject<FormEvent>(),
-    fields: {},
-    readonly: false,
-    text: {
-      loading: 'Loading'
-    }
-  };
-
   constructor(private cd: ChangeDetectorRef) {}
-
-  get fields() {
-    return this.config.fields;
-  }
-
-  get events$(): Subject<FormEvent> {
-    return this.config.events$;
-  }
 
   ngOnInit(): void {
     /**
-     * Merge the given form configuration with the default configuration and store it
+     * Create a FormEvent Subject or hook into the existing if the current form isn't the root instance.
      */
-    this.config = mergeHelper(
-      this.defaultFormConfig,
-      (this.form as unknown as IConfig<T>)
-    ) as Required<IConfig<T>>;
+    this.events$ = (this.root) ? new Subject<FormEvent>() : this.rootFormEvents$ as Subject<FormEvent>;
 
-    this.addFieldsToRootFormGroup();
+    /**
+     * Only call create() if the form isn't created
+     */
+    if (this.autoCreate && !this.created) {
+      this.create();
+    }
+  }
+
+  /**
+   * Create the form and
+   */
+  create() {
+    if (this.created) {
+      throw new Error('Form is already created.');
+    }
+
+    this.addFieldsToFormGroup();
+
+    /**
+     * If the FormKitForm isn't the root form, stop right here.
+     */
+    if (!this.root) {
+      return;
+    }
 
     /**
      * Store the initialValues of the form. If the form is reset, these
      * will be the fallback values.
      */
-    this.initialValues = this.root.getRawValue();
+    this.initialValues = this.form.getRawValue();
 
     /**
      * Set up the AfterValueUpdateScheduler.
@@ -107,12 +89,12 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     /**
      * Trigger a event emit for the first time checks
      */
-    this.afterValueUpdateScheduler$.next(this.root.getRawValue());
+    // this.afterValueUpdateScheduler$.next(this.form.getRawValue());
 
     /**
      * Watch form changes and apply the AfterValueChangesChecks on changes
      */
-    this.root.valueChanges.pipe(
+    this.form.valueChanges.pipe(
       takeUntil(this.destroy$),
       filter(() => !this.updateByControlWithResetProperty)
     ).subscribe(() => {
@@ -121,20 +103,38 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * property (these fields have their own valueChanges listener and will trigger
        * the updateScheduler accordingly.
        */
-      this.afterValueUpdateScheduler$.next(this.root.getRawValue());
+      this.afterValueUpdateScheduler$.next(this.form.getRawValue());
     });
 
-    this.value$ = this.config.events$.pipe(
+    /**
+     * Hook into the OnAfterUpdateChecks event stream and update the value$ observable value
+     */
+    this.value$ = this.events$.pipe(
       filter(event => event.type === FormEventType.OnAfterUpdateChecks),
       delay(25),
-      map(() => this.root.getRawValue())
+      map(() => this.form.getRawValue())
     );
 
+    /**
+     * Run change detection
+     */
     this.cd.detectChanges();
+
+    /**
+     * Everything done, update the created prop
+     */
+    this.created = true;
   }
 
+  /**
+   * Transforms the current set of form values and returns the transformed values.
+   *
+   * @param payload object with properties:
+   * 'omit' for keys to emit from the result
+   * 'transform': array with transforms per key
+   */
   transformValues<K = T>(payload: TransformValues<T, K>) {
-    const values: T = this.root.getRawValue();
+    const values: T = this.form.getRawValue();
 
     /* Apply transformations and delete original keys */
     if (typeof payload.transform === 'function') {
@@ -183,17 +183,20 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     return values;
   }
 
+  /**
+   * Update form values by given values. The values
+   * are patched, which means that there won't be any errors
+   * when values are missing for controls in the FormGroup.
+   *
+   * @param values Set of values to patch the FormGroup with.
+   */
   setValues(values: FormValues<T>) {
-    this.root.patchValue(values, { emitEvent: false, onlySelf: true });
+    this.form.patchValue(values, { emitEvent: false, onlySelf: true });
 
-    this.config.events$.next({
+    this.events$.next({
       type: FormEventType.OnAfterUpdateChecks,
-      values: this.root.getRawValue()
+      values: this.form.getRawValue()
     });
-  }
-
-  _onSubmitClick() {
-    this.ngSubmit.emit();
   }
 
   ngOnDestroy() {
@@ -218,10 +221,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * For the first update cycle, we emit a FirstUpdateComplete Event, so
        * that Fields can run a OnInit Hook.
        */
-      this.config.events$.next({
-        type: (this.firstUpdateCycle) ? FormEventType.OnFirstAfterUpdateChecks : FormEventType.OnAfterUpdateChecks,
-        values
-      });
+      this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
 
       if (this.firstUpdateCycle) {
         this.firstUpdateCycle = false;
@@ -232,12 +232,12 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   /**
    * Adds all fields to the root FormGroup by using the control() property.
    */
-  private addFieldsToRootFormGroup() {
-    for (const name of Object.keys(this.config.fields) as Extract<keyof T, string>[]) {
-      const field: IField<T, any> = this.config.fields[name] as IField<T, any>;
+  private addFieldsToFormGroup() {
+    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
+      const field: IField<T, any> = this.fields[name] as IField<T, any>;
 
       /**
-       * Set a template property in each field if it doesn't exist already
+       * Set a hide property in each field if it doesn't exist already
        */
       if (!field.hide) {
         field.hide = false;
@@ -254,7 +254,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
           obj[key] = childField.control();
         }
 
-        this.root.addControl(
+        this.form.addControl(
           name,
           new FormArray([
             new FormGroup(obj as {[key: string]: FormControl})
@@ -269,10 +269,10 @@ export class FormComponent<T> implements OnInit, OnDestroy {
           obj[key] = childField.control();
         }
 
-        this.root.addControl(name, new FormGroup(obj as {[key: string]: FormControl}));
+        this.form.addControl(name, new FormGroup(obj as {[key: string]: FormControl}));
 
       } else {
-        this.root.addControl(name, field.control());
+        this.form.addControl(name, field.control());
       }
 
       /**
@@ -285,18 +285,23 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * value of this field. After this, all fields in the form
        * will receive a event to run their after update value checks.
        */
-      if (field.hasOwnProperty('resetFormOnChange')) {
-        this.root.get(name).valueChanges
+      if (this.root && field.hasOwnProperty('resetFormOnChange')) {
+        this.form.controls.name.valueChanges
           .pipe(
             map(value => ({ [name]: value }) as unknown as FormValues<T>,
             takeUntil(this.destroy$))
           ).subscribe((value: any) => {
             this.updateByControlWithResetProperty = true;
-            this.root.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
-            this.afterValueUpdateScheduler$.next(this.root.getRawValue());
+            this.form.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
+            this.afterValueUpdateScheduler$.next(this.form.getRawValue());
           }
         );
       }
+
+      /**
+       * Add field config into the fields$ array with observables per field config ({ name: string, field$: Observable<IField>>})
+       */
+      this.fieldList.push({ name, field });
     }
   }
 }

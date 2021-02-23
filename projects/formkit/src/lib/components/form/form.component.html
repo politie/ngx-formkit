@@ -1,25 +1,29 @@
-<ng-container *ngIf="root">
-  <form cy-formkit-form [formGroup]="root" class="formkit-form" (ngSubmit)="_onSubmitClick()">
+<div *ngIf="form" cy-formkit-form [formGroup]="form" class="formkit-form">
+
+  <!-- Slot for when the form isn't created yet -->
+  <ng-content *ngIf="!created" select="[beforeCreated]"></ng-content>
+
+  <ng-container *ngIf="created">
 
     <!-- Form description -->
-    <ng-content *ngIf="!config.readonly" select="[formDescription]"></ng-content>
+    <ng-content *ngIf="!readonly" select="[formDescription]"></ng-content>
 
     <!-- Readonly form description -->
-    <ng-content *ngIf="config.readonly" select="[formDescriptionReadOnly]"></ng-content>
+    <ng-content *ngIf="readonly" select="[formDescriptionReadOnly]"></ng-content>
 
-    <div class="formkit-fields-wrapper">
-      <ng-container *ngFor="let field of config.fields | fieldIterator">
+    <div class="formkit-fields">
+      <ng-container *ngFor="let fieldListItem of fieldList">
         <formkit-form-field
-          [form]="config"
-          [formGroup]="root"
-          [control]="root.get(field.key)!"
-          [name]="[field.key]"
-          [field]="$any(field.value)">
+          [formEvents$]="events$"
+          [formGroup]="form"
+          [control]="form.get(fieldListItem.name)!"
+          [name]="[fieldListItem.name]"
+          [field]="$any(fieldListItem.field)">
         </formkit-form-field>
       </ng-container>
     </div>
 
     <ng-content select="[footer]"></ng-content>
     <ng-content select="[submitButton]"></ng-content>
-  </form>
-</ng-container>
+  </ng-container>
+</div>
