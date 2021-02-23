@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HumanizePipe } from './pipes/humanize.pipe';
 import { MatOptionModule } from '@angular/material/core';
@@ -27,6 +27,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CustomFieldComponent } from './components/custom-field/custom-field.component';
 import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
+import { FormKitModuleConfig } from './models/config.model';
+import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
+import { FORM_EVENTS, FormKitService } from './services';
 
 @NgModule({
   imports: [
@@ -82,9 +85,26 @@ import { FormFieldDirective } from './directives/form-field/form-field.directive
     TextareaFieldComponent,
     CustomFieldComponent,
     ArrayFieldComponent
-  ],
-  providers: []
+  ]
 })
 export class FormKitModule {
-  constructor() { }
+  static forRoot(config?: Partial<FormKitModuleConfig>): ModuleWithProviders<FormKitModule> {
+
+    /**
+     * Since NgPackagr will complain about lambda's, we add
+     * the @dynamic decorator right here to let the build --prod pass.
+     */
+    // @dynamic
+    const mergeUserConfigWithDefaultConfig = () => ({ ...FORMKIT_MODULE_DEFAULT_CONFIG, ...config });
+
+    return {
+      ngModule: FormKitModule,
+      providers: [
+        {
+          provide: FORMKIT_MODULE_CONFIG_TOKEN,
+          useFactory: mergeUserConfigWithDefaultConfig
+        }
+      ]
+    };
+  }
 }
