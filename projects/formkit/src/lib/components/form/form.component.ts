@@ -290,7 +290,15 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * will receive a event to run their after update value checks.
        */
       if (this.root && field.hasOwnProperty('resetFormOnChange')) {
-        this.form.controls.name.valueChanges
+
+        /**
+         * Security check to see if there's a control in the controls object with `name` property
+         */
+        if (!this.form.controls[name]) {
+          return;
+        }
+
+        this.form.controls[name].valueChanges
           .pipe(
             map(value => ({ [name]: value }) as unknown as FormValues<T>,
             takeUntil(this.destroy$))
