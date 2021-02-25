@@ -65,7 +65,21 @@ export class FormComponent<T> implements OnInit, OnDestroy {
    */
   create() {
     if (this.created) {
-      throw new Error('Form is already created.');
+      throw new Error('FormKit: Form is already created.');
+    }
+
+    /**
+     * Check if there's a FormGroup passed in the [form] attribute / @Input()
+     */
+    if (!this.form || !(this.form instanceof FormGroup)) {
+      throw new Error(`FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.`);
+    }
+
+    /**
+     * Check if there are fields set in the [fields] attribute / @Input()
+     */
+    if (!this.fields || (Object.keys(this.fields).length === 0 && this.fields.constructor === Object)) {
+      throw new Error(`FormKit: <formkit-form> has no fields set in [fields] attribute.`);
     }
 
     this.addFieldsToFormGroup();
