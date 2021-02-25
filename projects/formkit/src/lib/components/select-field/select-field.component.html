@@ -2,7 +2,7 @@
   <mat-form-field appearance="outline" *ngIf="options$ | async as options">
     <mat-label>{{ field.label }}</mat-label>
     <select matNativeControl [formControlName]="name" [compareWith]="compareFunction">
-      <option *ngFor="let option of options" [value]="option" [disabled]="option.disabled ? option.disabled : false">
+      <option *ngFor="let option of options" [ngValue]="option" [disabled]="option.disabled ? option.disabled : false">
         {{ option.label }}
       </option>
 
