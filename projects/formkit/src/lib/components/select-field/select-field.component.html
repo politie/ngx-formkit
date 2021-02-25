@@ -1,5 +1,5 @@
 <ng-container [formGroup]="formGroup" *ngIf="field">
-  <mat-form-field appearance="outline" *ngIf="options$ | async as options">
+  <mat-form-field *ngIf="options$ | async as options">
     <mat-label>{{ field.label }}</mat-label>
     <select matNativeControl [formControlName]="name" [compareWith]="compareFunction">
       <option *ngFor="let option of options" [ngValue]="option" [disabled]="option.disabled ? option.disabled : false">
