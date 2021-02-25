@@ -95,6 +95,11 @@ export type ISelectField<T, K extends keyof T> = IFieldBase<T, K> & {
   autoselectSingleOption?: boolean;
   options: Options[] | Observable<Options[]>;
   emptyOptionsText?: string;
+
+  /**
+   * If using multiple, the value of the FormControl must be of type array
+   */
+  multiple?: boolean;
 }
 
 export type ITextField<T, K extends keyof T> = IFieldBase<T, K> & {

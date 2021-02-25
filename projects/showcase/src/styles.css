@@ -9,16 +9,16 @@ html, body {
   @apply bg-gray-300;
 }
 
-.fb-form-notification {
+.formkit-field-notification {
   @apply text-sm;
 }
 
-.fb-form-notification.error {
+.formkit-field-notification.error {
   @apply text-red-500;
 }
 
-.fb-form-notification.disabled,
-.fb-form-notification.information {
+.formkit-field-notification.disabled,
+.formkit-field-notification.information {
   @apply text-gray-500;
 }
 
@@ -26,102 +26,47 @@ html, body {
   @apply w-full;
 }
 
-.mat-form-field-wrapper {
-  @apply pb-0;
-}
-
-fb-form-wrapper .mat-radio-group .mat-radio-button:not(:last-child) {
-  @apply mr-4;
-}
+/*.mat-form-field-wrapper {*/
+/*  @apply pb-0;*/
+/*}*/
 
 /**
  * FormKit styling
  */
-.fb-form-wrapper {
+.formkit-form {
+  @apply space-y-4;
+}
+
+.formkit-fields .formkit-field:not(:last-child) {
+  @apply mb-8;
+}
+
+form > formkit-form > .formkit-form > .formkit-fields {
   @apply w-2/3;
+}
+
+.formkit-fields {
   @apply flex;
   @apply flex-row;
   @apply flex-wrap;
-  @apply justify-between;
   @apply -ml-3;
-  @apply space-y-8;
 }
 
-.fb-array-field-group {
-  @apply flex;
-  @apply justify-between;
-  @apply items-start;
-}
-
-.fb-array-field-group-fields {
-  @apply flex-1;
-  @apply flex;
-  @apply flex-row;
-  @apply flex-wrap;
-  @apply justify-between;
-  @apply -ml-3;
-  @apply space-y-3;
-}
-
-.fb-group-field-wrapper {
-  @apply -ml-3;
-  @apply space-y-3;
-}
-
-.fb-array-field-delete {
-  @apply p-3;
-  @apply mt-2;
-  @apply text-xl;
-}
-
-.button.fb-array-field-add {
-  @apply bg-white;
-  @apply text-black;
-}
-
-.fb-array-field-wrapper lib-form-field {
-  @apply pt-4;
-}
-
-.fb-form-wrapper lib-form-field {
+formkit-field {
   @apply px-3;
+}
+
+formkit-field,
+.formkit-array-field {
   @apply space-y-2;
 }
 
-.fb-form-notification {
-  @apply text-sm;
-}
-
-.fb-form-notification.error {
-  @apply text-red-500;
-}
-
-.fb-form-notification.disabled,
-.fb-form-notification.information {
-  @apply text-gray-500;
-}
-
-.fb-form-notification.loading {
-  @apply bg-gray-100;
-}
-
-.fb-form-input-loader {
-  @apply absolute;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.fb-form-tooltip-icon.mat-icon {
-  @apply w-4;
-  @apply h-4;
-
-  font-size: 1rem;
+:host {
+  display: block;
 }
 
 .type-radio:checked + label {
-  @apply bg-gray-100;
+  @apply bg-gray-200;
   @apply border-blue-500;
   @apply text-blue-500;
 }
@@ -131,8 +76,101 @@ fb-form-wrapper .mat-radio-group .mat-radio-button:not(:last-child) {
   @apply cursor-not-allowed;
 }
 
-.button.primary {
-  @apply bg-blue-500 text-white py-3 px-4 font-medium tracking-tight;
+.formkit-field-header-inner {
+  display: flex;
+  align-items: center;
+}
+
+.formkit-field-title {
+  @apply text-xl font-medium tracking-tight;
+}
+
+.formkit-field-tooltip {
+  @apply flex ml-1 items-center justify-center w-6 h-6 cursor-pointer text-gray-400 hover:text-black;
+}
+
+formkit-radio-field .mat-radio-group .mat-radio-button:not(:last-child) {
+  @apply mr-4;
+}
+
+.formkit-radio-buttons-field {
+  @apply flex;
+  @apply pb-3;
+}
+
+.formkit-radio-buttons-field [type="radio"] {
+  @apply sr-only;
+}
+
+.formkit-radio-button-label {
+  @apply flex-1;
+  @apply border;
+  @apply border-gray-500;
+  @apply rounded-md;
+  @apply p-3;
+  @apply cursor-pointer;
+}
+
+.formkit-radio-buttons-field [type="radio"]:nth-of-type(2n) + .formkit-radio-button-label {
+  @apply ml-3;
+  @apply border-l;
+}
+
+.formkit-radio-buttons-field [type="radio"]:disabled + .formkit-radio-button-label {
+  @apply opacity-50;
+  @apply cursor-not-allowed;
+}
+
+.formkit-radio-buttons-field [type="radio"]:checked + .formkit-radio-button-label {
+  @apply bg-blue-500;
+  @apply border-blue-500;
+  @apply text-blue-500;
+  @apply text-white;
+}
+
+.formkit-radio-button-label-title {
+  @apply uppercase;
+  @apply font-medium;
+  @apply text-xs;
+}
+
+.formkit-radio-button-label-description {
+  @apply text-sm;
+}
+
+.formkit-array-field-group {
+  @apply flex;
+  @apply items-start;
+}
+
+.formkit-array-field-group formkit-form {
+  @apply flex-1;
+}
+
+.button.formkit-array-field-add {
+  @apply bg-white;
+  @apply text-black;
+}
+
+.formkit-array-field-delete {
+  @apply flex-none;
+  @apply ml-2;
+  @apply p-3;
+  @apply mt-2;
+  @apply text-xl;
+}
+
+.formkit-field-notification {
+  @apply text-sm;
+}
+
+.formkit-field-notification.error {
+  @apply text-red-500;
+}
+
+.formkit-field-notification.disabled,
+.formkit-field-notification.information {
+  @apply text-gray-400;
 }
 
 .button[disabled] {

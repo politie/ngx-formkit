@@ -307,7 +307,7 @@ this.myFormKitForm.setValues(...);
 
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
-| create | | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. | |
+| create | `values (T)` | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. You can provide a object of values to patch the form before all schedulers are set. This allows you to have initial values for resets (in your field definitions) and a different starting value for the form. | |
 | setValues | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties | `void` |
 | transformValues | `TransformValues<T>` | Get a object with the current form values and transform them. See ['Transforming form values'](#transform-form-values) for example usage. | `T` |
 
@@ -373,6 +373,46 @@ In the `forRoot()`, you can add a configuration object with the following proper
 | components | `{...}` | Object with `[FieldType.<name>]` properties to globally override components per `Field type` | `default set, see Field Types` |
 
 *= required
+
+## Content slots
+
+The `<formkit-form>` offers several content slots for you to project content in. 
+
+Example:
+
+```angular2html
+<div formDescription>
+  Content will be placed in the `formDescription` content slot.
+</div>
+```
+
+The available slots are:
+- `beforeCreated` Visible if the `autoCreate` attribute is set to `false` and before calling `create()`.
+- `formDescription` Visible if `create()` is called, placed above the form fields.
+- `formDescriptionReadOnly` Visible if `create()` is called and the `readonly` attribute is set to `true`.
+- `footer` Visible if `create()` is called, placed below the form fields
+- `submitButton` Visible if `create()` is called, placed below the footer and form fields.
+
+## Styling
+
+You can bring your own CSS to style `<formkit-form>` instances. Out of the box, the inputs use the styling provided by Angular Material.
+
+### Tip: Customising the appearance of Angular Material text fields
+
+You can override the appearance of Angular Material text fields used in FormKit by overriding the default options with the `MAT_FORM_FIELD_DEFAULT_OPTIONS` Injection Token:
+
+```ts
+@NgModule({
+  providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        appearance: 'legacy' | 'outline' | 'standard' | 'fill'
+      }
+    }
+  ]
+})
+```
 
 ## Custom components
 

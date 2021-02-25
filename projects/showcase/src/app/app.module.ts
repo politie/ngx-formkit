@@ -7,6 +7,7 @@ import { E2eFormCreatorComponent } from './components/e2e-form-creator/e2e-form-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormKitModule } from '../../../formkit/src/public-api';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,14 @@ import { ReactiveFormsModule } from '@angular/forms';
       }
     })
   ],
-  providers: [],
+  providers: [
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        appearance: 'outline'
+      }
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

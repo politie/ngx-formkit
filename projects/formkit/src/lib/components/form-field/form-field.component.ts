@@ -32,7 +32,7 @@ export class FormFieldComponent implements OnInit, OnDestroy {
    */
   @HostBinding('class') get fieldClasses(): string {
     return [
-      'formkit-form-field',
+      'formkit-field',
       this.field.type === FieldType.Array ? 'space-y-2': '',
       this.field.width ? 'is-constrained w-' + this.field.width : 'w-full',
       (this.field.type === FieldType.Hidden || this.field.hide) ? 'hidden' : ''
