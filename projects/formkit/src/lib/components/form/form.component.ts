@@ -279,6 +279,24 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   }
 
   /**
+   * Check if the field has the property 'resetFormOnChange' set.
+   * If so, listen to the valueChanges observable and call the
+   * afterValueUpdateScheduler$ observable.
+   */
+  private createListenerForFormResetControl(name: Extract<keyof T, string>) {
+    this.form.controls[name].valueChanges
+      .pipe(
+        map(value => ({ [name]: value }) as unknown as FormValues<T>,
+        takeUntil(this.destroy$))
+      ).subscribe((value: any) => {
+        this.updateByControlWithResetProperty = true;
+        this.form.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
+        this.afterValueUpdateScheduler$.next(this.form.getRawValue());
+      }
+    );
+  }
+
+  /**
    * Adds all fields to the root FormGroup by using the control() property.
    */
   private addFieldsToFormGroup() {
@@ -313,25 +331,8 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * value of this field. After this, all fields in the form
        * will receive a event to run their after update value checks.
        */
-      if (this.root && field.hasOwnProperty('resetFormOnChange')) {
-
-        /**
-         * Security check to see if there's a control in the controls object with `name` property
-         */
-        if (!this.form.controls[name]) {
-          return;
-        }
-
-        this.form.controls[name].valueChanges
-          .pipe(
-            map(value => ({ [name]: value }) as unknown as FormValues<T>,
-            takeUntil(this.destroy$))
-          ).subscribe((value: any) => {
-            this.updateByControlWithResetProperty = true;
-            this.form.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
-            this.afterValueUpdateScheduler$.next(this.form.getRawValue());
-          }
-        );
+      if (this.root && field.hasOwnProperty('resetFormOnChange') && this.form.controls[name]) {
+        this.createListenerForFormResetControl(name);
       }
 
       /**
