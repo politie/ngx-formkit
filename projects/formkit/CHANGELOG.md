@@ -1,3 +1,7 @@
+# 0.0.5
+- Fixed issue where `SelectField` value returns `[object object]` as string instead of actual object.
+- Updated logic for `resetFormOnChange` control listener in `FormComponent`.
+
 # 0.0.4
 - Fixed issue where a control lookup could return `undefined`.
 
