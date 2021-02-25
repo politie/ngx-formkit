@@ -63,7 +63,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   /**
    * Create the form and
    */
-  create() {
+  create(patch?: Partial<T>) {
     if (this.created) {
       throw new Error('FormKit: Form is already created.');
     }
@@ -98,6 +98,14 @@ export class FormComponent<T> implements OnInit, OnDestroy {
      * will be the fallback values.
      */
     this.initialValues = this.form.getRawValue();
+
+    /**
+     * If there are values given to patch the form,
+     * apply them before the event listeners are set.
+     */
+    if (patch && typeof patch === 'object') {
+      this.form.patchValue(patch);
+    }
 
     /**
      * Set up the AfterValueUpdateScheduler.
