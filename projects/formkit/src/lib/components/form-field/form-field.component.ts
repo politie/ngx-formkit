@@ -26,7 +26,6 @@ import { FormKitModuleConfig } from '../../models/config.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldComponent implements OnInit, OnDestroy {
-
   /**
    * Apply classes to the host component
    */
@@ -189,6 +188,7 @@ export class FormFieldComponent implements OnInit, OnDestroy {
   updateHiddenState(match: boolean) {
     if (this.field && this.field.hide !== match) {
       this.field.hide = match;
+      this.cd.markForCheck();
     }
   }
 
