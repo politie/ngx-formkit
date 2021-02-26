@@ -44,6 +44,14 @@ export class FormComponent<T> implements OnInit, OnDestroy {
 
   constructor(private cd: ChangeDetectorRef) {}
 
+  get initialFormValues() {
+    return this.initialValues;
+  }
+
+  get scheduler$() {
+    return this.afterValueUpdateScheduler$;
+  }
+
   ngOnInit(): void {
     /**
      * Create a FormEvent Subject or hook into the existing if the current form isn't the root instance.
@@ -206,22 +214,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     }
 
     return values;
-  }
-
-  /**
-   * Update form values by given values. The values
-   * are patched, which means that there won't be any errors
-   * when values are missing for controls in the FormGroup.
-   *
-   * @param values Set of values to patch the FormGroup with.
-   */
-  setValues(values: FormValues<T>) {
-    this.form.patchValue(values, { emitEvent: false, onlySelf: true });
-
-    this.events$.next({
-      type: FormEventType.OnAfterUpdateChecks,
-      values: this.form.getRawValue()
-    });
   }
 
   ngOnDestroy() {
