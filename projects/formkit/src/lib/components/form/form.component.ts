@@ -9,7 +9,9 @@ import {
   FormFields,
   FormKitFormFieldListItem,
   FormValues,
+  IArrayField,
   IField,
+  IGroupField,
   TransformValues
 } from '../../models';
 
@@ -282,9 +284,9 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
        */
       if (field.type === FieldType.Array) {
-        this.form.addControl(name, new FormArray([createFormGroupFromBlueprint(field)]));
+        this.form.addControl(name, new FormArray([createFormGroupFromBlueprint(field as IArrayField<any, any>)]));
       } else if (field.type === FieldType.Group) {
-        this.form.addControl(name, createFormGroupFromBlueprint(field));
+        this.form.addControl(name, createFormGroupFromBlueprint(field as IGroupField<any, any>));
       } else {
         this.form.addControl(name, field.control());
       }
