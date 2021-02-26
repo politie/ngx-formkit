@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IArrayField, ISingleField } from '../../models/field.model';
+import { FormArray, FormGroup } from '@angular/forms';
+import { IArrayField } from '../../models/field.model';
 import { Subject } from 'rxjs';
 import { FormEvent } from '../../models';
+import { createFormGroupFromBlueprint } from '../../helpers';
 
 @Component({
   selector: 'formkit-array-field',
@@ -16,14 +17,7 @@ export class ArrayFieldComponent {
   @Input() formGroup!: FormGroup;
 
   onAdd() {
-    const obj: {[key: string]: FormControl} = {};
-
-    for (const key of Object.keys(this.field.blueprint))  {
-      const childField: ISingleField<any, any> = this.field.blueprint[key];
-      obj[key] = childField.control();
-    }
-
-    this.control.push(new FormGroup(obj as {[key: string]: FormControl}));
+    this.control.push(createFormGroupFromBlueprint(this.field));
   }
 
   onRemove(index: number) {

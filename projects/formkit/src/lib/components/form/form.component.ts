@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 
 import {
@@ -9,14 +9,12 @@ import {
   FormFields,
   FormKitFormFieldListItem,
   FormValues,
-  IArrayField,
   IField,
-  IGroupField,
-  ISingleField,
   TransformValues
 } from '../../models';
 
 import { debounceTime, delay, filter, map, takeUntil } from 'rxjs/operators';
+import { createFormGroupFromBlueprint } from '../../helpers';
 
 @Component({
   selector: 'formkit-form',
@@ -143,7 +141,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     );
 
     /**
-     * Everything done, update the created prop
+     * Everything done, update the created prop and emit event
      */
     this.created = true;
 
@@ -257,50 +255,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   }
 
   /**
-   * Return the FormControl created by the control() function in the field config
-   *
-   * @param field Single field configuration
-   * @private
-   */
-  private createFormControl(field: ISingleField<T, any>): FormControl {
-    return field.control();
-  }
-
-  /**
-   * Return a FormGroup based on the given field configuration
-   *
-   * @param field Group field config
-   * @private
-   */
-  private createFormGroup(field: IGroupField<T, any>): FormGroup {
-    const obj: {[K in Extract<keyof T[any], string>]?: FormControl} = {};
-
-    for (const key of Object.keys(field.blueprint) as Extract<keyof T[any], string>[])  {
-      const childField: ISingleField<T, any> = field.blueprint[key] as ISingleField<T, any>;
-      obj[key] = childField.control();
-    }
-
-    return new FormGroup(obj as {[key: string]: FormControl});
-  }
-
-  /**
-   * Return a FormArray based on the given field configuration
-   *
-   * @param field Array field configuration
-   * @private
-   */
-  private createFormArray(field: IArrayField<T, any>): FormArray {
-    const obj: {[key: string]: FormControl} = {};
-
-    for (const key of Object.keys(field.blueprint))  {
-      const childField: ISingleField<T, any> = field.blueprint[key];
-      obj[key] = childField.control();
-    }
-
-    return new FormArray([new FormGroup(obj)]);
-  }
-
-  /**
    * Check if the field has the property 'resetFormOnChange' set.
    * If so, listen to the valueChanges observable and call the
    * afterValueUpdateScheduler$ observable.
@@ -336,11 +290,11 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
        */
       if (field.type === FieldType.Array) {
-        this.form.addControl(name, this.createFormArray(field));
+        this.form.addControl(name, new FormArray([createFormGroupFromBlueprint(field)]));
       } else if (field.type === FieldType.Group) {
-        this.form.addControl(name, this.createFormGroup(field));
+        this.form.addControl(name, createFormGroupFromBlueprint(field));
       } else {
-        this.form.addControl(name, this.createFormControl(field));
+        this.form.addControl(name, field.control());
       }
 
       /**
