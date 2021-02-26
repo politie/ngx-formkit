@@ -1,3 +1,7 @@
+# 0.0.7
+- Implemented `createFormGroupFromBlueprint` helper to be used inside FormKit and for custom components.
+- Removed `setValues` method. You can use `patchValue` directly on the form, triggering the schedulers for after update checks as well.
+
 # 0.0.6
 - Updated package name to `ngx-formkit`.
 - Added option to add `values` to form `create()` method to patch form before the `afterUpdateValueScheduler$` is active. This will give the option to have initial values set in your field definitions for resets and initialize your form with different values.
