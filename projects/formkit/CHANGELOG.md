@@ -1,6 +1,9 @@
 # 0.0.7
 - Implemented `createFormGroupFromBlueprint` helper to be used inside FormKit and for custom components.
 - Removed `setValues` method. You can use `patchValue` directly on the form, triggering the schedulers for after update checks as well.
+- Added `ToggleFieldComponent` to use with a Toggle
+- Updated showcase project with clearer examples
+- Updated imports (`FormsModule` isn't required if we import `ReactiveFormsModule`)
 
 # 0.0.6
 - Updated package name to `ngx-formkit`.

@@ -489,3 +489,4 @@ The following field types are available (you can [add your own](#custom-componen
 - Select
 - Text Field
 - Textarea Field
+- Toggle Field
