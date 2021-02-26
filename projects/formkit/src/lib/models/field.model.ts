@@ -1,6 +1,6 @@
 import { FormValues, Options } from './form.model';
 import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export enum FieldType {
   Hidden,
@@ -10,6 +10,7 @@ export enum FieldType {
   RadioButton,
   Select,
   Checkbox,
+  Toggle,
   Textarea,
   Array,
   Group,
@@ -19,7 +20,7 @@ export enum FieldType {
 type FieldMessageFunctionPayload<T> = {
   control: FormControl | FormArray | FormGroup,
   errors: ValidationErrors | null,
-  values: FormValues<T>
+  values: Required<FormValues<T>>
 }
 
 export enum FieldMessageType {
@@ -83,6 +84,11 @@ type IFieldBase<T, K extends keyof T> = {
 export type ICheckboxField<T, K extends keyof T> = IFieldBase<T, K> & {
   type: FieldType.Checkbox;
   option: Options;
+}
+
+export type IToggleField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Toggle;
+  toggleLabel: string;
 }
 
 export type IRadioField<T, K extends keyof T> = IFieldBase<T, K> & {
@@ -152,7 +158,8 @@ export type ISingleFieldConfig<T, K extends keyof T> =
   IRadioField<T, K> |
   ICheckboxField<T, K> |
   ISelectField<T, K> |
-  ICustomField<T, K>
+  ICustomField<T, K> |
+  IToggleField<T, K>
 ;
 
 export type ISingleField<T, K extends keyof T> = ISingleFieldConfig<T, K> & {

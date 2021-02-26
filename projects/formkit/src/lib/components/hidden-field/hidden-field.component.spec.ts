@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HiddenFieldComponent } from './hidden-field.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('HiddenFieldComponent', () => {
   let component: HiddenFieldComponent;
@@ -10,7 +10,6 @@ describe('HiddenFieldComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        FormsModule,
         ReactiveFormsModule
       ],
       declarations: [

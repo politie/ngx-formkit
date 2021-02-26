@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HumanizePipe } from './pipes/humanize.pipe';
 import { MatOptionModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,11 +28,12 @@ import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
 import { FormKitModuleConfig } from './models/config.model';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
+import { ToggleFieldComponent } from './components/toggle-field/toggle-field.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     MatOptionModule,
     MatRadioModule,
@@ -43,6 +44,7 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
     MatButtonModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatSlideToggleModule,
     MatCheckboxModule
   ],
   declarations: [
@@ -60,7 +62,8 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
     FormFieldComponent,
     GroupFieldComponent,
     CustomFieldComponent,
-    FormFieldDirective
+    FormFieldDirective,
+    ToggleFieldComponent
   ],
   entryComponents: [
     TextFieldComponent,
@@ -72,7 +75,8 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
     SelectFieldComponent,
     CheckboxFieldComponent,
     ArrayFieldComponent,
-    GroupFieldComponent
+    GroupFieldComponent,
+    ToggleFieldComponent
   ],
   exports: [
     MatButtonModule,

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormFieldComponent } from './form-field.component';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FieldMessageType, FieldType, FormEvent, FormEventType, ISingleField } from '../../models';
@@ -49,7 +49,6 @@ describe('FieldComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         BrowserDynamicTestingModule,
-        FormsModule,
         ReactiveFormsModule,
         FormKitModule,
         MatTooltipModule,

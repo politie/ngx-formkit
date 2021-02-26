@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CustomFieldComponent } from './custom-field.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('CustomFieldComponent', () => {
   let component: CustomFieldComponent;
@@ -10,7 +10,6 @@ describe('CustomFieldComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        FormsModule,
         ReactiveFormsModule
       ],
       declarations: [

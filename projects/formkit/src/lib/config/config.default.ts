@@ -10,6 +10,7 @@ import { SelectFieldComponent } from '../components/select-field/select-field.co
 import { TextareaFieldComponent } from '../components/textarea-field/textarea-field.component';
 import { TextFieldComponent } from '../components/text-field/text-field.component';
 import { CustomFieldComponent } from '../components/custom-field/custom-field.component';
+import { ToggleFieldComponent } from '../components/toggle-field/toggle-field.component';
 
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
   text: {
@@ -26,6 +27,7 @@ export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
     [FieldType.Checkbox]: CheckboxFieldComponent,
     [FieldType.Array]: ArrayFieldComponent,
     [FieldType.Group]: GroupFieldComponent,
-    [FieldType.Custom]: CustomFieldComponent
+    [FieldType.Custom]: CustomFieldComponent,
+    [FieldType.Toggle]: ToggleFieldComponent
   }
 };
