@@ -7,17 +7,14 @@ export type HiddenForm = {
 }
 
 export const hiddenFormFields:FormFields<HiddenForm> = {
+  checkbox: {
+    type: FieldType.Toggle,
+    control: () => new FormControl(false),
+    toggleLabel: 'Hide text field'
+  },
   input: {
     type: FieldType.Text,
     control: () => new FormControl(),
     hidden: values => values.checkbox === true
-  },
-  checkbox: {
-    type: FieldType.Checkbox,
-    control: () => new FormControl(false),
-    option: {
-      id: 'messages-1',
-      label: 'Check to make Textfield hidden'
-    }
   }
 };

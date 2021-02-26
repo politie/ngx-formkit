@@ -5,7 +5,7 @@ describe('E2E Hidden', () => {
 
     cy.get('@container').within(() => {
       cy.get('div[cy-formkit-form]').as('form');
-      cy.get('button[submitbutton]').as('button');
+      cy.get('button[cy-form-submit-button]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('inputField');
       cy.get('input[ng-reflect-name="input"]').as('input');
       cy.get('input[type=checkbox]').as('checkbox');
@@ -23,6 +23,7 @@ describe('E2E Hidden', () => {
 
     it('should hide the input field', () => {
       cy.get('@inputField').should('not.be.visible');
+      cy.get('@inputField').should('have.class', 'hidden');
     });
   });
 });

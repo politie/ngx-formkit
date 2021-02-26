@@ -1,10 +1,1 @@
-button {
-  background-color: black;
-  color: white;
-  padding: 1rem;
-}
 
-button[disabled] {
-  opacity: .25;
-  pointer-events: none;
-}

@@ -1,11 +1,11 @@
-describe('Basic fields', () => {
+describe('Kitchen sink fields', () => {
   beforeEach(() => {
     cy.visit('/e2e');
-    cy.get('[ng-reflect-title="basic"]').as('container');
+    cy.get('[ng-reflect-title="Kitchen sink"]').as('container');
 
     cy.get('@container').within(() => {
       cy.get('div[cy-formkit-form]').as('form');
-      cy.get('button[submitbutton]').as('button');
+      cy.get('button[cy-form-submit-button]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('textField');
       cy.get('formkit-form-field[ng-reflect-name="checkbox"]').as('checkboxField');
       cy.get('formkit-form-field[ng-reflect-name="array"]').as('arrayField');
@@ -14,6 +14,7 @@ describe('Basic fields', () => {
       cy.get('formkit-form-field[ng-reflect-name="radio"]').as('radioField');
       cy.get('formkit-form-field[ng-reflect-name="select"]').as('selectField');
       cy.get('formkit-form-field[ng-reflect-name="textarea"]').as('textareaField');
+      cy.get('formkit-form-field[ng-reflect-name="toggle"]').as('toggleField');
     });
   });
 
@@ -70,13 +71,21 @@ describe('Basic fields', () => {
 
   it('should handle select field', () => {
     cy.get('@selectField').within(() => {
-      cy.get('select').select('Label 2');
+      cy.get('mat-select').click();
     });
+    cy.get('mat-option').contains('Label 2').click();
   });
 
   it('should handle textarea field', () => {
     cy.get('@textareaField').within(() => {
       cy.get('textarea').type('test');
+    });
+  });
+
+  it('should handle toggle field', () => {
+    cy.get('@toggleField').within(() => {
+      cy.get('.mat-slide-toggle-label').click({ force: true });
+      cy.get('input[type=checkbox]').should('be.checked');
     });
   });
 });

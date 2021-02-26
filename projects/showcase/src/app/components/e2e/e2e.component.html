@@ -1,6 +1,11 @@
-<div *ngFor="let config of fieldSets" class="bg-white shadow-lg p-8">
-  <app-e2e-form-creator
-    [fields]="config.fields"
-    [title]="config.title">
-  </app-e2e-form-creator>
+<div class="mb-6">
+  <formkit-form [form]="form" [fields]="fields"></formkit-form>
 </div>
+
+<app-e2e-form-creator
+  *ngFor="let config of fieldSets"
+  [debug]="form.controls.toggle.value === true"
+  [fields]="config.fields"
+  [message]="config.message"
+  [title]="config.title">
+</app-e2e-form-creator>

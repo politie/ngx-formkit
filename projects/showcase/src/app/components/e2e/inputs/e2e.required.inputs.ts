@@ -1,4 +1,4 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldMessageType, FieldType, FormFields } from 'formkit';
 import { FormControl } from '@angular/forms';
 
 export type RequiredForm = {
@@ -10,7 +10,14 @@ export const requiredFormFields: FormFields<RequiredForm> = {
   input: {
     type: FieldType.Text,
     control: () => new FormControl(),
-    required: values => values.checkbox === true
+    required: values => values.checkbox === true,
+    messages: [
+      {
+        show: ({ values, control }) => control.errors?.required,
+        text: 'This field is required.',
+        type: FieldMessageType.Error
+      }
+    ]
   },
   checkbox: {
     type: FieldType.Checkbox,

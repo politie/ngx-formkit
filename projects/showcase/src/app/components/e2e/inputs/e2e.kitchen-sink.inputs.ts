@@ -1,4 +1,4 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldMessageType, FieldType, FormFields } from 'formkit';
 import { FormControl } from '@angular/forms';
 
 export type BasicForm = {
@@ -14,11 +14,13 @@ export type BasicForm = {
   };
   radioButtons: number;
   radio: number;
-  select: number;
+  select: any;
+  selectMultiple: any[];
   textarea: string;
+  toggle: boolean;
 }
 
-export const basicFormFields: FormFields<BasicForm> = {
+export const kichenSinkFormFields: FormFields<BasicForm> = {
   hidden: {
     type: FieldType.Hidden,
     disabled: (values) => false,
@@ -66,11 +68,12 @@ export const basicFormFields: FormFields<BasicForm> = {
     blueprint: {
       text: {
         type: FieldType.Text,
-        required: values => values.input === 'aapje',
+        required: values => values.group.checkbox === true,
         control: () => new FormControl(),
         messages: [
           {
             show: ({ control }) => control.errors && control.errors.required,
+            type: FieldMessageType.Error,
             text: 'This field is required'
           }
         ]
@@ -80,7 +83,7 @@ export const basicFormFields: FormFields<BasicForm> = {
         control: () => new FormControl(),
         option: {
           id: 'messages-1',
-          label: 'Check to make Textfield required'
+          label: 'Make the above textfield required'
         }
       }
     }
@@ -131,6 +134,7 @@ export const basicFormFields: FormFields<BasicForm> = {
     }),
     label: 'Select an option',
     title: 'Select',
+    // multiple: true,
     options: [
       {
         id: 1,
@@ -145,9 +149,45 @@ export const basicFormFields: FormFields<BasicForm> = {
     ]
   },
 
+  selectMultiple: {
+    type: FieldType.Select,
+    control: () => new FormControl([{
+      id: 1,
+      label: 'Label 1',
+      description: 'Description 1'
+    }]),
+    label: 'Select an option',
+    title: 'Select',
+    multiple: true,
+    options: [
+      {
+        id: 1,
+        label: 'Label 1',
+        description: 'Description 1'
+      },
+      {
+        id: 2,
+        label: 'Label 2',
+        description: 'Description 2'
+      },
+      {
+        id: 3,
+        label: 'Label 3',
+        description: 'Description 3'
+      }
+    ]
+  },
+
   textarea: {
     type: FieldType.Textarea,
     control: () => new FormControl(),
     title: 'Textarea'
+  },
+
+  toggle: {
+    type: FieldType.Toggle,
+    control: () => new FormControl(false),
+    title: 'Toggle',
+    toggleLabel: 'Toggle me'
   }
 };
