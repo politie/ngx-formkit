@@ -82,7 +82,7 @@ describe('FieldComponent', () => {
     component.formGroup = new FormGroup({ 'field-name': control });
     component.control = control;
     component.formEvents$ = events$;
-    component.name = ['field-name'];
+    component.name = 'field-name';
     component.field = field as any;
     fixture.detectChanges();
   });
@@ -110,11 +110,12 @@ describe('FieldComponent', () => {
   });
 
   it('should update the hidden state', () => {
+    const spy = spyOn(component.visibilityChange, 'emit').and.callFake(() => {});
     expect(component.field.hide).toBeFalsy();
     component.updateHiddenState(true);
-    expect(component.field.hide).toEqual(true);
+    expect(spy).toHaveBeenCalledWith({ name: 'field-name', hide: true });
     component.updateHiddenState(false);
-    expect(component.field.hide).toEqual(false);
+    expect(spy).toHaveBeenCalledWith({ name: 'field-name', hide: false });
   });
 
   it('should update the disabled state', () => {

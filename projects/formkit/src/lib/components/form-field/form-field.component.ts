@@ -1,42 +1,43 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  ComponentFactoryResolver,
+  ComponentFactoryResolver, EventEmitter,
   HostBinding,
   Inject,
-  Input,
   OnDestroy,
-  OnInit,
+  OnInit, Output,
   ViewChild
 } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldMessage, FieldMessageType, FieldType, IField } from '../../models/field.model';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
 import { Observable, Subject } from 'rxjs';
 import { extractEvents } from '../../helpers/extract-events.helpers';
 import { FormEvent, FormEventType, FormValues } from '../../models/form.model';
-import { delay, filter, take, takeUntil } from 'rxjs/operators';
+import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
+import { FieldBaseComponent } from '../field-base/field-base.component';
 
 @Component({
   selector: 'formkit-form-field',
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormFieldComponent implements OnInit, OnDestroy {
+export class FormFieldComponent extends FieldBaseComponent implements OnInit, OnDestroy {
   @Output() visibilityChange: EventEmitter<{ name: string; hide: boolean; }> = new EventEmitter<{name: string; hide: boolean}>()
 
   /**
    * Apply classes to the host component
    */
+  @HostBinding('style.--column-span') get fieldWidth(): string {
+    return this.field.width ? this.field.width.toString() : '12';
+  };
+
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
-      this.field.type === FieldType.Array ? 'space-y-2': '',
-      this.field.width ? 'is-constrained w-' + this.field.width : 'w-full',
-      (this.field.type === FieldType.Hidden || this.field.hide) ? 'hidden' : ''
+      (this.field.hide) ? 'hidden' : ''
     ].filter(Boolean).join(' ');
   }
 
@@ -44,12 +45,6 @@ export class FormFieldComponent implements OnInit, OnDestroy {
    * Serves as host for rendering the field components
    */
   @ViewChild(FormFieldDirective, { static: true }) fieldHost!: FormFieldDirective;
-
-  @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
-  @Input() formEvents$!: Subject<FormEvent>;
-  @Input() field!: IField<any, any>;
-  @Input() name!: string[];
-  @Input() formGroup!: FormGroup;
 
   destroy$ = new Subject<boolean>();
   messages$!: Observable<FieldMessage[]>;
@@ -59,13 +54,13 @@ export class FormFieldComponent implements OnInit, OnDestroy {
 
   private messagesSubject$ = new Subject<FieldMessage[]>();
   private firstUpdate = true;
-  private componentCdr!: ChangeDetectorRef;
 
   constructor(
     private resolver: ComponentFactoryResolver,
-    private cd: ChangeDetectorRef,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: FormKitModuleConfig
-  ) { }
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     if (!this.field || !this.control) {
@@ -95,9 +90,7 @@ export class FormFieldComponent implements OnInit, OnDestroy {
     compRef.instance.formEvents$ = this.formEvents$;
     compRef.instance.formGroup = this.formGroup;
     compRef.instance.field = this.field;
-    compRef.instance.name = this.name.slice().pop();
-
-    this.componentCdr = compRef.injector.get(ChangeDetectorRef);
+    compRef.instance.name = this.name;
   }
 
   /**
@@ -106,9 +99,10 @@ export class FormFieldComponent implements OnInit, OnDestroy {
   setupFormEventListener() {
     this.formEvents$.pipe(
       filter(event => (event.type === FormEventType.OnAfterUpdateChecks)),
+      map<FormEvent, FormValues<any>>(event => event.values),
       takeUntil(this.destroy$)
-    ).subscribe(event => {
-      this.onAfterUpdateChecks(event.values);
+    ).subscribe(values => {
+      this.onAfterUpdateChecks(values);
     });
   }
 
