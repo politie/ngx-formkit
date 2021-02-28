@@ -1,7 +1,7 @@
 <ng-container [formGroup]="formGroup" *ngIf="field">
   <mat-form-field>
-    <mat-label>{{ (field && field.label) ? field.label : name | humanize }}</mat-label>
-    <input matInput [formControlName]="name">
+    <mat-label>{{ (field.label) ? field.label : name | humanize }}</mat-label>
+    <input matInput [formControlName]="name" [type]="type">
     <mat-icon *ngIf="field.icon" matSuffix>{{ field.icon }}</mat-icon>
   </mat-form-field>
 </ng-container>

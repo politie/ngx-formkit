@@ -5,7 +5,7 @@ import { FormEvent, ISingleFieldConfig } from '../../models';
 
 @Component({
   selector: 'formkit-field-base',
-  template: '',
+  template: '<p>FieldBaseComponent. You can extend this component.</p>',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FieldBaseComponent {

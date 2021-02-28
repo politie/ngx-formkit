@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { FormEvent, ISelectField, Options } from '../../models';
+import { FormControl } from '@angular/forms';
+import { ISelectField, Options } from '../../models';
 import { isObservable, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FieldBaseComponent } from '../field-base/field-base.component';
 
 @Component({
   selector: 'formkit-select-field',
@@ -10,12 +11,9 @@ import { takeUntil } from 'rxjs/operators';
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SelectFieldComponent implements OnInit, OnDestroy {
+export class SelectFieldComponent extends FieldBaseComponent implements OnInit, OnDestroy {
   @Input() control!: FormControl;
-  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ISelectField<any, any>;
-  @Input() name!: string;
-  @Input() formGroup!: FormGroup;
 
   destroy$ = new Subject<boolean>();
   options$: Observable<Options[]> | undefined;

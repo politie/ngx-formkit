@@ -1,6 +1,6 @@
 <ng-container [formGroup]="formGroup" *ngIf="field">
   <mat-form-field *ngIf="options$ | async as options">
-    <mat-label>{{ field.label }}</mat-label>
+    <mat-label>{{ field.label ? field.label : name | humanize }}</mat-label>
 
     <mat-select [formControlName]="name" [compareWith]="compareFunction" [multiple]="field.multiple" panelClass="formkit-select-field-panel">
       <mat-option *ngFor="let option of options" [value]="option" [disabled]="option.disabled ? option.disabled : false">

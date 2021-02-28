@@ -1,18 +1,15 @@
-import { Component, Input } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ICheckboxField } from '../../models/field.model';
-import { Subject } from 'rxjs';
-import { FormEvent } from '../../models';
+import { FieldBaseComponent } from '../field-base/field-base.component';
 
 @Component({
   selector: 'formkit-checkbox-field',
   templateUrl: './checkbox-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class CheckboxFieldComponent {
+export class CheckboxFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ICheckboxField<any, any>;
-  @Input() name!: string;
-  @Input() formGroup!: FormGroup;
 }

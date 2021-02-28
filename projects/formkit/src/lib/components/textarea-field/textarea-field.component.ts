@@ -1,17 +1,15 @@
-import { Component, Input } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FormEvent, ITextareaField } from '../../models';
-import { Subject } from 'rxjs';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ITextareaField } from '../../models';
+import { FieldBaseComponent } from '../field-base/field-base.component';
 
 @Component({
   selector: 'formkit-textarea-field',
   templateUrl: './textarea-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class TextareaFieldComponent {
-  @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() formEvents$!: Subject<FormEvent>;
+export class TextareaFieldComponent extends FieldBaseComponent {
+  @Input() control!: FormControl;
   @Input() field!: ITextareaField<any, any>;
-  @Input() name!: string;
-  @Input() formGroup!: FormGroup;
 }

@@ -1,22 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { FormEvent, IToggleField } from '../../models';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { IToggleField } from '../../models';
+import { FieldBaseComponent } from '../field-base/field-base.component';
 
 @Component({
   selector: 'formkit-toggle-field',
   templateUrl: './toggle-field.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class ToggleFieldComponent implements OnInit {
+export class ToggleFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IToggleField<any, any>;
-  @Input() name!: string;
-  @Input() formGroup!: FormGroup;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 }
