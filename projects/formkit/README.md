@@ -147,7 +147,7 @@ Below is a rundown of each option per field object.
 | title | `string` | Title to display above the field |
 | tooltip | `string` | Tooltip to display above the field |
 | transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
-| width | `1/2`, `1/3`, `2/3` | If you want to limit the with of the field, add the `width` property to your field. |
+| width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
 
 ### Hooks
 You can use hooks to hook into the lifecycle of a `field`. You can use the following hooks:
@@ -509,11 +509,14 @@ export class CustomTextInputComponent extends CustomFieldComponent implements On
 The following field types are available (you can [add your own](#custom-components)):
 
 - Checkbox Field
+- Date Field
+- Email Field
 - Hidden Field
+- Number Field
 - Password Field
-- Radio Field
 - Radiobuttons Field
-- Select
+- Radio Field
+- Select Field (with multiple option)
 - Text Field
 - Textarea Field
 - Toggle Field

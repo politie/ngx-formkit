@@ -31,7 +31,7 @@ export class AppComponent {
     toggle: {
       type: FieldType.Toggle,
       control: () => new FormControl(true),
-      toggleLabel: 'Toggle debug information'
+      label: 'Toggle debug information (raw values object from each form)'
     }
   }
 

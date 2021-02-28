@@ -3,19 +3,26 @@ import { FormControl } from '@angular/forms';
 
 export type ArrayForm = {
   array: {
-    input: string
+    firstName: string;
+    lastName: string;
   }
 }
 
 export const arrayFormFields:FormFields<ArrayForm> = {
   array: {
     type: FieldType.Array,
-    buttonLabel: 'Add item to array +',
+    buttonLabel: 'Add field group to array +',
     maxLength: 5,
     blueprint: {
-      input: {
+      firstName: {
         type: FieldType.Text,
         control: () => new FormControl(),
+        width: 6
+      },
+      lastName: {
+        type: FieldType.Text,
+        control: () => new FormControl(),
+        width: 6
       }
     }
   }

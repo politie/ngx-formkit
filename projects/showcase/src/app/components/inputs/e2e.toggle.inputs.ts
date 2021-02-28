@@ -9,7 +9,7 @@ export const toggleFormFields: FormFields<ToggleForm> = {
   toggle: {
     type: FieldType.Toggle,
     control: () => new FormControl(false),
-    toggleLabel: 'Toggle me'
+    label: 'Toggle me'
   }
 };
 

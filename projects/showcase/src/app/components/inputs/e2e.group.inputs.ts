@@ -14,6 +14,6 @@ export const groupFormFields:FormFields<GroupForm> = {
   toggle: {
     type: FieldType.Toggle,
     control: () => new FormControl(false),
-    toggleLabel: 'Toggle button'
+    label: 'Toggle button'
   }
 };

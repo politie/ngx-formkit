@@ -1,56 +1,41 @@
 import { FieldType, FormFields } from 'formkit';
-import { AbstractControl, FormControl, ValidationErrors } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 
 export type LayoutForm = {
   day: number;
   month: number;
   year: number;
   name: string;
-  lastname: string;
-  group: {
-    array: string;
-    aap: boolean
-  }
-}
-
-export class FormKitValidators {
-
-  static valueExists(control: AbstractControl): boolean {
-    const value = control.value;
-
-    if (value === undefined || value === null) {
-      return false;
-    }
-
-    return value !== '';
-  }
-
-  static numberValidator(control: AbstractControl): ValidationErrors | null {
-    if (!FormKitValidators.valueExists(control)) {
-      return null;
-    }
-
-    if (isNaN(control.value)) {
-      return { numberRequired: true };
-    }
-
-    return null;
-  };
+  lastName: string;
 }
 
 export const layoutFormFields: FormFields<LayoutForm> = {
   day: {
-    type: FieldType.Date,
+    type: FieldType.Number,
     control: () => new FormControl(null),
-    width: 4
+    width: 3
   },
   month: {
-    type: FieldType.Text,
-    control: () => new FormControl(null, [FormKitValidators.numberValidator]),
-    width: 4
+    type: FieldType.Select,
+    control: () => new FormControl(),
+    width: 5,
+    options: [
+      {
+        id: 'jan',
+        label: 'January'
+      },
+      {
+        id: 'feb',
+        label: 'February'
+      },
+      {
+        id: 'mar',
+        label: 'March'
+      }
+    ]
   },
   year: {
-    type: FieldType.Text,
+    type: FieldType.Number,
     control: () => new FormControl(null),
     width: 4
   },
@@ -59,24 +44,9 @@ export const layoutFormFields: FormFields<LayoutForm> = {
     control: () => new FormControl(null),
     width: 6
   },
-  lastname: {
+  lastName: {
     type: FieldType.Text,
     control: () => new FormControl(null),
     width: 6
-  },
-  group: {
-    type: FieldType.Group,
-    blueprint: {
-      array: {
-        type: FieldType.Text,
-        control: () => new FormControl('array')
-      },
-      aap: {
-        type: FieldType.Toggle,
-        control: () => new FormControl(false),
-        disabled: (values) => values.group.array === 'array',
-        toggleLabel: 'Disable array field'
-      }
-    }
   }
 };

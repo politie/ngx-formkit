@@ -1,5 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { FieldType, IArrayField, IGroupField, ISingleField } from '../models';
+import { FieldType, IArrayField, IGroupField, IHiddenField, ISingleField } from '../models';
 
 export const createFormGroupFromBlueprint = (field: IArrayField<any, any> | IGroupField<any, any>): FormGroup => {
   if (!field || !field.blueprint || typeof field.blueprint !== 'object' || (field.type !== FieldType.Array && field.type !== FieldType.Group)) {
@@ -9,7 +9,7 @@ export const createFormGroupFromBlueprint = (field: IArrayField<any, any> | IGro
   const obj: { [key: string]: FormControl } = {};
 
   for (const key of Object.keys(field.blueprint)) {
-    const childField: ISingleField<any, any> = field.blueprint[key];
+    const childField: ISingleField<any, any> | IHiddenField<any, any> = field.blueprint[key];
     obj[key] = childField.control();
   }
 

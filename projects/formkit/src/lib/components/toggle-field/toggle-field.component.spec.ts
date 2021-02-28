@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ToggleFieldComponent } from './toggle-field.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HumanizePipe } from '../../pipes';
 
 describe('ToggleFieldComponent', () => {
   let component: ToggleFieldComponent;
@@ -14,7 +15,10 @@ describe('ToggleFieldComponent', () => {
         MatSlideToggleModule,
         ReactiveFormsModule
       ],
-      declarations: [ ToggleFieldComponent ]
+      declarations: [
+        HumanizePipe,
+        ToggleFieldComponent
+      ]
     })
     .compileComponents();
   });
