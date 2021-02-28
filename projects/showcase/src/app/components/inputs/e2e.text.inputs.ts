@@ -1,12 +1,12 @@
 import { FieldType, FormFields } from 'formkit';
 import { FormControl } from '@angular/forms';
 
-export type SimpleForm = {
-  input: string;
+export type TextForm = {
+  text: string;
 }
 
-export const simpleFormFields: FormFields<SimpleForm> = {
-  input: {
+export const textFormFields: FormFields<TextForm> = {
+  text: {
     type: FieldType.Text,
     control: () => new FormControl(null)
   }
