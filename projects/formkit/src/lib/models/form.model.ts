@@ -15,7 +15,7 @@ export enum FormEventType {
 }
 
 export type FormEvent = {
-  type: FormEventType,
+  type: FormEventType;
   values: FormValues<any>;
 }
 

@@ -1,20 +1,23 @@
 import { FormValues, Options } from './form.model';
 import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export enum FieldType {
-  Hidden,
-  Password,
-  Text,
-  Radio,
-  RadioButton,
-  Select,
-  Checkbox,
-  Toggle,
-  Textarea,
   Array,
+  Checkbox,
+  Custom,
+  Date,
+  Email,
   Group,
-  Custom
+  Hidden,
+  Number,
+  Password,
+  RadioButton,
+  Radio,
+  Select,
+  Text,
+  Textarea,
+  Toggle
 }
 
 type FieldMessageFunctionPayload<T> = {
@@ -48,7 +51,6 @@ type ConditionalFunction<T> = boolean | ((values: T) => boolean);
 
 type IFieldBase<T, K extends keyof T> = {
   type: FieldType;
-  value?: T[K];
   hooks?: FieldHookProperties<T>;
   component?: any;
   required?: ConditionalFunction<T>;
@@ -65,7 +67,7 @@ type IFieldBase<T, K extends keyof T> = {
   /**
    * Optional width of the field. Defaults to full width
    */
-  width?: '1/2' | '1/3' | '2/3';
+  width?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
   /**
    * Optional title. This title is placed above the field
@@ -81,19 +83,49 @@ type IFieldBase<T, K extends keyof T> = {
   messages?: FieldMessageProperties<T>[];
 }
 
+export type IArrayField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Array;
+  buttonLabel?: string
+  maxLength?: number;
+  blueprint: {
+    [key: string]: ISingleField<T, K> | IHiddenField<T, K>;
+  }
+}
+
 export type ICheckboxField<T, K extends keyof T> = IFieldBase<T, K> & {
   type: FieldType.Checkbox;
   option: Options;
 }
 
-export type IToggleField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Toggle;
-  toggleLabel: string;
+export type ICustomField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Custom;
+  control: () => FormControl;
+}
+
+export type IGroupField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Group;
+  blueprint: {
+    [key in keyof T[K]]: ISingleField<T, K> | IHiddenField<T, K>;
+  }
+}
+
+export type IHiddenField<T, K extends keyof T> = {
+  type: FieldType.Hidden;
+  control: () => FormControl;
+}
+
+export type IPasswordField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Password;
+  icon?: string;
 }
 
 export type IRadioField<T, K extends keyof T> = IFieldBase<T, K> & {
   type: FieldType.Radio | FieldType.RadioButton;
   options: Options[];
+}
+
+export type IToggleField<T, K extends keyof T> = IFieldBase<T, K> & {
+  type: FieldType.Toggle;
 }
 
 export type ISelectField<T, K extends keyof T> = IFieldBase<T, K> & {
@@ -109,7 +141,7 @@ export type ISelectField<T, K extends keyof T> = IFieldBase<T, K> & {
 }
 
 export type ITextField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Text;
+  type: FieldType.Date | FieldType.Email | FieldType.Number | FieldType.Text;
   icon?: string;
 }
 
@@ -120,45 +152,14 @@ export type ITextareaField<T, K extends keyof T> = IFieldBase<T, K> & {
   maxRows?: number;
 }
 
-export type IPasswordField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Password;
-  icon?: string;
-}
-
-export type IHiddenField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Hidden;
-}
-
-export type IArrayField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Array;
-  buttonLabel?: string
-  maxLength?: number;
-  blueprint: {
-    [key: string]: ISingleField<T, any>;
-  }
-}
-
-export type IGroupField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Group;
-  blueprint: {
-    [key in keyof T[K]]: ISingleField<T, K>;
-  }
-}
-
-export type ICustomField<T, K extends keyof T> = IFieldBase<T, K> & {
-  type: FieldType.Custom;
-  control: () => FormControl;
-}
-
 export type ISingleFieldConfig<T, K extends keyof T> =
-  ITextField<T, K> |
-  ITextareaField<T, K> |
-  IHiddenField<T, K> |
+  ICheckboxField<T, K> |
+  ICustomField<T, K> |
   IPasswordField<T, K> |
   IRadioField<T, K> |
-  ICheckboxField<T, K> |
   ISelectField<T, K> |
-  ICustomField<T, K> |
+  ITextField<T, K> |
+  ITextareaField<T, K> |
   IToggleField<T, K>
 ;
 
@@ -167,9 +168,16 @@ export type ISingleField<T, K extends keyof T> = ISingleFieldConfig<T, K> & {
 }
 
 export type IField<T, K extends keyof T> =
-  ISingleField<T, K> |
   IArrayField<T, K> |
-  IGroupField<T, K>
+  IGroupField<T, K> |
+  IHiddenField<T, K> |
+  ISingleField<T, K>
+;
+
+export type IVisibleField<T, K extends keyof T> =
+  IArrayField<T, K> |
+  IGroupField<T, K> |
+  ISingleField<T, K>
 ;
 
 export type FormFields<T> = {
@@ -178,5 +186,5 @@ export type FormFields<T> = {
 
 export type FormKitFormFieldListItem<T> = {
   name: Extract<keyof T, string>;
-  field: IField<T, any>;
+  field$: BehaviorSubject<IVisibleField<T, any>>;
 };

@@ -7,10 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { TextFieldComponent } from './components/text-field/text-field.component';
 import { RadioButtonsFieldComponent } from './components/radio-buttons-field/radio-buttons-field.component';
 import { RadioFieldComponent } from './components/radio-field/radio-field.component';
-import { HiddenFieldComponent } from './components/hidden-field/hidden-field.component';
 import { PasswordFieldComponent } from './components/password-field/password-field.component';
 import { SelectFieldComponent } from './components/select-field/select-field.component';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,13 +21,14 @@ import { ArrayFieldComponent } from './components/array-field/array-field.compon
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { GroupFieldComponent } from './components/group-field/group-field.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CustomFieldComponent } from './components/custom-field/custom-field.component';
 import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
 import { FormKitModuleConfig } from './models/config.model';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
 import { ToggleFieldComponent } from './components/toggle-field/toggle-field.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FieldBaseComponent } from './components/field-base/field-base.component';
+import { TextFieldComponent } from './components/text-field/text-field.component';
 
 @NgModule({
   imports: [
@@ -48,43 +47,41 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatCheckboxModule
   ],
   declarations: [
+    FormFieldDirective,
     HumanizePipe,
-    TextFieldComponent,
-    RadioButtonsFieldComponent,
-    RadioFieldComponent,
-    HiddenFieldComponent,
-    PasswordFieldComponent,
-    SelectFieldComponent,
-    FormComponent,
-    CheckboxFieldComponent,
-    TextareaFieldComponent,
     ArrayFieldComponent,
+    CheckboxFieldComponent,
+    FieldBaseComponent,
+    FormComponent,
     FormFieldComponent,
     GroupFieldComponent,
-    CustomFieldComponent,
-    FormFieldDirective,
+    PasswordFieldComponent,
+    RadioButtonsFieldComponent,
+    RadioFieldComponent,
+    SelectFieldComponent,
+    TextFieldComponent,
+    TextareaFieldComponent,
     ToggleFieldComponent
   ],
   entryComponents: [
-    TextFieldComponent,
-    TextareaFieldComponent,
+    ArrayFieldComponent,
+    CheckboxFieldComponent,
+    FieldBaseComponent,
+    FormComponent,
+    FormFieldComponent,
+    GroupFieldComponent,
+    PasswordFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,
-    HiddenFieldComponent,
-    PasswordFieldComponent,
     SelectFieldComponent,
-    CheckboxFieldComponent,
-    ArrayFieldComponent,
-    GroupFieldComponent,
+    TextFieldComponent,
+    TextareaFieldComponent,
     ToggleFieldComponent
   ],
   exports: [
-    MatButtonModule,
     HumanizePipe,
     FormComponent,
-    TextareaFieldComponent,
-    CustomFieldComponent,
-    ArrayFieldComponent
+    FieldBaseComponent
   ]
 })
 export class FormKitModule {
