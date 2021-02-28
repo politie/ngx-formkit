@@ -26,6 +26,8 @@ import { FormKitModuleConfig } from '../../models/config.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldComponent implements OnInit, OnDestroy {
+  @Output() visibilityChange: EventEmitter<{ name: string; hide: boolean; }> = new EventEmitter<{name: string; hide: boolean}>()
+
   /**
    * Apply classes to the host component
    */
@@ -156,12 +158,12 @@ export class FormFieldComponent implements OnInit, OnDestroy {
       });
     }
 
-    if (this.field.disabled) {
-      this.updateDisabledState(typeof this.field.disabled === 'boolean' ? this.field.disabled : this.field.disabled(values));
-    }
-
     if (this.field.hidden) {
       this.updateHiddenState(typeof this.field.hidden === 'boolean' ? this.field.hidden : this.field.hidden(values));
+    }
+
+    if (this.field.disabled) {
+      this.updateDisabledState(typeof this.field.disabled === 'boolean' ? this.field.disabled : this.field.disabled(values));
     }
 
     if (this.field.required) {
@@ -171,9 +173,11 @@ export class FormFieldComponent implements OnInit, OnDestroy {
     if (this.field.messages) {
       this.updateMessages(values);
     }
+  }
 
-    if (this.componentCdr) {
-      this.componentCdr.detectChanges();
+  updateHiddenState(match: boolean) {
+    if (this.field && this.field.hide !== match) {
+      this.visibilityChange.emit({ name: this.name, hide: match });
     }
   }
 
@@ -182,13 +186,6 @@ export class FormFieldComponent implements OnInit, OnDestroy {
       this.control.disable({ onlySelf: true, emitEvent: false });
     } else if (!match && this.control.disabled) {
       this.control.enable({ onlySelf: true, emitEvent: false });
-    }
-  }
-
-  updateHiddenState(match: boolean) {
-    if (this.field && this.field.hide !== match) {
-      this.field.hide = match;
-      this.cd.markForCheck();
     }
   }
 
