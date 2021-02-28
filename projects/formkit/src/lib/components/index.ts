@@ -1,6 +1,7 @@
 export * from './array-field/array-field.component';
 export * from './checkbox-field/checkbox-field.component';
 export * from './custom-field/custom-field.component';
+export * from './field-base/field-base.component';
 export * from './form/form.component';
 export * from './form-field/form-field.component';
 export * from './group-field/group-field.component';
