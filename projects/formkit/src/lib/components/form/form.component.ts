@@ -274,13 +274,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
       const field: IField<T, any> = this.fields[name] as IField<T, any>;
 
       /**
-       * Set a hide property in each field if it doesn't exist already
-       */
-      if (!field.hide) {
-        field.hide = false;
-      }
-
-      /**
        * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
        */
       if (field.type === FieldType.Array) {
@@ -290,6 +283,26 @@ export class FormComponent<T> implements OnInit, OnDestroy {
       } else {
         this.form.addControl(name, field.control());
       }
+
+      /**
+       * We're done if the current field type is FieldType.Hidden, since we don't do anything with this field type other
+       * than assigning a FormControl to it.
+       */
+      if (field.type === FieldType.Hidden) {
+        continue;
+      }
+
+      /**
+       * Set a hide property in each field if it doesn't exist already
+       */
+      if (!field.hide) {
+        field.hide = false;
+      }
+
+      /**
+       * Create Observable for field definition
+       */
+      const field$ = new BehaviorSubject<IVisibleField<T, any>>(field);
 
       /**
        * Check if the field has the property 'resetFormOnChange' set.
@@ -308,7 +321,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
       /**
        * Add field config into the fields$ array with observables per field config ({ name: string, field$: Observable<IField>>})
        */
-      this.fieldList.push({ name, field });
+      this.fieldList.push({ name, field$ });
     }
   }
 }
