@@ -37,28 +37,16 @@ html, body {
   @apply space-y-4;
 }
 
-form > formkit-form > .formkit-form > .formkit-fields {
-  @apply w-2/3;
-}
-
 .formkit-fields {
-  @apply flex;
-  @apply flex-row;
-  @apply flex-wrap;
-  @apply -ml-3;
+  --column-span: 12;
+  @apply gap-4;
+  @apply grid;
+
+  grid-template-columns: repeat(12, 1fr);
 }
 
-.formkit-fields .formkit-field:not(.hidden) + .formkit-field {
-  @apply mt-8;
-}
-
-formkit-form-field {
-  @apply px-3;
-}
-
-formkit-form-field,
-.formkit-array-field {
-  @apply space-y-2;
+.formkit-field {
+  grid-column: auto / span var(--column-span);
 }
 
 :host {

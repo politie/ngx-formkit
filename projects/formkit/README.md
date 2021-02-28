@@ -397,6 +397,33 @@ The available slots are:
 
 You can bring your own CSS to style `<formkit-form>` instances. Out of the box, the inputs use the styling provided by Angular Material.
 
+To get the most out of the form, you can use the following starting point for the CSS:
+
+```css
+/* will create vertical spacing between fields  */
+.formkit-form > * + * {
+  margin-top: 2rem
+}
+
+/* This will create a grid to place form fields in */
+.formkit-fields {
+  /* set the default column span to match the full 12 columns */
+  --column-span: 12;
+  
+  /* Create a grid with 12 evenly spaced columns */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  
+  /* Add some spacing between fields in the same group or on the same line. */
+  grid-gap: 1rem;
+}
+
+.formkit-field {
+  /* the --column-span variable will be set per formkit-form-field if you set the width property (defaults to 12). */
+  grid-column: auto / span var(--column-span);
+}
+```
+
 ### Tip: Customising the appearance of Angular Material text fields
 
 You can override the appearance of Angular Material text fields used in FormKit by overriding the default options with the `MAT_FORM_FIELD_DEFAULT_OPTIONS` Injection Token:
