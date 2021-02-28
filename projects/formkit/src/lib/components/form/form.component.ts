@@ -40,7 +40,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   fieldList: FormKitFormFieldListItem<T>[] = [];
 
   private initialValues!: T;
-  private firstUpdateCycle = true;
   private afterValueUpdateScheduler$ = new Subject<Partial<T>>();
   private updateByControlWithResetProperty = false;
 
@@ -241,10 +240,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * that Fields can run a OnInit Hook.
        */
       this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
-
-      if (this.firstUpdateCycle) {
-        this.firstUpdateCycle = false;
-      }
     });
   }
 
