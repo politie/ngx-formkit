@@ -1,6 +1,6 @@
 # FormKit
 
-This repository is used to create the ngxFormKit library. For the readme, check [the readme in the /projects/formkit](/projects/formkit/README.md) folder.
+This repository is used to create the ngxFormKit library. For the readme, check [the readme in the /projects/formkit](/projects/formkit/) folder.
 
 ## Build the library
 

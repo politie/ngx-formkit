@@ -480,18 +480,18 @@ const formConfig: FormKitFields<Type> = {
 
 ### Creating your custom component
 
-You can extend the `CustomFieldComponent`. This component has all `@Input()` properties set (you can override the types).
+You can extend the `FieldBaseComponent`. This component has all `@Input()` properties set (you can override the types).
 
 You must add a HTML element that has the `[formGroup]` attribute that will be filled with the `formGroup` `@Input()` property. The `[formControlName]` property **must** be mapped to the `name` `@Input()` property in order to get your custom component to work.
 
 ```ts
-import { CustomFieldComponent, ISingleFieldConfig, FormKitForm } from '@politie/formkit';
+import { FieldBaseComponent, ISingleFieldConfig, FormKitForm } from '@politie/formkit';
 
 @Component({
   selector: 'app-custom-text-input-component',
   template: `<div [formGroup]="formGroup"><input type="text" [formControlName]="name"></div>`,
 })
-export class CustomTextInputComponent extends CustomFieldComponent implements OnInit {
+export class CustomTextInputComponent extends FieldBaseComponent implements OnInit {
 
   @Input() control!: FormControl | FormArray | FormGroup;
   @Input() events$!: Subject<FormEvent>;
