@@ -9,9 +9,7 @@ import { FieldType, IFormGroup } from '../../models';
 type FormType = {
   value1: string;
   value2: string;
-  value3: {
-    input: string
-  }[];
+  value3: string;
   value3edit: string[];
 }
 
@@ -34,13 +32,12 @@ describe('FormComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FormComponent);
-    component = fixture.componentInstance;
+    component = fixture.componentInstance as FormComponent<FormType>;
     component.autoCreate = false;
 
     component.fields = {
       value1: {
-        type: FieldType.Text,
-        control: () => new FormControl()
+        type: FieldType.Text
       }
     };
 
@@ -101,7 +98,7 @@ describe('FormComponent', () => {
       component.fields = {
         value1: {
           type: FieldType.Text,
-          control: () => new FormControl('testvalue')
+          value: 'testvalue'
         }
       };
     });
@@ -161,16 +158,14 @@ describe('FormComponent', () => {
       component.fields = {
         value1: {
           type: FieldType.Text,
-          control: () => new FormControl(),
           resetFormOnChange: true
         },
         value2: {
-          type: FieldType.Text,
-          control: () => new FormControl()
+          type: FieldType.Text
         },
         value3: {
           type: FieldType.Text,
-          control: () => new FormControl('initial-value-3')
+          value: 'initial-value-3'
         }
       };
     });
@@ -202,16 +197,14 @@ describe('FormComponent', () => {
       component.fields = {
         value1: {
           type: FieldType.Text,
-          control: () => new FormControl(),
           resetFormOnChange: true
         },
         value2: {
-          type: FieldType.Text,
-          control: () => new FormControl()
+          type: FieldType.Text
         },
         value3: {
           type: FieldType.Text,
-          control: () => new FormControl('initial-value-3')
+          value: 'initial-value-3'
         }
       };
     });
@@ -233,9 +226,7 @@ describe('FormComponent', () => {
     const spy = spyOn(component.form, 'getRawValue').and.callFake(() => ({
       value1: '123',
       value2: '456',
-      value3: [{
-        input: '123'
-      }]
+      value3: '123'
     }));
 
     const result = component.transformValues({
@@ -243,7 +234,7 @@ describe('FormComponent', () => {
       transform: values => ([
         {
           from: 'value3',
-          to: { 'value3edit': values.value3.map((value: any) => value.input) }
+          to: { 'value3edit': [values.value3] }
         },
         {
           from: 'value1',

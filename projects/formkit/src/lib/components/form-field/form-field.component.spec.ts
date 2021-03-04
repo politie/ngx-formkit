@@ -16,7 +16,6 @@ import { FormKitModule } from '../../formkit.module';
 
 const field: ISingleField<any, any> = {
   type: FieldType.Radio,
-  control: () => new FormControl(),
   options: [],
   transform: values => {
     if (values.testValue === 'test') {
@@ -60,7 +59,7 @@ describe('FieldComponent', () => {
           provide: FORMKIT_MODULE_CONFIG_TOKEN,
           useFactory: () => ({
             components: {
-              [FieldType.Radio]: RadioFieldComponent,
+              [FieldType.Radio]: RadioFieldComponent
             },
             text: {
               loading: 'loading'

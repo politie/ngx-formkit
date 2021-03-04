@@ -23,7 +23,7 @@ describe('Create FormGroup from Blueprint helper', () => {
       blueprint: {
         test: {
           type: FieldType.Text,
-          control: () => new FormControl('testvalue')
+          value: 'testvalue'
         }
       }
     }))
@@ -34,11 +34,11 @@ describe('Create FormGroup from Blueprint helper', () => {
       blueprint: {
         test: {
           type: FieldType.Text,
-          control: () => new FormControl('testvalue')
+          value: 'testvalue'
         },
         test2: {
           type: FieldType.Text,
-          control: () => new FormControl('testvalue2')
+          value: 'testvalue2'
         }
       }
     });

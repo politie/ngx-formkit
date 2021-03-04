@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { FormEvent, ISingleFieldConfig } from '../../models';
+import { FormEvent, ISingleField } from '../../models';
 
 @Component({
   selector: 'formkit-field-base',
@@ -11,7 +11,7 @@ import { FormEvent, ISingleFieldConfig } from '../../models';
 export class FieldBaseComponent {
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
   @Input() formEvents$!: Subject<FormEvent>;
-  @Input() field!: ISingleFieldConfig<any, any>;
+  @Input() field!: ISingleField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
 }

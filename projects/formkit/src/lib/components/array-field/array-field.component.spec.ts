@@ -37,7 +37,7 @@ describe('ArrayFieldComponent', () => {
       blueprint: {
         test: {
           type: FieldType.Text,
-          control: () => new FormControl('test')
+          value: 'test'
         }
       }
     };
