@@ -33,7 +33,7 @@ export const removeError = (errors: ValidationErrors | null, ...keys: string[]):
   }
 };
 
-export const mergeErrors = (errors: ValidationErrors | null, error: { [key: string]: any } | null): ValidationErrors | null => {
+export const mergeError = (errors: ValidationErrors | null, error: { [key: string]: any } | null): ValidationErrors | null => {
   if (errors && !utilities.isEmptyObject(errors)) {
     return { ...errors, ...error };
   } else if (error && !utilities.isEmptyObject(error)) {

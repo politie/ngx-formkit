@@ -1,3 +1,11 @@
+# 1.0.0
+- **BREAKING CHANGE**: the `control` property should not be used anymore. `FormKit` will assign `FormControl` properties for your field definitions. You can add `value` and `validators` properties to your field definitions if you need a default value or validator functions.
+- **BUGFIX**: Updated required functions by merging errors and removing error by key instead of replacing the entire error object.
+- Added `CreateFormControl` helper function.
+- Added `Utilities` functions.
+- Updated all demo forms in the showcase project.
+- Disabled `strictTemplates` and added readme section about this decision.
+
 # 0.0.7
 - Implemented `createFormGroupFromBlueprint` helper to be used inside FormKit and for custom components.
 - Removed `setValues` method. You can use `patchValue` directly on the form, triggering the schedulers for after update checks as well.

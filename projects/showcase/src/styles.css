@@ -146,6 +146,7 @@ formkit-radio-field .mat-radio-group .mat-radio-button:not(:last-child) {
 
 .formkit-field-notification {
   @apply text-sm;
+  @apply mt-2;
 }
 
 .formkit-field-notification.error {
@@ -161,4 +162,8 @@ formkit-radio-field .mat-radio-group .mat-radio-button:not(:last-child) {
 button[disabled] {
   pointer-events: none;
   opacity: .25;
+}
+
+.next-button {
+  @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
 }

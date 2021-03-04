@@ -112,8 +112,7 @@ export class MyComponent implements OnInit {
    */
   fields: FormKitFields<MyType> = {
     username: {
-      type: FieldType.Text,
-      control: () => new FormControl()
+      type: FieldType.Text
     }
   }
 }
@@ -134,7 +133,6 @@ Below is a rundown of each option per field object.
 | Parameter | Type | Description 
 |:---|:---|:---|
 | type* | `FieldType` | The type of field. See [Field Types](#field-types) for available field types. |
-| control* | `() => FormControl(value?, [Validator]?)` | A function that returns a `FormControl`. You can add a default value as the first parameter, [Validator functions](https://angular.io/api/forms/Validator) as optional second parameter. If you use multiple validator functions, add them as an array. |
 | component | `any` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
 | description | `string` | Description to display above the field |
 | disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
@@ -147,6 +145,8 @@ Below is a rundown of each option per field object.
 | title | `string` | Title to display above the field |
 | tooltip | `string` | Tooltip to display above the field |
 | transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
+| validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator) |
+| value | `any` | Set a default value to the control. |
 | width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
 
 ### Hooks
@@ -470,7 +470,6 @@ export class AppModule { }
 const formConfig: FormKitFields<Type> = {
   myField: {
     type: FieldType.TextField,
-    control: () => new FormControl(),
     component: CustomTextInputComponent.
   }
 }
@@ -485,7 +484,7 @@ You can extend the `FieldBaseComponent`. This component has all `@Input()` prope
 You must add a HTML element that has the `[formGroup]` attribute that will be filled with the `formGroup` `@Input()` property. The `[formControlName]` property **must** be mapped to the `name` `@Input()` property in order to get your custom component to work.
 
 ```ts
-import { FieldBaseComponent, ISingleFieldConfig, FormKitForm } from '@politie/formkit';
+import { FieldBaseComponent, ISingleField, FormKitForm } from '@politie/formkit';
 
 @Component({
   selector: 'app-custom-text-input-component',
@@ -495,7 +494,7 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
 
   @Input() control!: FormControl | FormArray | FormGroup;
   @Input() events$!: Subject<FormEvent>;
-  @Input() field!: ISingleFieldConfig<any>;
+  @Input() field!: ISingleField<any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
 
@@ -520,3 +519,12 @@ The following field types are available (you can [add your own](#custom-componen
 - Text Field
 - Textarea Field
 - Toggle Field
+
+
+### Note about using `strictTemplates`
+
+Since all published libraries must use the View Engine compiler, something is off with the recognition of a generic type provided in a [@ViewChild](https://angular.io/api/core/ViewChild) which turns the `[fields]` attribute into a error if you provide `FormFields<YourType>`. 
+
+Until this is fixed, we recommend you set the `strictTemplates` under `angulerCompilerOptions` in `tsconfig.json` to false. 
+
+If no `strictTemplates` property is set in your `tsconfig.json`, you already should be good to go, since the property defaults to `false`.

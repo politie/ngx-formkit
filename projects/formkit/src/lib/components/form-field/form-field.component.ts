@@ -18,6 +18,7 @@ import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseComponent } from '../field-base/field-base.component';
+import { mergeError, removeError } from '../../helpers';
 
 @Component({
   selector: 'formkit-form-field',
@@ -195,7 +196,11 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
   }
 
   updateRequiredState(match: boolean) {
-    this.control.setErrors(match ? Validators.required(this.control) : null);
+    if (match) {
+      this.control.setErrors(mergeError(this.control.errors, Validators.required(this.control)));
+    } else {
+      this.control.setErrors(removeError(this.control.errors, 'required'));
+    }
   }
 
   updateMessages(values: FormValues<any>) {

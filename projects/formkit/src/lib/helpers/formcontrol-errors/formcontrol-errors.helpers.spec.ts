@@ -1,4 +1,4 @@
-import { mergeErrors, removeError } from './formcontrol-errors.helpers';
+import { mergeError, removeError } from './formcontrol-errors.helpers';
 
 const errorSet = {
   required: true,
@@ -47,17 +47,17 @@ describe('Helpers', () => {
 
   describe('Merge errors', () => {
     it('It should return all errors if no extra error is provided', () => {
-      const errors = mergeErrors(errorSet, null);
+      const errors = mergeError(errorSet, null);
       expect(errors).toEqual(errorSet);
     });
 
     it('should only return the new error if no existing error is provided', () => {
-      const errors = mergeErrors(null, { required: true });
+      const errors = mergeError(null, { required: true });
       expect(errors).toEqual({ required: true });
     });
 
     it('should return null if both existing errors and new errors are not provided', () => {
-      const errors = mergeErrors(null, null);
+      const errors = mergeError(null, null);
       expect(errors).toEqual(null);
     });
   });
