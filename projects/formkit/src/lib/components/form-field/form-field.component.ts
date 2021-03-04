@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
   ComponentFactoryResolver, EventEmitter,
   HostBinding,
@@ -54,9 +54,11 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
 
   private messagesSubject$ = new Subject<FieldMessage[]>();
   private firstUpdate = true;
+  private componentCdr!: ChangeDetectorRef;
 
   constructor(
     private resolver: ComponentFactoryResolver,
+    private cd: ChangeDetectorRef,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: FormKitModuleConfig
   ) {
     super();
@@ -91,6 +93,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
     compRef.instance.formGroup = this.formGroup;
     compRef.instance.field = this.field;
     compRef.instance.name = this.name;
+    this.componentCdr = compRef.injector.get(ChangeDetectorRef);
   }
 
   /**
@@ -119,6 +122,10 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
     ).subscribe(() => {
       if (this.field.messages) {
         this.updateMessages(this.formGroup.getRawValue());
+      }
+
+      if (this.componentCdr) {
+        this.componentCdr.markForCheck();
       }
     });
   }
@@ -166,6 +173,10 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
 
     if (this.field.messages) {
       this.updateMessages(values);
+    }
+
+    if (this.componentCdr) {
+      this.componentCdr.markForCheck();
     }
   }
 
