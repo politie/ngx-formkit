@@ -1,5 +1,5 @@
 import { FormValues, Options } from './form.model';
-import { FormArray, FormControl, FormGroup, ValidationErrors } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export enum FieldType {
@@ -59,6 +59,8 @@ type IFieldBase<T, K extends keyof T> = {
   transform?: (values: T) => T[K] | undefined;
   resetFormOnChange?: boolean;
   hide?: boolean;
+  value?: T[K];
+  validators?: ValidatorFn[];
 
   /**
    * Optional label. This description is placed as the 'label' above the field
@@ -88,7 +90,7 @@ export type IArrayField<T, K extends keyof T> = IFieldBase<T, K> & {
   buttonLabel?: string
   maxLength?: number;
   blueprint: {
-    [key: string]: ISingleField<T, K> | IHiddenField<T, K>;
+    [key in keyof T[K]]: ISingleField<T, K> | IHiddenField<T, K>;
   }
 }
 
@@ -99,7 +101,6 @@ export type ICheckboxField<T, K extends keyof T> = IFieldBase<T, K> & {
 
 export type ICustomField<T, K extends keyof T> = IFieldBase<T, K> & {
   type: FieldType.Custom;
-  control: () => FormControl;
 }
 
 export type IGroupField<T, K extends keyof T> = IFieldBase<T, K> & {
@@ -111,7 +112,8 @@ export type IGroupField<T, K extends keyof T> = IFieldBase<T, K> & {
 
 export type IHiddenField<T, K extends keyof T> = {
   type: FieldType.Hidden;
-  control: () => FormControl;
+  value?: T[K];
+  validators?: ValidatorFn[];
 }
 
 export type IPasswordField<T, K extends keyof T> = IFieldBase<T, K> & {
@@ -152,7 +154,7 @@ export type ITextareaField<T, K extends keyof T> = IFieldBase<T, K> & {
   maxRows?: number;
 }
 
-export type ISingleFieldConfig<T, K extends keyof T> =
+export type ISingleField<T, K extends keyof T> =
   ICheckboxField<T, K> |
   ICustomField<T, K> |
   IPasswordField<T, K> |
@@ -162,10 +164,6 @@ export type ISingleFieldConfig<T, K extends keyof T> =
   ITextareaField<T, K> |
   IToggleField<T, K>
 ;
-
-export type ISingleField<T, K extends keyof T> = ISingleFieldConfig<T, K> & {
-  control: () => FormControl;
-}
 
 export type IField<T, K extends keyof T> =
   IArrayField<T, K> |
