@@ -1,5 +1,4 @@
 import { FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
 
 export type RadioForm = {
   radio: number;
@@ -8,7 +7,6 @@ export type RadioForm = {
 export const radioFormFields: FormFields<RadioForm> = {
   radio: {
     type: FieldType.Radio,
-    control: () => new FormControl(2),
     options: [
       {
         id: 1,

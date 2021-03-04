@@ -1,5 +1,4 @@
 import { FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
 
 export type HiddenForm = {
   input: string;
@@ -10,16 +9,14 @@ export type HiddenForm = {
 export const hiddenFormFields:FormFields<HiddenForm> = {
   checkbox: {
     type: FieldType.Toggle,
-    control: () => new FormControl(false),
+    value: false,
     label: 'Hide text field'
   },
   input: {
     type: FieldType.Text,
-    control: () => new FormControl(),
     hidden: values => values.checkbox === true
   },
   text: {
-    type: FieldType.Text,
-    control: () => new FormControl()
+    type: FieldType.Text
   }
 };

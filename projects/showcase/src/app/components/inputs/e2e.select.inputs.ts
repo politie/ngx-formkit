@@ -1,5 +1,4 @@
 import { FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
 
 export type SelectForm = {
   select: any;
@@ -9,11 +8,11 @@ export type SelectForm = {
 export const selectFormFields: FormFields<SelectForm> = {
   select: {
     type: FieldType.Select,
-    control: () => new FormControl({
+    value: {
       id: 1,
       label: 'Label 1',
       description: 'Description 1'
-    }),
+    },
     label: 'Select an option',
     options: [
       {
@@ -31,11 +30,11 @@ export const selectFormFields: FormFields<SelectForm> = {
 
   selectMultiple: {
     type: FieldType.Select,
-    control: () => new FormControl([{
+    value: [{
       id: 1,
       label: 'Label 1',
       description: 'Description 1'
-    }]),
+    }],
     label: 'Select an option',
     multiple: true,
     options: [

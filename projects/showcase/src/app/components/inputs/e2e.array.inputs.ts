@@ -1,5 +1,4 @@
 import { FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
 
 export type ArrayForm = {
   array: {
@@ -16,12 +15,10 @@ export const arrayFormFields:FormFields<ArrayForm> = {
     blueprint: {
       firstName: {
         type: FieldType.Text,
-        control: () => new FormControl(),
         width: 6
       },
       lastName: {
         type: FieldType.Text,
-        control: () => new FormControl(),
         width: 6
       }
     }

@@ -7,7 +7,6 @@ export type NumberForm = {
 
 export const numberFormFields: FormFields<NumberForm> = {
   number: {
-    type: FieldType.Number,
-    control: () => new FormControl()
+    type: FieldType.Number
   }
 };

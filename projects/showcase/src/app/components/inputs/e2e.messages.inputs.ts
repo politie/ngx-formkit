@@ -1,5 +1,4 @@
 import { FieldMessageType, FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
 
 export type MessagesForm = {
   input: string;
@@ -8,7 +7,6 @@ export type MessagesForm = {
 export const messagesFormFields: FormFields<MessagesForm> = {
   input: {
     type: FieldType.Text,
-    control: () => new FormControl(),
     messages: [
       {
         type: FieldMessageType.Information,
