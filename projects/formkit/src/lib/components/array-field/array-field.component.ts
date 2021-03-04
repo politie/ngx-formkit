@@ -3,7 +3,7 @@ import { FormArray, FormGroup } from '@angular/forms';
 import { IArrayField } from '../../models/field.model';
 import { Subject } from 'rxjs';
 import { FormEvent } from '../../models';
-import { createFormGroupFromBlueprint } from '../../helpers';
+import { formGroupFromBlueprint } from '../../helpers';
 
 @Component({
   selector: 'formkit-array-field',
@@ -17,7 +17,7 @@ export class ArrayFieldComponent {
   @Input() formGroup!: FormGroup;
 
   onAdd() {
-    this.control.push(createFormGroupFromBlueprint(this.field));
+    this.control.push(formGroupFromBlueprint(this.field));
   }
 
   onRemove(index: number) {

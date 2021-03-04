@@ -11,7 +11,7 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
 import { Observable, Subject } from 'rxjs';
-import { extractEvents } from '../../helpers/extract-events.helpers';
+import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormEventType, FormValues } from '../../models/form.model';
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
