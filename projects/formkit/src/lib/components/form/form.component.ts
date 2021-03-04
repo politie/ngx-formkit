@@ -18,6 +18,7 @@ import {
 
 import { debounceTime, delay, filter, map, takeUntil } from 'rxjs/operators';
 import { formGroupFromBlueprint } from '../../helpers';
+import { createFormControl } from '../../helpers/create-formcontrol/create-formcontrol.helpers';
 
 @Component({
   selector: 'formkit-form',
@@ -303,7 +304,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
         } else if (field.type === FieldType.Group) {
           this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any>));
         } else {
-          this.form.addControl(name, (typeof field.control === 'function') ? field.control() : field.control);
+          this.form.addControl(name, createFormControl(field.value, field.validators));
         }
       }
 
