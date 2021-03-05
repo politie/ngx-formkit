@@ -67,18 +67,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
      */
     this.events$ = (this.root) ? new Subject<FormEvent>() : this.rootFormEvents$ as Subject<FormEvent>;
 
-    /**
-     * Only call create() if the form isn't created
-     */
-    if (!this.created) {
-      this.create();
-    }
-  }
-
-  /**
-   * Create the form and
-   */
-  create() {
     if (this.created) {
       throw new Error('FormKit: Form is already created.');
     }
