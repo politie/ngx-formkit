@@ -87,8 +87,6 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
    * defined in the form
    */
   renderFieldComponent() {
-    console.log(this.config);
-
     const factory = this.resolver.resolveComponentFactory(this.field.component || this.config.components[this.field.type]);
     const ref = this.fieldHost.viewContainerRef;
     ref.clear();
