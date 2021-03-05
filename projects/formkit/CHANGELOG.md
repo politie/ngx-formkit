@@ -1,3 +1,10 @@
+# 1.0.2
+- Removed `[autoCreate]` `@Input()` property
+- Removed `created` slot in template
+- Added more reliable `patch` method on the `FormComponent` if you work with controls with `resetFormOnChange` properties set.
+- Refactored the logic for updating and resetting the form.
+- Added option for setting the `debounce` before running afterUpdate checks. This only applies to updates done by a User, not for Reset and Patch updates.
+
 # 1.0.1
 - **BUGFIX**: Updated the one time `detectChanges` after `create()` to `markForCheck()` since unit tests could break with error `view.root.sanitizer.sanitize is not a function`.
 
