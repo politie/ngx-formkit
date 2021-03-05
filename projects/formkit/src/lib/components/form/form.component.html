@@ -1,8 +1,5 @@
 <div *ngIf="form" cy-formkit-form [formGroup]="form" class="formkit-form" [ngClass]="[root ? 'formkit-form-root' : 'formkit-form-sub']">
 
-  <!-- Slot for when the form isn't created yet -->
-  <ng-content *ngIf="!created" select="[beforeCreated]"></ng-content>
-
   <ng-container *ngIf="created">
 
     <!-- Form description -->
