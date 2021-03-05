@@ -1,3 +1,6 @@
+# 1.0.1
+- **BUGFIX**: Updated the one time `detectChanges` after `create()` to `markForCheck()` since unit tests could break with error `view.root.sanitizer.sanitize is not a function`.
+
 # 1.0.0
 - **BREAKING CHANGE**: the `control` property should not be used anymore. `FormKit` will assign `FormControl` properties for your field definitions. You can add `value` and `validators` properties to your field definitions if you need a default value or validator functions.
 - **BUGFIX**: Updated required functions by merging errors and removing error by key instead of replacing the entire error object.

@@ -159,7 +159,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     /**
      * Run change detection
      */
-    this.cd.detectChanges();
+    this.cd.markForCheck();
   }
 
   /**
