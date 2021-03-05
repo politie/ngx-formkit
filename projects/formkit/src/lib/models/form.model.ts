@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 export type FormValues<T> = { [P in keyof T]?: T[P] };
 
 export enum FormUpdateType {
+  Init,
   User,
   Patch,
   Reset

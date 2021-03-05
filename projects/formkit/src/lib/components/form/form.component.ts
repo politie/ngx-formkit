@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
+import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
 
 import {
   FieldType,
@@ -7,6 +8,8 @@ import {
   FormEventType,
   FormFields,
   FormKitFormFieldListItem,
+  FormKitModuleConfig,
+  FormUpdateType,
   FormValues,
   IArrayField,
   IField,
@@ -15,9 +18,10 @@ import {
   TransformValues
 } from '../../models';
 
-import { debounceTime, delay, filter, map, takeUntil } from 'rxjs/operators';
+import { debounce, delay, filter, map, takeUntil } from 'rxjs/operators';
 import { formGroupFromBlueprint } from '../../helpers';
 import { createFormControl } from '../../helpers/create-formcontrol/create-formcontrol.helpers';
+import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 
 @Component({
   selector: 'formkit-form',
@@ -28,11 +32,12 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   @Input() form!: FormGroup;
   @Input() fields!: FormFields<T>;
   @Input() readonly = false;
-  @Input() autoCreate = true;
   @Input() root = true;
   @Input() rootFormEvents$?: Subject<FormEvent>;
 
   created = false;
+
+  formUpdateType: FormUpdateType = FormUpdateType.Init;
 
   value$!: Observable<Partial<T>>;
   destroy$ = new Subject<boolean>();
@@ -41,8 +46,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   fieldList: FormKitFormFieldListItem<T>[] = [];
 
   private initialValues!: T;
-  private afterValueUpdateScheduler$ = new Subject<Partial<T>>();
-  private updateByControlWithResetProperty = false;
+  private afterValueUpdateScheduler$ = new Subject<void>();
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -66,7 +70,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     /**
      * Only call create() if the form isn't created
      */
-    if (this.autoCreate && !this.created) {
+    if (!this.created) {
       this.create();
     }
   }
@@ -111,13 +115,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     this.initialValues = this.form.getRawValue();
 
     /**
-     * If there are values given to patch the form,
-     */
-    if (patch && typeof patch === 'object') {
-      this.form.patchValue(patch);
-    }
-
-    /**
      * Set up the AfterValueUpdateScheduler.
      * This scheduler is responsible for emitting events to child FormField components
      */
@@ -126,21 +123,19 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     /**
      * Trigger a event emit for the first time checks
      */
-    this.afterValueUpdateScheduler$.next(this.form.getRawValue());
+    this.afterValueUpdateScheduler$.next();
 
     /**
-     * Watch form changes and apply the AfterValueChangesChecks on changes
+     * Watch form changes and apply the AfterValueChangesChecks on changes.
+     * Only update if the update isn't triggered by a control with a resetFormOnChange
+     * property (these fields have their own valueChanges listener and will trigger
+     * the updateScheduler accordingly.
      */
     this.form.valueChanges.pipe(
-      takeUntil(this.destroy$),
-      filter(() => !this.updateByControlWithResetProperty)
+      filter(() => this.formUpdateType !== FormUpdateType.Reset),
+      takeUntil(this.destroy$)
     ).subscribe(() => {
-      /**
-       * Only update if the update isn't triggered by a control with a resetFormOnChange
-       * property (these fields have their own valueChanges listener and will trigger
-       * the updateScheduler accordingly.
-       */
-      this.afterValueUpdateScheduler$.next(this.form.getRawValue());
+      this.afterValueUpdateScheduler$.next();
     });
 
     /**
@@ -161,6 +156,19 @@ export class FormComponent<T> implements OnInit, OnDestroy {
      * Run change detection
      */
     this.cd.markForCheck();
+  }
+
+  /**
+   * Use the patch property to reliably patch the form with new values.
+   * This is useful if you have a field with `resetFormOnChange` properties
+   * set in your fields definition.
+   *
+   * @param patch the values to use for patching
+   */
+  patch(patch: Partial<T>) {
+    this.formUpdateType = FormUpdateType.Patch;
+    this.form.patchValue(patch, { onlySelf: false, emitEvent: false });
+    this.afterValueUpdateScheduler$.next();
   }
 
   /**
@@ -253,22 +261,17 @@ export class FormComponent<T> implements OnInit, OnDestroy {
    * Adds a subscription to the global afterValueUpdateScheduler$ observable with some delay.
    */
   private setupAfterValueUpdateScheduler() {
-
-      /**
-       * If this change is triggered by a Field with the resetFormOnChange,
-       * reset the updateByControlWithResetProperty for the next update round.
-       */
-      if (this.updateByControlWithResetProperty) {
-        this.updateByControlWithResetProperty = false;
-      }
-
-      /**
-       * For the first update cycle, we emit a FirstUpdateComplete Event, so
-       * that Fields can run a OnInit Hook.
-       */
-      this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
     this.afterValueUpdateScheduler$.pipe(
       debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.config.updateDebounceTime) : 0)),
+      map(() => this.form.getRawValue()),
+      takeUntil(this.destroy$)
+    ).subscribe(values => {
+        this.formUpdateType = FormUpdateType.User;
+        /**
+         * For the first update cycle, we emit a FirstUpdateComplete Event, so
+         * that Fields can run a OnInit Hook.
+         */
+        this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
     });
   }
 
@@ -280,12 +283,13 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   private createListenerForFormResetControl(name: Extract<keyof T, string>) {
     this.form.controls[name].valueChanges
       .pipe(
+        filter(() => this.formUpdateType !== FormUpdateType.Patch),
         map(value => ({ [name]: value }) as unknown as FormValues<T>,
         takeUntil(this.destroy$))
       ).subscribe((value: any) => {
-        this.updateByControlWithResetProperty = true;
+        this.formUpdateType = FormUpdateType.Reset;
         this.form.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
-        this.afterValueUpdateScheduler$.next(this.form.getRawValue());
+        this.afterValueUpdateScheduler$.next();
       }
     );
   }
