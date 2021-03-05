@@ -12,6 +12,8 @@ import { ToggleFieldComponent } from '../components/toggle-field/toggle-field.co
 import { FieldBaseComponent } from '../components';
 
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
+  updateDebounceTime: 200,
+
   text: {
     loading: 'loading'
   },

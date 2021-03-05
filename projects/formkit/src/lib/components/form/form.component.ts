@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import {
   FieldType,
@@ -45,7 +44,10 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   private afterValueUpdateScheduler$ = new Subject<Partial<T>>();
   private updateByControlWithResetProperty = false;
 
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(
+    private cd: ChangeDetectorRef,
+    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
+  ) {}
 
   get initialFormValues() {
     return this.initialValues;
@@ -72,7 +74,7 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   /**
    * Create the form and
    */
-  create(patch?: Partial<T>) {
+  create() {
     if (this.created) {
       throw new Error('FormKit: Form is already created.');
     }
@@ -110,7 +112,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
 
     /**
      * If there are values given to patch the form,
-     * apply them before the event listeners are set.
      */
     if (patch && typeof patch === 'object') {
       this.form.patchValue(patch);
@@ -252,7 +253,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
    * Adds a subscription to the global afterValueUpdateScheduler$ observable with some delay.
    */
   private setupAfterValueUpdateScheduler() {
-    this.afterValueUpdateScheduler$.pipe(debounceTime(10), takeUntil(this.destroy$)).subscribe(values => {
 
       /**
        * If this change is triggered by a Field with the resetFormOnChange,
@@ -267,6 +267,8 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * that Fields can run a OnInit Hook.
        */
       this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
+    this.afterValueUpdateScheduler$.pipe(
+      debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.config.updateDebounceTime) : 0)),
     });
   }
 

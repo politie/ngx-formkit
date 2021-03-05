@@ -1,11 +1,14 @@
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
-  ComponentFactoryResolver, EventEmitter,
+  ComponentFactoryResolver,
+  EventEmitter,
   HostBinding,
   Inject,
   OnDestroy,
-  OnInit, Output,
+  OnInit,
+  Output,
   ViewChild
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -60,7 +63,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
   constructor(
     private resolver: ComponentFactoryResolver,
     private cd: ChangeDetectorRef,
-    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: FormKitModuleConfig
+    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
     super();
   }
@@ -84,6 +87,8 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
    * defined in the form
    */
   renderFieldComponent() {
+    console.log(this.config);
+
     const factory = this.resolver.resolveComponentFactory(this.field.component || this.config.components[this.field.type]);
     const ref = this.fieldHost.viewContainerRef;
     ref.clear();
