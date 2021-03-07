@@ -75,6 +75,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
 
     this.renderFieldComponent();
     this.setupOneTimeFormControlEventListener();
+    this.setupResetListener();
     this.setupFormEventListener();
   }
 
@@ -98,6 +99,22 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
     compRef.instance.field = this.field;
     compRef.instance.name = this.name;
     this.componentCdr = compRef.injector.get(ChangeDetectorRef);
+  }
+
+  setupResetListener() {
+    if (!this.field.resetFormOnChange) {
+      return;
+    }
+
+    this.control.valueChanges.pipe(
+      map(value => ({ [this.name]: value })),
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.formEvents$.next({
+        type: FormEventType.OnResetByControl,
+        values: value
+      });
+    });
   }
 
   /**

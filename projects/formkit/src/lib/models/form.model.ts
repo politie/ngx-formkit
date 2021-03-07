@@ -18,7 +18,8 @@ export type Options = {
 }
 
 export enum FormEventType {
-  OnAfterUpdateChecks
+  OnAfterUpdateChecks,
+  OnResetByControl
 }
 
 export type FormEvent = {

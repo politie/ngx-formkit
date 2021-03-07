@@ -67,16 +67,16 @@ describe('FormComponent', () => {
   });
 
   describe('Possible [form] attribute errors', () => {
-    const errorMesage = 'FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.';
+    const errorMessage = 'FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.';
 
     it('should not create if no form prop is supplied', () => {
       component.form = null as any;
-      expect(() => component.ngOnInit()).toThrowError(errorMesage);
+      expect(() => component.ngOnInit()).toThrowError(errorMessage);
     });
 
     it('should not create if no formGroup is supplied', () => {
       component.form = new FormControl() as any;
-      expect(() => component.ngOnInit()).toThrowError(errorMesage);
+      expect(() => component.ngOnInit()).toThrowError(errorMessage);
     });
   });
 

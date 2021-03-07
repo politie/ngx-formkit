@@ -10,7 +10,6 @@ import {
   FormKitFormFieldListItem,
   FormKitModuleConfig,
   FormUpdateType,
-  FormValues,
   IArrayField,
   IField,
   IGroupField,
@@ -123,6 +122,23 @@ export class FormComponent<T> implements OnInit, OnDestroy {
       filter(() => this.formUpdateType !== FormUpdateType.Reset),
       takeUntil(this.destroy$)
     ).subscribe(() => {
+      this.afterValueUpdateScheduler$.next();
+    });
+
+    /**
+     * Setup a listener for the OnResetByControl FormEvent. This event is fired from (any) child
+     * field (even nested) that has the `resetFormOnChange` property set. Since this event will
+     * arrive before the root FormGroup valueChanges observable will emit, we se the updateType
+     * to Reset, stopping the call to the scheduler$ there and reset the form right here.
+     */
+    this.events$.pipe(
+      filter(event => event.type === FormEventType.OnResetByControl),
+      filter(() => this.formUpdateType === FormUpdateType.User),
+      map((event) => event.values),
+      takeUntil(this.destroy$)
+    ).subscribe(values => {
+      this.formUpdateType = FormUpdateType.Reset;
+      this.form.reset({ ...this.initialValues, ...values }, { emitEvent: false, onlySelf: true });
       this.afterValueUpdateScheduler$.next();
     });
 
@@ -264,25 +280,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if the field has the property 'resetFormOnChange' set.
-   * If so, listen to the valueChanges observable and call the
-   * afterValueUpdateScheduler$ observable.
-   */
-  private createListenerForFormResetControl(name: Extract<keyof T, string>) {
-    this.form.controls[name].valueChanges
-      .pipe(
-        filter(() => this.formUpdateType !== FormUpdateType.Patch),
-        map(value => ({ [name]: value }) as unknown as FormValues<T>,
-        takeUntil(this.destroy$))
-      ).subscribe((value: any) => {
-        this.formUpdateType = FormUpdateType.Reset;
-        this.form.reset({ ...this.initialValues, ...value }, { emitEvent: false, onlySelf: true });
-        this.afterValueUpdateScheduler$.next();
-      }
-    );
-  }
-
-  /**
    * Adds all fields to the root FormGroup by using the control() property.
    */
   private addFieldsToFormGroup() {
@@ -321,20 +318,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
        * Create Observable for field definition
        */
       const field$ = new BehaviorSubject<IVisibleField<T, any>>(field);
-
-      /**
-       * Check if the field has the property 'resetFormOnChange' set.
-       * If so, listen to the valueChanges observable and call the
-       * afterValueUpdateScheduler$ observable.
-       *
-       * When a field with this property set changes, the form is reset
-       * to the initial values and the only value that is set is the
-       * value of this field. After this, all fields in the form
-       * will receive a event to run their after update value checks.
-       */
-      if (this.root && field.hasOwnProperty('resetFormOnChange') && this.form.controls[name]) {
-        this.createListenerForFormResetControl(name);
-      }
 
       /**
        * Add field config into the fields$ array with observables per field config ({ name: string, field$: Observable<IField>>})

@@ -307,7 +307,7 @@ this.myFormKitForm.patch(...);
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
 | create | `values (T)` | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. You can provide a object of values to patch the form before all schedulers are set. This allows you to have initial values for resets (in your field definitions) and a different starting value for the form. | |
-| patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties | `void` |
+| patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties. This method is useful if you have fields set with the `resetFormOnChange` property, to bypass reset behaviour if you call `patchValue` on the `FormGroup` directly. | `void` |
 | transformValues | `TransformValues<T>` | Get a object with the current form values and transform them. See ['Transforming form values'](#transform-form-values) for example usage. | `T` |
 
 > **Important:** If you want to use properties or methods on the `FormComponent` `ViewChild`, you should trigger them after Angular `AfterViewInit` checks are done, to prevent issues with input properties or methods that aren't defined yet. So, for example:
