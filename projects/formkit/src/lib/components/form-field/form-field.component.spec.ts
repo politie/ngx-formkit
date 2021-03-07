@@ -101,7 +101,7 @@ describe('FieldComponent', () => {
 
     expect(output.length).toEqual(1);
 
-    component.control.setValue('aapje', { onlySelf: true, emitEvent: false });
+    component.control.setValue('test', { onlySelf: true, emitEvent: false });
     component.control.markAsTouched();
 
     component.updateMessages({ test: '123 '});

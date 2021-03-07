@@ -279,7 +279,6 @@ Example:
 | form* | `FormGroup` | The FormGroup to use for this form. | |
 | fields* | `FormFields<T>` | The fields configuration for this form | |
 | readonly | `boolean` | Render the form in readonly mode | `false` |
-| autoCreate | `boolean` | Should the form call the `create()` method automatically? If you set this property to `false`, you must call the `create()` method yourself. This is useful if you need to wait for e.g. API calls to complete before rendering the form. | `true` |
 
 *required
 
@@ -302,14 +301,21 @@ this.myFormKitForm.value$.subscribe();
 Example:
 
 ```ts
-this.myFormKitForm.setValues(...);
+this.myFormKitForm.patch(...);
 ```
 
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
 | create | `values (T)` | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. You can provide a object of values to patch the form before all schedulers are set. This allows you to have initial values for resets (in your field definitions) and a different starting value for the form. | |
-| setValues | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties | `void` |
+| patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties | `void` |
 | transformValues | `TransformValues<T>` | Get a object with the current form values and transform them. See ['Transforming form values'](#transform-form-values) for example usage. | `T` |
+
+> **Important:** If you want to use properties or methods on the `FormComponent` `ViewChild`, you should trigger them after Angular `AfterViewInit` checks are done, to prevent issues with input properties or methods that aren't defined yet. So, for example:
+> ```typescript
+> ngAfterViewInit() {
+>   this.myFormKitForm.patch(...);
+> }
+```
 
 ### Transform form values
 Use the `transformValues` method to transform form values, for example to match a certain (backend) schema.

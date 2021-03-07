@@ -5,6 +5,8 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
 import { FieldType, IFormGroup } from '../../models';
+import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
+import { RadioFieldComponent } from '../radio-field/radio-field.component';
 
 type FormType = {
   value1: string;
@@ -25,6 +27,12 @@ describe('FormComponent', () => {
       declarations: [
         MockComponent(FormFieldComponent),
         FormComponent
+      ],
+      providers: [
+        {
+          provide: FORMKIT_MODULE_CONFIG_TOKEN,
+          useValue: FORMKIT_MODULE_DEFAULT_CONFIG
+        }
       ]
     })
     .compileComponents();
@@ -33,7 +41,6 @@ describe('FormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance as FormComponent<FormType>;
-    component.autoCreate = false;
 
     component.fields = {
       value1: {
@@ -48,8 +55,6 @@ describe('FormComponent', () => {
         input: new FormControl('123')
       })])
     }) as IFormGroup<any>;
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -58,7 +63,7 @@ describe('FormComponent', () => {
 
   it('should not create if already created', () => {
     component.created = true;
-    expect(() => component.create()).toThrowError('FormKit: Form is already created.');
+    expect(() => component.ngOnInit()).toThrowError('FormKit: Form is already created.');
   });
 
   describe('Possible [form] attribute errors', () => {
@@ -66,12 +71,12 @@ describe('FormComponent', () => {
 
     it('should not create if no form prop is supplied', () => {
       component.form = null as any;
-      expect(() => component.create()).toThrowError(errorMesage);
+      expect(() => component.ngOnInit()).toThrowError(errorMesage);
     });
 
     it('should not create if no formGroup is supplied', () => {
       component.form = new FormControl() as any;
-      expect(() => component.create()).toThrowError(errorMesage);
+      expect(() => component.ngOnInit()).toThrowError(errorMesage);
     });
   });
 
@@ -83,12 +88,12 @@ describe('FormComponent', () => {
 
     it('should not create if no fields definition is supplied', () => {
       component.fields = null as any;
-      expect(() => component.create()).toThrowError(errorMessage);
+      expect(() => component.ngOnInit()).toThrowError(errorMessage);
     });
 
     it('should not create if fields definition is empty', () => {
       component.fields = {} as any;
-      expect(() => component.create()).toThrowError(errorMessage);
+      expect(() => component.ngOnInit()).toThrowError(errorMessage);
     });
   });
 
@@ -101,6 +106,7 @@ describe('FormComponent', () => {
           value: 'testvalue'
         }
       };
+      fixture.detectChanges();
     });
 
     it('should store the initial values', fakeAsync(() => {
@@ -109,8 +115,6 @@ describe('FormComponent', () => {
           value1: 'testvalue'
         });
       });
-
-      component.create();
 
       tick(25);
 
@@ -121,34 +125,16 @@ describe('FormComponent', () => {
       expect(component.form.controls.value1.value).toEqual('testvalue');
     }));
 
-    it('should patch values based on given object', fakeAsync(() => {
-      component.scheduler$.subscribe(r => {
-        expect(r).toEqual({
-          value1: 'patched-value'
-        });
-      });
-
-      component.create({ value1: 'patched-value' });
-
-      tick(25);
-
-      expect(component.form.controls.value1.value).toEqual('patched-value');
-    }));
-
     it('should emit events if the form changes value', fakeAsync(() => {
-      component.create();
-
-      component.scheduler$.subscribe(r => {
-        expect(r).toEqual({
-          value1: 'patch-form-directly'
-        });
-      });
-
-      component.form.patchValue({
+      component.patch({
         value1: 'patch-form-directly'
       });
 
       tick(25);
+
+      expect(component.form.getRawValue()).toEqual({
+        value1: 'patch-form-directly'
+      });
     }));
   });
 
@@ -171,21 +157,18 @@ describe('FormComponent', () => {
     });
 
     it('should run ValueChanges checks for this form', fakeAsync(() => {
+      fixture.detectChanges();
       const spy = spyOn(component.form, 'reset').and.callThrough();
-
-      component.create();
-
-      component.scheduler$.subscribe(r => {
-        expect(r).toEqual({
-          value1: 'value-with-reset',
-          value2: null,
-          value3: 'initial-value-3'
-        });
-      });
 
       component.form.controls.value1.setValue('value-with-reset');
 
       tick(25);
+
+      expect(component.form.getRawValue()).toEqual({
+        value1: 'value-with-reset',
+        value2: null,
+        value3: 'initial-value-3'
+      });
 
       expect(spy).toHaveBeenCalled();
     }));
@@ -211,12 +194,12 @@ describe('FormComponent', () => {
 
     it('should trigger the addControl function', () => {
       const spy = spyOn(component.form, 'addControl').and.callThrough();
-      component.create();
+      fixture.detectChanges();
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
     it('should populate the fieldList', () => {
-      component.create();
+      fixture.detectChanges();
       expect(component.fieldList.length).toEqual(3);
       expect(component.fieldList.map(i => i.name)).toEqual(['value1', 'value2', 'value3']);
     });

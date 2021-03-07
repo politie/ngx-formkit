@@ -3,8 +3,8 @@ import { FieldType, FormFields } from 'formkit';
 export type GroupForm = {
   text: string;
   toggle: boolean;
-  aapje: {
-    aapje22: string;
+  group: {
+    input: string;
   };
 }
 
@@ -17,10 +17,10 @@ export const groupFormFields:FormFields<GroupForm> = {
     value: false,
     label: 'Toggle button'
   },
-  aapje: {
+  group: {
     type: FieldType.Group,
     blueprint: {
-      aapje22: {
+      input: {
         type: FieldType.Text
       }
     }

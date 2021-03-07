@@ -2,7 +2,7 @@ import { FieldType, FormFields } from 'formkit';
 
 export type LayoutForm = {
   day: number;
-  month: number;
+  month: { id: string, label: string };
   year: number;
   name: string;
   lastName: string;
@@ -11,7 +11,8 @@ export type LayoutForm = {
 export const layoutFormFields: FormFields<LayoutForm> = {
   day: {
     type: FieldType.Number,
-    width: 3
+    width: 3,
+    resetFormOnChange: true
   },
   month: {
     type: FieldType.Select,
