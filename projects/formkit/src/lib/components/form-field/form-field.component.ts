@@ -23,6 +23,11 @@ import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseComponent } from '../field-base/field-base.component';
 import { mergeError, removeError } from '../../helpers';
 
+/**
+ * Since NgPackagr will complain about Required (which exists in Typescript), we add
+ * the @dynamic decorator right here to let the build --prod pass.
+ */
+// @dynamic
 @Component({
   selector: 'formkit-form-field',
   templateUrl: './form-field.component.html',

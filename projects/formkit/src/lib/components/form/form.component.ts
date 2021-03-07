@@ -22,6 +22,11 @@ import { formGroupFromBlueprint } from '../../helpers';
 import { createFormControl } from '../../helpers/create-formcontrol/create-formcontrol.helpers';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 
+/**
+ * Since NgPackagr will complain about Required (which exists in Typescript), we add
+ * the @dynamic decorator right here to let the build --prod pass.
+ */
+// @dynamic
 @Component({
   selector: 'formkit-form',
   templateUrl: './form.component.html',

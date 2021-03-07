@@ -1,8 +1,12 @@
+# 1.0.3
+- Hotfix for the NGCC compiler giving errors for `Required` type usage.
+
 # 1.0.2
 - Removed `[autoCreate]` `@Input()` property
 - Removed `created` slot in template
 - Added more reliable `patch` method on the `FormComponent` if you work with controls with `resetFormOnChange` properties set.
 - Refactored the logic for updating and resetting the form.
+- Refactored the logic for `resetFormOnChange` properties to allow child controls to have this option set as well.
 - Added option for setting the `debounce` before running afterUpdate checks. This only applies to updates done by a User, not for Reset and Patch updates.
 
 # 1.0.1
