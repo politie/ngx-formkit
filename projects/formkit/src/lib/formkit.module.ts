@@ -29,6 +29,8 @@ import { ToggleFieldComponent } from './components/toggle-field/toggle-field.com
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FieldBaseComponent } from './components/field-base/field-base.component';
 import { TextFieldComponent } from './components/text-field/text-field.component';
+import { NestedFormComponent } from './components/form/nested-form/nested-form.component';
+import { FormBaseComponent } from './components/form/form-base/form-base.component';
 
 @NgModule({
   imports: [
@@ -61,7 +63,9 @@ import { TextFieldComponent } from './components/text-field/text-field.component
     SelectFieldComponent,
     TextFieldComponent,
     TextareaFieldComponent,
-    ToggleFieldComponent
+    ToggleFieldComponent,
+    NestedFormComponent,
+    FormBaseComponent
   ],
   entryComponents: [
     ArrayFieldComponent,
