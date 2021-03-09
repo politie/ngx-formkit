@@ -3,13 +3,12 @@
     <ng-container [formArrayName]="name">
       <div class="formkit-array-field-group" *ngFor="let child of control.controls; index as i">
 
-        <formkit-form
+        <formkit-sub-form
           class="formkit-array-form"
           [root]="false"
-          [rootFormEvents$]="formEvents$"
           [form]="$any(child)"
           [fields]="$any(field.blueprint)">
-        </formkit-form>
+        </formkit-sub-form>
 
         <button
           class="formkit-array-field-delete"
