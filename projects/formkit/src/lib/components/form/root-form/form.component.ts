@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { merge, Subject, timer } from 'rxjs';
 
-import { FormEventType, FormKitModuleConfig, FormUpdateType, TransformValues } from '../../models';
+import { FormEventType, FormKitModuleConfig, FormUpdateType, TransformValues } from '../../../models';
 
 import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
-import { FormService } from '../../services/form.service';
-import { FormBaseComponent } from './form-base/form-base.component';
+import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../../config/config.token';
+import { FormService } from '../../../services/form.service';
+import { FormBaseComponent } from '../form-base/form-base.component';
 import { IFormComponent } from './form.component.model';
 
 /**

@@ -12,7 +12,7 @@ import { RadioFieldComponent } from './components/radio-field/radio-field.compon
 import { PasswordFieldComponent } from './components/password-field/password-field.component';
 import { SelectFieldComponent } from './components/select-field/select-field.component';
 import { MatSelectModule } from '@angular/material/select';
-import { FormComponent } from './components/form/form.component';
+import { FormComponent } from './components/form/root-form/form.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';

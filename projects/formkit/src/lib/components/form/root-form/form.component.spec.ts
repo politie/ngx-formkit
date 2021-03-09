@@ -2,11 +2,11 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FormFieldComponent } from '../form-field/form-field.component';
+import { FormFieldComponent } from '../../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
-import { FieldType, IFormGroup } from '../../models';
-import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
-import { RadioFieldComponent } from '../radio-field/radio-field.component';
+import { FieldType, IFormGroup } from '../../../models';
+import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../../config';
+import { RadioFieldComponent } from '../../radio-field/radio-field.component';
 
 type FormType = {
   value1: string;
