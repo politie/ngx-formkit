@@ -1,26 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { merge, Subject, timer } from 'rxjs';
 
-import {
-  FieldType,
-  FormEvent,
-  FormEventType,
-  FormFields,
-  FormKitFormFieldListItem,
-  FormKitModuleConfig,
-  FormUpdateType,
-  IArrayField,
-  IField,
-  IGroupField,
-  IVisibleField,
-  TransformValues
-} from '../../models';
+import { FormEventType, FormKitModuleConfig, FormUpdateType, TransformValues } from '../../models';
 
-import { debounce, delay, filter, map, takeUntil } from 'rxjs/operators';
-import { formGroupFromBlueprint } from '../../helpers';
-import { createFormControl } from '../../helpers/create-formcontrol/create-formcontrol.helpers';
+import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
+import { FormService } from '../../services/form.service';
+import { FormBaseComponent } from './form-base/form-base.component';
+import { IFormComponent } from './form.component.model';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -30,31 +17,24 @@ import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 @Component({
   selector: 'formkit-form',
   templateUrl: './form.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    FormService
+  ]
 })
-export class FormComponent<T> implements OnInit, OnDestroy {
-  @Input() form!: FormGroup;
-  @Input() fields!: FormFields<T>;
-  @Input() readonly = false;
-  @Input() root = true;
-
-  created = false;
-
+export class FormComponent<T> extends FormBaseComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   formUpdateType: FormUpdateType = FormUpdateType.Init;
 
-  value$!: Observable<Partial<T>>;
-  destroy$ = new Subject<boolean>();
-
-  events$!: Subject<FormEvent>;
-  fieldList: FormKitFormFieldListItem<T>[] = [];
-
+  readonly afterValueUpdateScheduler$ = new Subject<void>();
   private initialValues!: T;
-  private afterValueUpdateScheduler$ = new Subject<void>();
 
   constructor(
     private cd: ChangeDetectorRef,
+    private formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
-  ) {}
+  ) {
+    super();
+  }
 
   get initialFormValues() {
     return this.initialValues;
@@ -64,40 +44,17 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     return this.afterValueUpdateScheduler$;
   }
 
+  get value$() {
+    return this.formService.formEvents$.pipe(
+      filter(event => event.type === FormEventType.OnAfterUpdateChecks),
+      delay(25),
+      map(() => this.form.getRawValue()),
+      takeUntil(this.destroy$)
+    );
+  }
+
   ngOnInit(): void {
-    /**
-     * Create a FormEvent Subject or hook into the existing if the current form isn't the root instance.
-     */
-    this.events$ = (this.root) ? new Subject<FormEvent>() : this.rootFormEvents$ as Subject<FormEvent>;
-
-    if (this.created) {
-      throw new Error('FormKit: Form is already created.');
-    }
-
-    /**
-     * Check if there's a FormGroup passed in the [form] attribute / @Input()
-     */
-    if (!this.form || !(this.form instanceof FormGroup)) {
-      throw new Error(`FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.`);
-    }
-
-    /**
-     * Check if there are fields set in the [fields] attribute / @Input()
-     */
-    if (!this.fields || (Object.keys(this.fields).length === 0 && this.fields.constructor === Object)) {
-      throw new Error(`FormKit: <formkit-form> has no fields set in [fields] attribute.`);
-    }
-
-    this.addFieldsToFormGroup();
-
-    /**
-     * If the FormKitForm isn't the root form, stop right here.
-     */
-    if (!this.root) {
-      this.created = true;
-
-      return;
-    }
+    super.ngOnInit();
 
     /**
      * Store the initialValues of the form. If the form is reset, these
@@ -122,38 +79,19 @@ export class FormComponent<T> implements OnInit, OnDestroy {
      * property (these fields have their own valueChanges listener and will trigger
      * the updateScheduler accordingly.
      */
-    this.form.valueChanges.pipe(
-      filter(() => this.formUpdateType !== FormUpdateType.Reset),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.afterValueUpdateScheduler$.next();
-    });
-
-    /**
-     * Setup a listener for the OnResetByControl FormEvent. This event is fired from (any) child
-     * field (even nested) that has the `resetFormOnChange` property set. Since this event will
-     * arrive before the root FormGroup valueChanges observable will emit, we se the updateType
-     * to Reset, stopping the call to the scheduler$ there and reset the form right here.
-     */
-    this.events$.pipe(
-      filter(event => event.type === FormEventType.OnResetByControl),
-      filter(() => this.formUpdateType === FormUpdateType.User),
-      map((event) => event.values),
-      takeUntil(this.destroy$)
-    ).subscribe(values => {
-      this.formUpdateType = FormUpdateType.Reset;
-      this.form.reset({ ...this.initialValues, ...values }, { emitEvent: false, onlySelf: true });
-      this.afterValueUpdateScheduler$.next();
-    });
-
-    /**
-     * Hook into the OnAfterUpdateChecks event stream and update the value$ observable value
-     */
-    this.value$ = this.events$.pipe(
-      filter(event => event.type === FormEventType.OnAfterUpdateChecks),
-      delay(25),
-      map(() => this.form.getRawValue())
-    );
+    merge(
+      this.formService.fieldEvents$.pipe(
+        filter(() => this.formUpdateType === FormUpdateType.User),
+        map(event => event.values),
+        tap(values => {
+          this.formUpdateType = FormUpdateType.Reset;
+          this.form.reset({ ...this.initialValues, ...values }, { emitEvent: false, onlySelf: true });
+        })
+      ),
+      this.form.valueChanges.pipe(
+        filter(() => this.formUpdateType !== FormUpdateType.Reset)
+      )
+    ).pipe(takeUntil(this.destroy$)).subscribe(() => this.afterValueUpdateScheduler$.next());
 
     /**
      * Everything done, update the created prop and emit event
@@ -177,31 +115,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     this.formUpdateType = FormUpdateType.Patch;
     this.form.patchValue(patch, { onlySelf: false, emitEvent: false });
     this.afterValueUpdateScheduler$.next();
-  }
-
-  /**
-   * Will be called if one of the direct child fields in this form should change the
-   * hidden state. A new value will be emitted to this field via the BehaviorSubject field$.
-   *
-   * @param field object containing the `name` of the field and a boolean indicating if the field
-   * should be hidden.
-   */
-  onFieldVisibilityChange(field: { name: string, hide: boolean }) {
-    const index = this.fieldList.findIndex((fieldItem) => fieldItem.name === field.name);
-
-    if (index < 0) {
-      console.warn(`FormKit: no matching field found for "${name}" to update visibility.`);
-
-      return;
-    }
-
-    /**
-     * Emit a new value for the field$ observable
-     */
-    this.fieldList[index].field$.next({
-      ...this.fieldList[index].field$.getValue(),
-      ...{ hide: field.hide }
-    });
   }
 
   /**
@@ -261,72 +174,27 @@ export class FormComponent<T> implements OnInit, OnDestroy {
     return values;
   }
 
-  ngOnDestroy() {
-    this.destroy$.next(true);
-  }
-
   /**
    * Adds a subscription to the global afterValueUpdateScheduler$ observable with some delay.
    */
-  private setupAfterValueUpdateScheduler() {
+  setupAfterValueUpdateScheduler() {
+    if (this.created) {
+      return;
+    }
+
     this.afterValueUpdateScheduler$.pipe(
       debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.config.updateDebounceTime) : 0)),
       map(() => this.form.getRawValue()),
       takeUntil(this.destroy$)
     ).subscribe(values => {
+        console.log(`Scheduling update caused by: ${FormUpdateType[this.formUpdateType]}`);
+
         this.formUpdateType = FormUpdateType.User;
         /**
          * For the first update cycle, we emit a FirstUpdateComplete Event, so
          * that Fields can run a OnInit Hook.
          */
-        this.events$.next({ type: FormEventType.OnAfterUpdateChecks, values });
+        this.formService.triggerUpdateChecks(values);
     });
-  }
-
-  /**
-   * Adds all fields to the root FormGroup by using the control() property.
-   */
-  private addFieldsToFormGroup() {
-    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
-      const field: IField<T, any> = this.fields[name] as IField<T, any>;
-
-      /**
-       * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
-       */
-      if (this.root) {
-        if (field.type === FieldType.Array) {
-          this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any>)]));
-        } else if (field.type === FieldType.Group) {
-          this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any>));
-        } else {
-          this.form.addControl(name, createFormControl(field.value, field.validators));
-        }
-      }
-
-      /**
-       * We're done if the current field type is FieldType.Hidden, since we don't do anything with this field type other
-       * than assigning a FormControl to it.
-       */
-      if (field.type === FieldType.Hidden) {
-        continue;
-      }
-
-      /**
-       * Set a hide property in each field if it doesn't exist already
-       */
-      if (!field.hide) {
-        field.hide = false;
-      }
-
-      /**
-       * Create Observable for field definition
-       */
-      const field$ = new BehaviorSubject<IVisibleField<T, any>>(field);
-
-      /**
-       * Add field config into the fields$ array with observables per field config ({ name: string, field$: Observable<IField>>})
-       */
-      this.fieldList.push({ name, field$ });
-    }
   }
 }
