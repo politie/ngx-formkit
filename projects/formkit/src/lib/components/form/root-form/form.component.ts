@@ -1,13 +1,22 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { merge, Subject, timer } from 'rxjs';
 
-import { FormEventType, FormKitModuleConfig, FormUpdateType, TransformValues } from '../../../models';
+import {
+  FieldType,
+  FormEventType,
+  FormKitModuleConfig,
+  FormUpdateType, IArrayField,
+  IField, IGroupField,
+  TransformValues
+} from '../../../models';
 
 import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../../config/config.token';
 import { FormService } from '../../../services/form.service';
 import { FormBaseComponent } from '../form-base/form-base.component';
 import { IFormComponent } from './form.component.model';
+import { FormArray } from '@angular/forms';
+import { createFormControl, formGroupFromBlueprint } from '../../../helpers';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -23,6 +32,8 @@ import { IFormComponent } from './form.component.model';
   ]
 })
 export class FormComponent<T> extends FormBaseComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
+  @Input() readonly = false;
+
   formUpdateType: FormUpdateType = FormUpdateType.Init;
 
   readonly afterValueUpdateScheduler$ = new Subject<void>();
@@ -196,5 +207,23 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
          */
         this.formService.triggerUpdateChecks(values);
     });
+  }
+
+  /**
+   * Call the base processSingleFieldDefinition and add controls for each field (only in root)
+   *
+   * @param name the current field name
+   * @param field definition for this field
+   */
+  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any>) {
+    super.processSingleFieldDefinition(name, field);
+
+    if (field.type === FieldType.Array) {
+      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any>)]));
+    } else if (field.type === FieldType.Group) {
+      this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any>));
+    } else {
+      this.form.addControl(name, createFormControl(field.value, field.validators));
+    }
   }
 }

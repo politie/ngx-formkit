@@ -1,16 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
-import {
-  FieldType,
-  FormFields,
-  FormKitFormFieldListItem,
-  IArrayField,
-  IField,
-  IGroupField,
-  IVisibleField
-} from '../../../models';
+import { FormGroup } from '@angular/forms';
+import { FieldType, FormFields, FormKitFormFieldListItem, IField, IVisibleField } from '../../../models';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { createFormControl, formGroupFromBlueprint } from '../../../helpers';
 import { IFormBaseComponent } from './form-base.component.model';
 
 @Component({
@@ -19,8 +10,6 @@ import { IFormBaseComponent } from './form-base.component.model';
 export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDestroy {
   @Input() form!: FormGroup;
   @Input() fields!: FormFields<T>;
-  @Input() readonly = false;
-  @Input() root = true;
 
   created = false;
   destroy$ = new Subject<boolean>();
@@ -50,7 +39,10 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
 
   ngOnInit(): void {
     this.runSuppliedInputsChecks();
-    this.addFieldsToFormGroup();
+
+    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
+      this.processSingleFieldDefinition(name, this.fields[name] as IField<T, any>);
+    }
   }
 
 
@@ -83,54 +75,18 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
     this.destroy$.next(true);
   }
 
-  /**
-   * Adds all fields to the root FormGroup by using the control() property.
-   */
-  addFieldsToFormGroup() {
-    if (this.created) {
+  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any>) {
+    if (field.type === FieldType.Hidden) {
       return;
     }
 
-    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
-      const field: IField<T, any> = this.fields[name] as IField<T, any>;
-
-      /**
-       * For each FieldType, assign a FormArray, FormGroup or FormControl to the object
-       */
-      if (this.root) {
-        if (field.type === FieldType.Array) {
-          this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any>)]));
-        } else if (field.type === FieldType.Group) {
-          this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any>));
-        } else {
-          this.form.addControl(name, createFormControl(field.value, field.validators));
-        }
-      }
-
-      /**
-       * We're done if the current field type is FieldType.Hidden, since we don't do anything with this field type other
-       * than assigning a FormControl to it.
-       */
-      if (field.type === FieldType.Hidden) {
-        continue;
-      }
-
-      /**
-       * Set a hide property in each field if it doesn't exist already
-       */
-      if (!field.hide) {
-        field.hide = false;
-      }
-
-      /**
-       * Create Observable for field definition
-       */
-      const field$ = new BehaviorSubject<IVisibleField<T, any>>(field);
-
-      /**
-       * Add field config into the fields$ array with observables per field config ({ name: string, field$: Observable<IField>>})
-       */
-      this.fieldList.push({ name, field$ });
+    if (!field.hide) {
+      field.hide = false;
     }
+
+    this.fieldList.push({
+      name,
+      field$: new BehaviorSubject<IVisibleField<T, any>>(field)
+    });
   }
 }
