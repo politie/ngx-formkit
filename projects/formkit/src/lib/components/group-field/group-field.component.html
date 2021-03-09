@@ -1,7 +1,6 @@
 <ng-container [formGroup]="formGroup" *ngIf="field">
-  <formkit-sub-form
-    [root]="false"
+  <formkit-nested-form
     [form]="control"
     [fields]="field.blueprint">
-  </formkit-sub-form>
+  </formkit-nested-form>
 </ng-container>
