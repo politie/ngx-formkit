@@ -33,7 +33,7 @@ import { mergeError, removeError } from '../../helpers';
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormFieldComponent extends FieldBaseComponent implements OnInit, OnDestroy {
+export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit, OnDestroy {
   @Output() visibilityChange: EventEmitter<{ name: string; hide: boolean; }> = new EventEmitter<{name: string; hide: boolean}>()
 
   /**
@@ -55,9 +55,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
    */
   @ViewChild(FormFieldDirective, { static: true }) fieldHost!: FormFieldDirective;
 
-  destroy$ = new Subject<boolean>();
   messages$!: Observable<FieldMessage[]>;
-
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
 
@@ -68,6 +66,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
   constructor(
     private resolver: ComponentFactoryResolver,
     private cd: ChangeDetectorRef,
+    private formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
     super();
@@ -99,7 +98,6 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
 
     const compRef = ref.createComponent<any>(factory);
     compRef.instance.control = this.control;
-    compRef.instance.formEvents$ = this.formEvents$;
     compRef.instance.formGroup = this.formGroup;
     compRef.instance.field = this.field;
     compRef.instance.name = this.name;
@@ -115,10 +113,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
       map(value => ({ [this.name]: value })),
       takeUntil(this.destroy$)
     ).subscribe(value => {
-      this.formEvents$.next({
-        type: FormEventType.OnResetByControl,
-        values: value
-      });
+      this.formService.triggerFormResetByControl(value);
     });
   }
 
@@ -126,8 +121,7 @@ export class FormFieldComponent extends FieldBaseComponent implements OnInit, On
    * Sets up a event listener for the form events$ observable.
    */
   setupFormEventListener() {
-    this.formEvents$.pipe(
-      filter(event => (event.type === FormEventType.OnAfterUpdateChecks)),
+    this.formService.formEvents$.pipe(
       map<FormEvent, FormValues<any>>(event => event.values),
       takeUntil(this.destroy$)
     ).subscribe(values => {
