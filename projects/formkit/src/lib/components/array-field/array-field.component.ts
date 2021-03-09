@@ -11,7 +11,6 @@ import { formGroupFromBlueprint } from '../../helpers';
 })
 export class ArrayFieldComponent {
   @Input() control!: FormArray;
-  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: IArrayField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

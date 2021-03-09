@@ -80,7 +80,6 @@ describe('FieldComponent', () => {
 
     component.formGroup = new FormGroup({ 'field-name': control });
     component.control = control;
-    component.formEvents$ = events$;
     component.name = 'field-name';
     component.field = field as any;
     fixture.detectChanges();

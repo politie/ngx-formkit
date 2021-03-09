@@ -13,7 +13,6 @@
         <formkit-form-field
           *ngIf="fieldListItem.field$ | async as field"
           (visibilityChange)="onFieldVisibilityChange($event)"
-          [formEvents$]="events$"
           [formGroup]="form"
           [control]="form.get(fieldListItem.name)!"
           [name]="fieldListItem.name"

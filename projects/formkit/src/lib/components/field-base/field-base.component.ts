@@ -10,7 +10,6 @@ import { FormEvent, ISingleField } from '../../models';
 })
 export class FieldBaseComponent {
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
-  @Input() formEvents$!: Subject<FormEvent>;
   @Input() field!: ISingleField<any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;

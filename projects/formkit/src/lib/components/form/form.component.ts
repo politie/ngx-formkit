@@ -37,7 +37,6 @@ export class FormComponent<T> implements OnInit, OnDestroy {
   @Input() fields!: FormFields<T>;
   @Input() readonly = false;
   @Input() root = true;
-  @Input() rootFormEvents$?: Subject<FormEvent>;
 
   created = false;
 
