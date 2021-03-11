@@ -205,7 +205,7 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
          * For the first update cycle, we emit a FirstUpdateComplete Event, so
          * that Fields can run a OnInit Hook.
          */
-        this.formService.triggerUpdateChecks(values);
+        this.formService.triggerFormUpdateChecks(values);
     });
   }
 

@@ -23,7 +23,7 @@ export class FormService {
     this.subject$.next({ type: FormEventType.OnResetByControl, values});
   }
 
-  triggerUpdateChecks(values: any) {
+  triggerFormUpdateChecks(values: any) {
     this.subject$.next({ type: FormEventType.OnAfterUpdateChecks, values });
   }
 }
