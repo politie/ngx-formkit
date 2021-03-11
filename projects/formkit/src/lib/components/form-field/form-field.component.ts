@@ -6,7 +6,6 @@ import {
   EventEmitter,
   HostBinding,
   Inject,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild
@@ -15,13 +14,15 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
 import { Observable, Subject } from 'rxjs';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
-import { FormEvent, FormEventType, FormValues } from '../../models/form.model';
-import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
+import { FormEvent, FormValues } from '../../models/form.model';
+import { delay, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseComponent } from '../field-base/field-base.component';
 import { mergeError, removeError } from '../../helpers';
+import { FormService } from '../../services/form.service';
+import { IFormFieldComponent } from './form-field.component.model';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -33,7 +34,7 @@ import { mergeError, removeError } from '../../helpers';
   templateUrl: './form-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit, OnDestroy {
+export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit {
   @Output() visibilityChange: EventEmitter<{ name: string; hide: boolean; }> = new EventEmitter<{name: string; hide: boolean}>()
 
   /**
@@ -77,14 +78,15 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       return;
     }
 
+    this.messages$ = this.messagesSubject$.asObservable();
+
     this.renderFieldComponent();
     this.setupOneTimeFormControlEventListener();
-    this.setupResetListener();
     this.setupFormEventListener();
-  }
 
-  ngOnDestroy() {
-    this.destroy$.next(true);
+    if (this.field.resetFormOnChange) {
+      this.setupResetListener();
+    }
   }
 
   /**
@@ -105,10 +107,6 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   }
 
   setupResetListener() {
-    if (!this.field.resetFormOnChange) {
-      return;
-    }
-
     this.control.valueChanges.pipe(
       map(value => ({ [this.name]: value })),
       takeUntil(this.destroy$)
@@ -133,8 +131,6 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
    * Sets up a one time control listener to match messages with the current control state
    */
   setupOneTimeFormControlEventListener() {
-    this.messages$ = this.messagesSubject$.asObservable();
-
     extractEvents(this.control).pipe(
       take(1),
       delay(10),
