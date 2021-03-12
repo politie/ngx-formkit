@@ -11,7 +11,7 @@ import { FormControl } from '@angular/forms';
 })
 export class TextFieldComponent extends FieldBaseComponent implements OnInit {
   @Input() control!: FormControl;
-  @Input() field!: ITextField<any, any>;
+  @Input() field!: ITextField<any, any, any>;
   type = 'text';
 
   ngOnInit() {

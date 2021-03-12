@@ -11,5 +11,5 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class TextareaFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() field!: ITextareaField<any, any>;
+  @Input() field!: ITextareaField<any, any, any>;
 }

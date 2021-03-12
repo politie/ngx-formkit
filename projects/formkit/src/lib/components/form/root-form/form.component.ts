@@ -215,13 +215,13 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
    * @param name the current field name
    * @param field definition for this field
    */
-  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any>) {
+  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     super.processSingleFieldDefinition(name, field);
 
     if (field.type === FieldType.Array) {
-      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any>)]));
+      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any, any>)]));
     } else if (field.type === FieldType.Group) {
-      this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any>));
+      this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any, any>));
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));
     }

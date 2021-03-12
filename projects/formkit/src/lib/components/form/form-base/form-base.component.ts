@@ -41,7 +41,7 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
     this.runSuppliedInputsChecks();
 
     for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
-      this.processSingleFieldDefinition(name, this.fields[name] as IField<T, any>);
+      this.processSingleFieldDefinition(name, this.fields[name] as IField<T, any, any>);
     }
   }
 
@@ -75,7 +75,7 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
     this.destroy$.next(true);
   }
 
-  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any>) {
+  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     if (field.type === FieldType.Hidden) {
       return;
     }
@@ -86,7 +86,7 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
 
     this.fieldList.push({
       name,
-      field$: new BehaviorSubject<IVisibleField<T, any>>(field)
+      field$: new BehaviorSubject<IVisibleField<T, any, any>>(field)
     });
   }
 }

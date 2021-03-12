@@ -11,5 +11,5 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class RadioButtonsFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() field!: IRadioField<any, any>;
+  @Input() field!: IRadioField<any, any, any>;
 }

@@ -11,7 +11,7 @@ import { IFieldBaseComponent } from './field-base.component.model';
 })
 export class FieldBaseComponent implements IFieldBaseComponent, OnDestroy {
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
-  @Input() field!: ISingleField<any, any>;
+  @Input() field!: ISingleField<any, any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
 

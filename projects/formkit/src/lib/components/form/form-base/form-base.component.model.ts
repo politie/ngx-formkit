@@ -8,7 +8,7 @@ export interface IFormBaseComponent<T> {
 
   runSuppliedInputsChecks(): void
 
-  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any>): void
+  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>): void
 
   onFieldVisibilityChange(field: { name: string, hide: boolean }): void
 }

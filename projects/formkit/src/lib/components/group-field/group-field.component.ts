@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 })
 export class GroupFieldComponent {
   @Input() control!: FormGroup;
-  @Input() field!: IGroupField<any, any>;
+  @Input() field!: IGroupField<any, any, any>;
   @Input() name!: string;
   @Input() formGroup!: FormGroup;
 }

@@ -49,19 +49,15 @@ export type FieldHookProperties<T> = {
 
 type ConditionalFunction<T> = boolean | ((values: T) => boolean);
 
-type IFieldBase<T, K extends keyof T> = {
+type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType;
-  hooks?: FieldHookProperties<T>;
+  hooks?: FieldHookProperties<Model>;
   component?: any;
-  required?: ConditionalFunction<T>;
-  disabled?: ConditionalFunction<T>;
-  hidden?: ConditionalFunction<T>;
-  transform?: (values: T) => T[K] | undefined;
+  required?: ConditionalFunction<Model>;
+  disabled?: ConditionalFunction<Model>;
+  hidden?: ConditionalFunction<Model>;
   resetFormOnChange?: boolean;
   hide?: boolean;
-  value?: T[K];
-  validators?: ValidatorFn[];
-
   /**
    * Optional label. This description is placed as the 'label' above the field
    */
@@ -82,55 +78,67 @@ type IFieldBase<T, K extends keyof T> = {
   description?: string;
 
   tooltip?: string;
-  messages?: FieldMessageProperties<T>[];
+  messages?: FieldMessageProperties<Model>[];
 }
 
-export type IArrayField<T, K extends keyof T> = IFieldBase<T, K> & {
+type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
+  value?: Level[FieldKey];
+  validators?: ValidatorFn[];
+  transform?: (values: Model) => Level[FieldKey] | undefined;
+}
+
+export type IArrayField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Array;
   buttonLabel?: string
   maxLength?: number;
   blueprint: {
-    [key in keyof T[K]]: ISingleField<T, K> | IHiddenField<T, K>;
+    [SubKey in keyof Level[FieldKey]]:
+      Level[FieldKey][SubKey] extends Record<string, unknown> ?
+        IGroupField<Model, Level[FieldKey], SubKey> | IArrayField<Model, Level[FieldKey], SubKey> :
+        ISingleField<Model, Level[FieldKey], SubKey> | IHiddenField<Model, Level[FieldKey], SubKey>
   }
 }
 
-export type ICheckboxField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type ICheckboxField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Checkbox;
   option: Options;
 }
 
-export type ICustomField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Custom;
 }
 
-export type IGroupField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type IGroupField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Group;
   blueprint: {
-    [key in keyof T[K]]: ISingleField<T, K> | IHiddenField<T, K>;
+    [SubKey in keyof Level[FieldKey]]:
+      Level[FieldKey][SubKey] extends Record<string, unknown> ?
+        IGroupField<Model, Level[FieldKey], SubKey> | IArrayField<Model, Level[FieldKey], SubKey> :
+        ISingleField<Model, Level[FieldKey], SubKey> | IHiddenField<Model, Level[FieldKey], SubKey>
   }
 }
 
-export type IHiddenField<T, K extends keyof T> = {
+export type IHiddenField<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType.Hidden;
-  value?: T[K];
+  value?: Level[FieldKey];
   validators?: ValidatorFn[];
 }
 
-export type IPasswordField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type IPasswordField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Password;
   icon?: string;
 }
 
-export type IRadioField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type IRadioField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Radio | FieldType.RadioButton;
   options: Options[];
 }
 
-export type IToggleField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type IToggleField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Toggle;
 }
 
-export type ISelectField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type ISelectField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Select;
   autoselectSingleOption?: boolean;
   options: Options[] | Observable<Options[]>;
@@ -142,47 +150,47 @@ export type ISelectField<T, K extends keyof T> = IFieldBase<T, K> & {
   multiple?: boolean;
 }
 
-export type ITextField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type ITextField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Date | FieldType.Email | FieldType.Number | FieldType.Text;
   icon?: string;
 }
 
-export type ITextareaField<T, K extends keyof T> = IFieldBase<T, K> & {
+export type ITextareaField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Textarea;
   icon?: string;
   minRows?: number;
   maxRows?: number;
 }
 
-export type ISingleField<T, K extends keyof T> =
-  ICheckboxField<T, K> |
-  ICustomField<T, K> |
-  IPasswordField<T, K> |
-  IRadioField<T, K> |
-  ISelectField<T, K> |
-  ITextField<T, K> |
-  ITextareaField<T, K> |
-  IToggleField<T, K>
+export type ISingleField<Model, Level, FieldKey extends keyof Level> =
+  ICheckboxField<Model, Level, FieldKey> |
+  ICustomField<Model, Level, FieldKey> |
+  IPasswordField<Model, Level, FieldKey> |
+  IRadioField<Model, Level, FieldKey> |
+  ISelectField<Model, Level, FieldKey> |
+  ITextField<Model, Level, FieldKey> |
+  ITextareaField<Model, Level, FieldKey> |
+  IToggleField<Model, Level, FieldKey>
 ;
 
-export type IField<T, K extends keyof T> =
-  IArrayField<T, K> |
-  IGroupField<T, K> |
-  IHiddenField<T, K> |
-  ISingleField<T, K>
+export type IField<Model, Level, FieldKey extends keyof Level> =
+  IArrayField<Model, Level, FieldKey> |
+  IGroupField<Model, Level, FieldKey> |
+  IHiddenField<Model, Level, FieldKey> |
+  ISingleField<Model, Level, FieldKey>
 ;
 
-export type IVisibleField<T, K extends keyof T> =
-  IArrayField<T, K> |
-  IGroupField<T, K> |
-  ISingleField<T, K>
+export type IVisibleField<Model, Level, FieldKey extends keyof Level> =
+  IArrayField<Model, Level, FieldKey> |
+  IGroupField<Model, Level, FieldKey> |
+  ISingleField<Model, Level, FieldKey>
 ;
 
-export type FormFields<T> = {
-  [K in Extract<keyof T, string>]?: IField<T, K>;
+export type FormFields<Model, Level = Model> = {
+  [Key in keyof Level]: IField<Model, Level, Key>;
 };
 
 export type FormKitFormFieldListItem<T> = {
   name: Extract<keyof T, string>;
-  field$: BehaviorSubject<IVisibleField<T, any>>;
+  field$: BehaviorSubject<IVisibleField<T, any, any>>;
 };

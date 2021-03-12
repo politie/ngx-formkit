@@ -14,7 +14,7 @@ import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config';
 import { FormKitModule } from '../../formkit.module';
 
-const field: ISingleField<any, any> = {
+const field: ISingleField<any, any, any> = {
   type: FieldType.Radio,
   options: [],
   transform: values => {

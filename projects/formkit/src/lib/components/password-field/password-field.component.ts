@@ -11,7 +11,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class PasswordFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() field!: IPasswordField<any, any>;
+  @Input() field!: IPasswordField<any, any, any>;
   @Input() showPasswords = false;
   @Output() togglePasswordVisibility = new EventEmitter<void>();
 

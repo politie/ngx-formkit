@@ -11,5 +11,5 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class ToggleFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() field!: IToggleField<any, any>;
+  @Input() field!: IToggleField<any, any, any>;
 }

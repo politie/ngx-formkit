@@ -11,5 +11,5 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class CheckboxFieldComponent extends FieldBaseComponent {
   @Input() control!: FormControl;
-  @Input() field!: ICheckboxField<any, any>;
+  @Input() field!: ICheckboxField<any, any, any>;
 }
