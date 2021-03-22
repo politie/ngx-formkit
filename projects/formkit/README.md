@@ -134,16 +134,17 @@ Below is a rundown of each option per field object.
 |:---|:---|:---|
 | type* | `FieldType` | The type of field. See [Field Types](#field-types) for available field types. |
 | component | `any` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
-| description | `string` | Description to display above the field |
+| description | `string` | Description to display above the field. |
 | disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
 | hooks | `{}` | Object with hook definitions for this field. See ['Hooks'](hooks) for example usage. |
 | hidden | `boolean` / `((values: T) => boolean)` | Should the field be hidden based on values of other fields. See ['Hide fields'](#hide-fields) for example usage. |
-| label | `string` | Label for this field |
+| label | `string` | Label for this field. |
 | messages | `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
 | required | `boolean` / `((values: T) => boolean)` | Should the field be required based on values of other fields. See ['Required fields'](#required-fields) for example usage.  |
+| placeholder | `string` | Optional placeholder text for input fields (when the user sets focus on a field and the field value is empty, the placeholder is shown). |
 | resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. You can't use this property inside a Array Field type. |
-| title | `string` | Title to display above the field |
-| tooltip | `string` | Tooltip to display above the field |
+| title | `string` | Title to display above the field. |
+| tooltip | `string` | Tooltip to display above the field. |
 | transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
 | validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator) |
 | value | `any` | Set a default value to the control. |

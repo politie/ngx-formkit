@@ -5,6 +5,7 @@
     <textarea
       matInput
       [formControlName]="name"
+      [placeholder]="field.placeholder"
       cdkTextareaAutosize
       [cdkAutosizeMinRows]="field.minRows || 3"
       [cdkAutosizeMaxRows]="field.maxRows || 10">

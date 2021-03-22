@@ -73,6 +73,11 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   title?: string;
 
   /**
+   * Optional placeholder
+   */
+  placeholder?: string;
+
+  /**
    * Optional description. This description is placed inside a <header> **above** the field
    */
   description?: string;
