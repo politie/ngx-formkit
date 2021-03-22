@@ -12,11 +12,20 @@ import { ToggleFieldComponent } from '../components/toggle-field/toggle-field.co
 import { FieldBaseComponent } from '../components';
 
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
+  messages: {
+    required: 'This field is required.',
+    min: error => `Value should be at least ${error.min}.`,
+    max: error => `Value should be at most ${error.max}.`,
+    minlength: error => `Field should have a minimum length of ${error.requiredLength} characters.`,
+    maxlength: error => `Field should have a maximum length of ${error.requiredLength} characters.`
+  },
+
   updateDebounceTime: 200,
 
   text: {
     loading: 'loading'
   },
+
   components: {
     [FieldType.Array]: ArrayFieldComponent,
     [FieldType.Checkbox]: CheckboxFieldComponent,

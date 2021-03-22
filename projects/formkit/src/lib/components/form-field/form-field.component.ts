@@ -136,9 +136,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      if (this.field.messages) {
-        this.updateMessages(this.formGroup.getRawValue());
-      }
+      this.updateMessages(this.formGroup.getRawValue());
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();
@@ -187,9 +185,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       this.updateRequiredState(typeof this.field.required === 'boolean' ? this.field.required : this.field.required(values));
     }
 
-    if (this.field.messages) {
-      this.updateMessages(values);
-    }
+    this.updateMessages(values);
 
     if (this.componentCdr) {
       this.componentCdr.markForCheck();
@@ -219,38 +215,53 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   }
 
   updateMessages(values: FormValues<any>) {
-    if (!this.field.messages) {
-      return;
-    }
-
     const messages: FieldMessage[] = [];
 
     /**
-     * Payload for the show function parameter
+     * Global defined error messages
      */
-    const payload = {
-      control: this.control as FormControl | FormArray | FormGroup,
-      errors: this.control.errors || {},
-      values
-    };
+    if (this.control.errors && this.control.touched) {
+      for (const error of Object.keys(this.control.errors).filter(s => this.config.messages[s])) {
+        const message = this.config.messages[error];
 
-    for (const item of this.field.messages) {
-      let show = false;
-
-      if (typeof item.show === 'boolean') {
-        show = item.show;
-      } else if (typeof item.show === 'function') {
-        show = item.show(payload);
-      }
-
-      /**
-       * If the specific message should show, push it in the messages array
-       */
-      if (show) {
         messages.push({
-          type: item.type || FieldMessageType.Information,
-          text: (typeof item.text === 'string') ? item.text : item.text(payload)
+          type: FieldMessageType.Error,
+          text: (typeof message === 'string') ? message : message(this.control.errors[error])
         });
+      }
+    }
+
+    /**
+     * Messages per field
+     */
+    if (this.field.messages) {
+      /**
+       * Payload for the show function parameter
+       */
+      const payload = {
+        control: this.control as FormControl | FormArray | FormGroup,
+        errors: this.control.errors || {},
+        values
+      };
+
+      for (const item of this.field.messages) {
+        let show = false;
+
+        if (typeof item.show === 'boolean') {
+          show = item.show;
+        } else if (typeof item.show === 'function') {
+          show = item.show(payload);
+        }
+
+        /**
+         * If the specific message should show, push it in the messages array
+         */
+        if (show) {
+          messages.push({
+            type: item.type || FieldMessageType.Information,
+            text: (typeof item.text === 'string') ? item.text : item.text(payload)
+          });
+        }
       }
     }
 
