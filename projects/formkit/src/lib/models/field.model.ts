@@ -92,10 +92,7 @@ export type IArrayField<Model, Level, FieldKey extends keyof Level> = IFieldBase
   buttonLabel?: string
   maxLength?: number;
   blueprint: {
-    [SubKey in keyof Level[FieldKey]]:
-      Level[FieldKey][SubKey] extends Record<string, unknown> ?
-        IGroupField<Model, Level[FieldKey], SubKey> | IArrayField<Model, Level[FieldKey], SubKey> :
-        ISingleField<Model, Level[FieldKey], SubKey> | IHiddenField<Model, Level[FieldKey], SubKey>
+    [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
   }
 }
 
@@ -111,10 +108,7 @@ export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFi
 export type IGroupField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Group;
   blueprint: {
-    [SubKey in keyof Level[FieldKey]]:
-      Level[FieldKey][SubKey] extends Record<string, unknown> ?
-        IGroupField<Model, Level[FieldKey], SubKey> | IArrayField<Model, Level[FieldKey], SubKey> :
-        ISingleField<Model, Level[FieldKey], SubKey> | IHiddenField<Model, Level[FieldKey], SubKey>
+    [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
   }
 }
 
@@ -187,7 +181,7 @@ export type IVisibleField<Model, Level, FieldKey extends keyof Level> =
 ;
 
 export type FormFields<Model, Level = Model> = {
-  [Key in keyof Level]: IField<Model, Level, Key>;
+  [Key in keyof Level]?: IField<Model, Level, Key>;
 };
 
 export type FormKitFormFieldListItem<T> = {
