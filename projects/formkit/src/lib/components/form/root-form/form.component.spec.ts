@@ -6,7 +6,6 @@ import { FormFieldComponent } from '../../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
 import { FieldType, IFormGroup } from '../../../models';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../../config';
-import { RadioFieldComponent } from '../../radio-field/radio-field.component';
 
 type FormType = {
   value1: string;
@@ -202,37 +201,6 @@ describe('FormComponent', () => {
       fixture.detectChanges();
       expect(component.fieldList.length).toEqual(3);
       expect(component.fieldList.map(i => i.name)).toEqual(['value1', 'value2', 'value3']);
-    });
-  });
-
-  it('should transform values and keys of the rawValues', () => {
-    const spy = spyOn(component.form, 'getRawValue').and.callFake(() => ({
-      value1: '123',
-      value2: '456',
-      value3: '123'
-    }));
-
-    const result = component.transformValues({
-      omit: ['value2'],
-      transform: values => ([
-        {
-          from: 'value3',
-          to: { 'value3edit': [values.value3] }
-        },
-        {
-          from: 'value1',
-          to: {
-            'value1': `${values.value1}456`
-          }
-        }
-      ])
-    });
-
-    expect(spy).toHaveBeenCalled();
-
-    expect(result).toEqual({
-      value1: '123456',
-      value3edit: ['123']
     });
   });
 });

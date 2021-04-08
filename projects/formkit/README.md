@@ -309,66 +309,13 @@ this.myFormKitForm.patch(...);
 |:---|:---|:---|:---|
 | create | `values (T)` | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. You can provide a object of values to patch the form before all schedulers are set. This allows you to have initial values for resets (in your field definitions) and a different starting value for the form. | |
 | patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties. This method is useful if you have fields set with the `resetFormOnChange` property, to bypass reset behaviour if you call `patchValue` on the `FormGroup` directly. | `void` |
-| transformValues | `TransformValues<T>` | Get a object with the current form values and transform them. See ['Transforming form values'](#transform-form-values) for example usage. | `T` |
 
 > **Important:** If you want to use properties or methods on the `FormComponent` `ViewChild`, you should trigger them after Angular `AfterViewInit` checks are done, to prevent issues with input properties or methods that aren't defined yet. So, for example:
 > ```typescript
 > ngAfterViewInit() {
 >   this.myFormKitForm.patch(...);
 > }
-```
-
-### Transform form values
-Use the `transformValues` method to transform form values, for example to match a certain (backend) schema.
-
-Considering the following values in the form:
-
-```ts
-{
-  username: 'user',
-  id: 1,
-  groups: [
-   'group-1',
-   'group-2'
-  ],
-  isAdmin: true,
-  preferences: {
-    email: true
-  }
-}
-```
-
-Let's say the API / backend implementation has a `updateUser` endpoint, where you shouldn't send the `isAdmin` property. We can use transformValues:
-
-```ts
-const values = myFormKitForm.transformValues({
-  omit: ['isAdmin']
-});
-```
-
-`values` now contains each property of the original values except `isAdmin`. If we need to transform a key, we can do it like this:
-
-```ts
-const values = myFormKitForm.transformValues({
-  transform: values => ([{
-    from: 'preferences',
-    to: { 'emailPreference': values.preferences?.email }
-  }])
-})
-```
-
-or
-
-```ts
-const values = myFormKitForm.transformValues({
-  transform: values => ([{
-    from: 'preferences',
-    to: 'updatePreferences'
-  }])
-})
-```
-
-The transform property in the `transformValues` payload takes a function that receives the current form values. It should return an array with transforms. The `to` property can take either a `string` or `object`. If you pass a `string`, the value set in the property `from` is copied to the key you define in `to`. If you set a `object`, you define a new key / value pair. You can use the `values` to look up a specific value in the form values.
+> ```
 
 ## Available options for the `forRoot()` method
 

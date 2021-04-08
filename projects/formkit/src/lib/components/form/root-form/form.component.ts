@@ -129,63 +129,6 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
   }
 
   /**
-   * Transforms the current set of form values and returns the transformed values.
-   *
-   * @param payload object with properties:
-   * 'omit' for keys to emit from the result
-   * 'transform': array with transforms per key
-   */
-  transformValues<K = T>(payload: TransformValues<T, K>) {
-    const values: T = this.form.getRawValue();
-
-    /* Apply transformations and delete original keys */
-    if (typeof payload.transform === 'function') {
-      const transforms = payload.transform(values);
-
-      for (const transform of transforms) {
-
-        /**
-         * Transform the value of 'from' to 'to' without transform
-         */
-        if (typeof transform.to === 'string') {
-          Object.defineProperty(values, transform.to, {
-            enumerable: true,
-            value: values[transform.from]
-          });
-
-          if (transform.to !== transform.from as string) {
-            delete values[transform.from];
-          }
-
-        } else if (typeof transform.to === 'object') {
-          const result = transform.to;
-          const key: Extract<keyof K, string> = Object.keys(result)[0] as Extract<keyof K, string>;
-
-          Object.defineProperty(values, key, {
-            enumerable: true,
-            value: result[key]
-          });
-
-          if (key as string !== transform.from) {
-            delete values[transform.from];
-          }
-        }
-      }
-    }
-
-    /**
-     *  Do the omit as last, so we can transform keys first
-     */
-    if (payload.omit) {
-      for (const key of payload.omit) {
-        delete values[key];
-      }
-    }
-
-    return values;
-  }
-
-  /**
    * Adds a subscription to the global afterValueUpdateScheduler$ observable with some delay.
    */
   setupAfterValueUpdateScheduler() {

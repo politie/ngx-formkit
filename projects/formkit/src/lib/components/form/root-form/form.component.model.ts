@@ -10,7 +10,5 @@ export interface IFormComponent<T> extends IFormBaseComponent<T> {
 
   patch(patch: Partial<T>): void
 
-  transformValues<K = T>(payload: TransformValues<T, K>): void
-
   setupAfterValueUpdateScheduler(): void
 }
