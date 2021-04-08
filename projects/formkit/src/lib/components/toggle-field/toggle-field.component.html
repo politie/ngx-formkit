@@ -1,3 +1,8 @@
-<ng-container [formGroup]="formGroup" *ngIf="field">
-  <mat-slide-toggle color="primary" [formControlName]="name">{{ field.label ? field.label : name | humanize }}</mat-slide-toggle>
+<ng-container [formGroup]="form" *ngIf="field">
+  <label class="inline-flex items-center form-toggle-wrapper">
+    <span class="form-toggle-toggle">
+      <input type="checkbox" class="form-toggle" [formControlName]="name">
+    </span>
+    <span class="form-toggle-label">{{ field.label ? field.label : name | humanize }}</span>
+  </label>
 </ng-container>

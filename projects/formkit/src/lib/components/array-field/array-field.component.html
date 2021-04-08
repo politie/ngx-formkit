@@ -1,4 +1,4 @@
-<ng-container [formGroup]="formGroup" *ngIf="field">
+<ng-container [formGroup]="form" *ngIf="field">
   <div class="formkit-array-field">
     <ng-container [formArrayName]="name">
       <div class="formkit-array-field-group" *ngFor="let child of control.controls; index as i">

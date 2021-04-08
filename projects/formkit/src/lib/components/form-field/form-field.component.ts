@@ -100,7 +100,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
 
     const compRef = ref.createComponent<any>(factory);
     compRef.instance.control = this.control;
-    compRef.instance.formGroup = this.formGroup;
+    compRef.instance.form = this.form;
     compRef.instance.field = this.field;
     compRef.instance.name = this.name;
     this.componentCdr = compRef.injector.get(ChangeDetectorRef);
@@ -136,7 +136,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.updateMessages(this.formGroup.getRawValue());
+      this.updateMessages(this.form.getRawValue());
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();

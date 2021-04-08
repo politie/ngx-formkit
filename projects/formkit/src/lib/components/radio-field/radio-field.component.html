@@ -1,7 +1,6 @@
-<ng-container [formGroup]="formGroup" *ngIf="field">
-  <mat-radio-group [formControlName]="name">
-    <mat-radio-button color="primary" *ngFor="let option of field.options" [value]="option.id">
-      {{ option.label }}
-    </mat-radio-button>
-  </mat-radio-group>
+<ng-container [formGroup]="form" *ngIf="field">
+  <label class="inline-flex items-center form-radio-wrapper" *ngFor="let option of field.options">
+    <input class="form-radio" type="radio" [value]="option.id" [formControlName]="name">
+    <span class="form-radio-label">{{ option.label }}</span>
+  </label>
 </ng-container>

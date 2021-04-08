@@ -78,7 +78,7 @@ describe('FieldComponent', () => {
     events$ = new Subject<FormEvent>();
     control = new FormControl('initial-value');
 
-    component.formGroup = new FormGroup({ 'field-name': control });
+    component.form = new FormGroup({ 'field-name': control });
     component.control = control;
     component.name = 'field-name';
     component.field = field as any;

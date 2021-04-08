@@ -13,10 +13,10 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
 })
 export class SelectFieldComponent extends FieldBaseComponent implements OnInit, OnDestroy {
   @Input() control!: FormControl;
-  @Input() field!: ISelectField<any, any>;
+  @Input() field!: ISelectField<any, any, any>;
 
   destroy$ = new Subject<boolean>();
-  options$: Observable<Options[]> | undefined;
+  options$!: Observable<Options[]>;
 
   ngOnInit() {
     if (!this.field) {
