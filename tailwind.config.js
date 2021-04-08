@@ -1,8 +1,8 @@
 module.exports = {
   purge: {
     content: [
-      "./src/**/*.html",
-      "./src/**/*.ts"
+      "./projects/showcase/src/**/*.html",
+      "./projects/showcase/src/**/*.ts"
     ],
     options: {
       safelist: [
@@ -23,5 +23,9 @@ module.exports = {
       center: true
     }
   },
-  plugins: []
+  plugins: [
+    require('@tailwindcss/forms')({
+      strategy: 'class'
+    })
+  ]
 }
