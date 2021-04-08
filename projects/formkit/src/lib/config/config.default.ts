@@ -13,11 +13,12 @@ import { FieldBaseComponent } from '../components';
 
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
   messages: {
+    email: 'This is not a valid email address.',
     required: 'This field is required.',
     min: error => `Value should be at least ${error.min}.`,
     max: error => `Value should be at most ${error.max}.`,
-    minlength: error => `Field should have a minimum length of ${error.requiredLength} characters.`,
-    maxlength: error => `Field should have a maximum length of ${error.requiredLength} characters.`
+    minlength: error => `Use a minimum of ${error.requiredLength} characters.`,
+    maxlength: error => `Use a maximum of ${error.requiredLength} characters.`
   },
 
   updateDebounceTime: 200,
