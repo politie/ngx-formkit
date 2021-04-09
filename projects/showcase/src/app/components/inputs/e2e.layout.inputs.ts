@@ -1,8 +1,9 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormFields, Options } from 'formkit';
+import { Validators } from '@angular/forms';
 
 export type LayoutForm = {
   day: number;
-  month: { id: string, label: string };
+  month: Options;
   year: number;
   name: string;
   lastName: string;
@@ -16,6 +17,7 @@ export const layoutFormFields: FormFields<LayoutForm> = {
   },
   month: {
     type: FieldType.Select,
+    value: { id: 'feb', label: 'February' },
     width: 5,
     options: [
       {
@@ -34,10 +36,12 @@ export const layoutFormFields: FormFields<LayoutForm> = {
   },
   year: {
     type: FieldType.Number,
+    validators: [Validators.required, Validators.min(6)],
     width: 4
   },
   name: {
     type: FieldType.Text,
+    validators: [Validators.required, Validators.maxLength(14)],
     width: 6
   },
   lastName: {

@@ -4,7 +4,10 @@ export type GroupForm = {
   text: string;
   toggle: boolean;
   group: {
-    input: string;
+    groupInput: string;
+    childGroup: {
+      childGroupInput: string
+    }
   };
 }
 
@@ -20,8 +23,17 @@ export const groupFormFields:FormFields<GroupForm> = {
   group: {
     type: FieldType.Group,
     blueprint: {
-      input: {
+      groupInput: {
         type: FieldType.Text
+      },
+      childGroup: {
+        type: FieldType.Group,
+        blueprint: {
+          childGroupInput: {
+            type: FieldType.Text,
+            value: 'default value'
+          }
+        }
       }
     }
   }
