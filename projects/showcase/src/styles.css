@@ -66,7 +66,7 @@ html, body {
   @apply flex ml-1 items-center justify-center w-6 h-6 cursor-pointer text-gray-500 hover:text-black;
 }
 
-formkit-radio-field .mat-radio-group .mat-radio-button:not(:last-child) {
+formkit-radio-field .form-radio-wrapper:not(:last-child) {
   @apply mr-4;
 }
 
@@ -127,7 +127,7 @@ formkit-radio-field .mat-radio-group .mat-radio-button:not(:last-child) {
   @apply w-full;
 }
 
-.formkit-array-field-group formkit-form {
+.formkit-array-field-group formkit-nested-form {
   @apply flex-1;
 }
 
@@ -166,4 +166,52 @@ button[disabled] {
 
 .next-button {
   @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+}
+
+.form-checkbox-wrapper,
+.form-radio-wrapper {
+  @apply cursor-pointer;
+}
+
+.form-checkbox {
+  @apply rounded;
+}
+
+.form-checkbox,
+.form-radio {
+  @apply text-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500;
+}
+
+.form-checkbox-label,
+.form-radio-label {
+  @apply ml-2;
+}
+
+.formkit-input {
+  @apply p-4 rounded-md border-gray-300 border w-full transition-colors focus:border-black focus:ring-1 ring-blue-500 focus:outline-none;
+}
+
+.formkit-input.ng-invalid.ng-touched:not(:focus) {
+  @apply border-red-500 ring-1 ring-red-500
+}
+
+.formkit-field-tooltip {
+  @apply relative;
+  @apply z-20;
+}
+
+.formkit-field-tooltip:hover:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100%);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 200px;
+  @apply bg-white;
+  @apply p-2;
+  @apply rounded-md;
+  @apply shadow-lg;
+  @apply text-xs;
+  @apply border;
+  @apply border-gray-200;
 }

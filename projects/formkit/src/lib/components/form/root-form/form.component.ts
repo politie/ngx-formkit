@@ -141,8 +141,6 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
       map(() => this.form.getRawValue()),
       takeUntil(this.destroy$)
     ).subscribe(values => {
-        console.log(`Scheduling update caused by: ${FormUpdateType[this.formUpdateType]}`);
-
         this.formUpdateType = FormUpdateType.User;
         /**
          * For the first update cycle, we emit a FirstUpdateComplete Event, so

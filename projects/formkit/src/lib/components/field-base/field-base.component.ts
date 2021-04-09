@@ -18,7 +18,6 @@ export class FieldBaseComponent implements IFieldBaseComponent, OnDestroy {
   destroy$ = new Subject<boolean>();
 
   ngOnDestroy() {
-    console.log('destroy', this.name);
     this.destroy$.next(true);
   }
 }

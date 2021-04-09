@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { FieldType, FormFields } from 'formkit';
 import { simpleFormFields } from './components/inputs/e2e.simple.inputs';
 import { messagesFormFields } from './components/inputs/e2e.messages.inputs';
