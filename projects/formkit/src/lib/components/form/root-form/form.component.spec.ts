@@ -4,8 +4,9 @@ import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormFieldComponent } from '../../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
-import { FieldType, IFormGroup } from '../../../models';
+import { FieldType, FormUpdateType, IFormGroup } from '../../../models';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../../config';
+import { FormService } from '../../../services';
 
 type FormType = {
   value1: string;
@@ -17,6 +18,7 @@ type FormType = {
 describe('FormComponent', () => {
   let component: FormComponent<FormType>;
   let fixture: ComponentFixture<FormComponent<any>>;
+  let service: FormService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -28,6 +30,7 @@ describe('FormComponent', () => {
         FormComponent
       ],
       providers: [
+        FormService,
         {
           provide: FORMKIT_MODULE_CONFIG_TOKEN,
           useValue: FORMKIT_MODULE_DEFAULT_CONFIG
@@ -40,6 +43,7 @@ describe('FormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance as FormComponent<FormType>;
+    service = TestBed.inject(FormService);
 
     component.fields = {
       value1: {
@@ -157,19 +161,20 @@ describe('FormComponent', () => {
 
     it('should run ValueChanges checks for this form', fakeAsync(() => {
       fixture.detectChanges();
+      component.formUpdateType = FormUpdateType.User;
+
       const spy = spyOn(component.form, 'reset').and.callThrough();
+      component.formService.triggerFormResetByControl({ value1: 'value-with-reset' });
 
-      component.form.controls.value1.setValue('value-with-reset');
+      tick();
 
-      tick(25);
+      expect(spy).toHaveBeenCalled();
 
       expect(component.form.getRawValue()).toEqual({
         value1: 'value-with-reset',
         value2: null,
         value3: 'initial-value-3'
       });
-
-      expect(spy).toHaveBeenCalled();
     }));
   });
 
@@ -200,7 +205,7 @@ describe('FormComponent', () => {
     it('should populate the fieldList', () => {
       fixture.detectChanges();
       expect(component.fieldList.length).toEqual(3);
-      expect(component.fieldList.map(i => i.name)).toEqual(['value1', 'value2', 'value3']);
+      expect(component.fieldList).toEqual(['value1', 'value2', 'value3']);
     });
   });
 });

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormBaseComponent } from './form-base.component';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FieldType } from '../../../models';
 
 describe('FormBaseComponent', () => {
   let component: FormBaseComponent<any>;
@@ -8,6 +10,9 @@ describe('FormBaseComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule
+      ],
       declarations: [ FormBaseComponent ]
     })
     .compileComponents();
@@ -16,6 +21,12 @@ describe('FormBaseComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormBaseComponent);
     component = fixture.componentInstance;
+    component.form = new FormGroup({});
+    component.fields = {
+      test: {
+        type: FieldType.Text
+      }
+    };
     fixture.detectChanges();
   });
 

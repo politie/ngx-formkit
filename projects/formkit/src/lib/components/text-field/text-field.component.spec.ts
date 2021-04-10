@@ -26,7 +26,7 @@ describe('TextFieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TextFieldComponent);
     component = fixture.componentInstance;
-    component.formGroup = new FormGroup({
+    component.form = new FormGroup({
       field: new FormControl()
     });
     component.name = 'field';

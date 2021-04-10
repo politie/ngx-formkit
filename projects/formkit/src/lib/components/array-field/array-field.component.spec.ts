@@ -6,6 +6,7 @@ import { FormComponent } from '../form/root-form/form.component';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
 import { FieldType } from '../../models';
+import { NestedFormComponent } from '../form';
 
 describe('ArrayFieldComponent', () => {
   let component: ArrayFieldComponent;
@@ -17,6 +18,7 @@ describe('ArrayFieldComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [
+        NestedFormComponent,
         MockComponent(FormFieldComponent),
         MockComponent(FormComponent),
         ArrayFieldComponent
@@ -28,7 +30,7 @@ describe('ArrayFieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ArrayFieldComponent);
     component = fixture.componentInstance;
-    component.formGroup = new FormGroup({
+    component.form = new FormGroup({
       array: new FormArray([])
     });
     component.name = 'array';
