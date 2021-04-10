@@ -1,5 +1,5 @@
 import { FieldType, FormKitModuleConfig } from '../models';
-import { ArrayFieldComponent } from '../components/array-field/array-field.component';
+import { RepeatableFieldComponent } from '../components/repeatable-field/repeatable-field.component';
 import { CheckboxFieldComponent } from '../components/checkbox-field/checkbox-field.component';
 import { GroupFieldComponent } from '../components/group-field/group-field.component';
 import { PasswordFieldComponent } from '../components/password-field/password-field.component';
@@ -28,7 +28,7 @@ export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
   },
 
   components: {
-    [FieldType.Array]: ArrayFieldComponent,
+    [FieldType.Repeatable]: RepeatableFieldComponent,
     [FieldType.Checkbox]: CheckboxFieldComponent,
     [FieldType.Custom]: FieldBaseComponent,
     [FieldType.Date]: TextFieldComponent,
