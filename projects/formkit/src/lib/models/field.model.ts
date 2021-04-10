@@ -1,6 +1,6 @@
 import { FormValues, Options } from './form.model';
 import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export enum FieldType {
   Repeatable,
@@ -43,15 +43,10 @@ export type FieldMessageProperties<T> = {
   text: string | ((payload : FieldMessageFunctionPayload<T>) => string)
 }
 
-export type FieldHookProperties<T> = {
-  onInit?: (payload: FieldMessageFunctionPayload<T>) => void
-}
-
 type ConditionalFunction<T> = boolean | ((values: T) => boolean);
 
 type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType;
-  hooks?: FieldHookProperties<Model>;
   component?: any;
   required?: ConditionalFunction<Model>;
   disabled?: ConditionalFunction<Model>;
@@ -125,7 +120,6 @@ export type IHiddenField<Model, Level, FieldKey extends keyof Level> = {
 
 export type IPasswordField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Password;
-  icon?: string;
 }
 
 export type IRadioField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
@@ -142,21 +136,14 @@ export type ISelectField<Model, Level, FieldKey extends keyof Level> = ISingleFi
   autoselectSingleOption?: boolean;
   options: Options[] | Observable<Options[]>;
   emptyOptionsText?: string;
-
-  /**
-   * If using multiple, the value of the FormControl must be of type array
-   */
-  multiple?: boolean;
 }
 
 export type ITextField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Date | FieldType.Email | FieldType.Number | FieldType.Text;
-  icon?: string;
 }
 
 export type ITextareaField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Textarea;
-  icon?: string;
   minRows?: number;
   maxRows?: number;
 }
