@@ -12,8 +12,7 @@ export type LayoutForm = {
 export const layoutFormFields: FormFields<LayoutForm> = {
   day: {
     type: FieldType.Number,
-    width: 3,
-    resetFormOnChange: true
+    width: 3
   },
   month: {
     type: FieldType.Select,
