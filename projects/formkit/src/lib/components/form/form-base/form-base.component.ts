@@ -13,7 +13,7 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
 
   created = false;
   destroy$ = new Subject<boolean>();
-  fieldList: FormKitFormFieldListItem<T>[] = [];
+  fieldList: Extract<keyof T, string>[] = [];
 
   constructor() {}
 
@@ -80,13 +80,6 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
       return;
     }
 
-    if (!field.hide) {
-      field.hide = false;
-    }
-
-    this.fieldList.push({
-      name,
-      field$: new BehaviorSubject<IVisibleField<T, any, any>>(field)
-    });
+    this.fieldList.push(name);
   }
 }

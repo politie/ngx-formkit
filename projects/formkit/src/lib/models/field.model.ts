@@ -57,7 +57,7 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   disabled?: ConditionalFunction<Model>;
   hidden?: ConditionalFunction<Model>;
   resetFormOnChange?: boolean;
-  hide?: boolean;
+
   /**
    * Optional label. This description is placed as the 'label' above the field
    */
@@ -191,5 +191,5 @@ export type FormFields<Model, Level = Model> = {
 
 export type FormKitFormFieldListItem<T> = {
   name: Extract<keyof T, string>;
-  field$: BehaviorSubject<IVisibleField<T, any, any>>;
+  field: IVisibleField<T, any, any>;
 };
