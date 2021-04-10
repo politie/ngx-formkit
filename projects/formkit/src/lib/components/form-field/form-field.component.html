@@ -18,7 +18,7 @@
 
 <!-- Field messages -->
 <div
-  *ngFor="let message of formFieldMessages.list$ | async"
+  *ngFor="let message of fieldMessagesService.list$ | async"
   class="formkit-field-notification"
   cy-formkit-field-notification
   [ngClass]="FieldMessageType[message.type].toLowerCase()">

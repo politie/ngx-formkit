@@ -1,14 +1,15 @@
 import { Subject } from 'rxjs';
-import { FieldMessage, FieldMessageType, FormValues } from '../../models';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FormFieldBase } from '../form-field-base/form-field-base.class';
-import { IFormFieldMessages } from './form-field-messages.model';
+import { FieldMessage, FieldMessageType, FormValues, IVisibleField } from '../../models';
+import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { IFieldMessagesService } from './field-messages.service.model';
+import { Injectable } from '@angular/core';
 
-export class FormFieldMessages extends FormFieldBase implements IFormFieldMessages {
+@Injectable()
+export class FieldMessagesService implements IFieldMessagesService {
   public list$ = new Subject<FieldMessage[]>();
 
-  updateVisibleMessages(values: FormValues<any>) {
-    if (!this.field.messages) {
+  updateVisibleMessages(control: AbstractControl, field: IVisibleField<any, any, any>, values: FormValues<any>) {
+    if (!field.messages) {
       return;
     }
 
@@ -16,15 +17,15 @@ export class FormFieldMessages extends FormFieldBase implements IFormFieldMessag
      * Payload for the show function parameter
      */
     const payload = {
-      control: this.control as FormControl | FormArray | FormGroup,
-      errors: this.control.errors || {},
+      control: control as FormControl | FormArray | FormGroup,
+      errors: control.errors || {},
       values
     };
 
     /**
      * Emit a new value to the messagesSubject$ Subject
      */
-    this.list$.next(this.field.messages
+    this.list$.next(field.messages
       .filter(message => {
         if (typeof message.show === 'function') {
           return message.show(payload);

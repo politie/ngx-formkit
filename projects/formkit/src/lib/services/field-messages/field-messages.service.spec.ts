@@ -1,9 +1,11 @@
 import { FormControl } from '@angular/forms';
-import { FieldType } from '../../models';
-import { FormFieldMessages } from './form-field-messages.class';
+import { FieldType, IVisibleField } from '../../models';
+import { FieldMessagesService } from './field-messages.service';
 
-describe('FormFieldMessages', () => {
-  let instance: FormFieldMessages;
+describe('FieldMessagesService', () => {
+  let service: FieldMessagesService;
+  let control: FormControl;
+  let field: IVisibleField<any, any, any>;
 
   // describe('Flow with state properties', () => {
   //   beforeEach(() => {
@@ -18,19 +20,21 @@ describe('FormFieldMessages', () => {
 
   describe('Flow without messages property', () => {
     beforeEach(() => {
-      instance = new FormFieldMessages(new FormControl('test-value', null), {
+      service = new FieldMessagesService();
+      control = new FormControl('test-value', null);
+      field = {
         type: FieldType.Text
-      });
+      };
     });
 
     it('should create', () => {
-      expect(instance).toBeInstanceOf(FormFieldMessages);
-      expect(instance.control.value).toEqual('test-value');
+      expect(service).toBeInstanceOf(FieldMessagesService);
+      expect(control.value).toEqual('test-value');
     });
 
     it('should handle updates, but should not call anything', () => {
-      const spy = spyOn(instance.list$, 'next').and.callThrough();
-      instance.updateVisibleMessages({ required: 'required' });
+      const spy = spyOn(service.list$, 'next').and.callThrough();
+      service.updateVisibleMessages(control, field, { required: 'required' });
       expect(spy).toHaveBeenCalledTimes(0);
     });
   });

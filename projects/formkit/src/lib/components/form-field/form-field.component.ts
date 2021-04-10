@@ -18,8 +18,8 @@ import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseComponent } from '../field-base/field-base.component';
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
-import { FormFieldState } from '../../classes/form-field-state/form-field-state.class';
-import { FormFieldMessages } from '../../classes/form-field-messages/form-field-messages.class';
+import { FieldStateService } from '../../services/field-state/field-state.service';
+import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -29,7 +29,11 @@ import { FormFieldMessages } from '../../classes/form-field-messages/form-field-
 @Component({
   selector: 'formkit-form-field',
   templateUrl: './form-field.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    FieldMessagesService,
+    FieldStateService
+  ]
 })
 export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit {
   /**
@@ -54,13 +58,12 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
 
-  formFieldState!: FormFieldState;
-  formFieldMessages!: FormFieldMessages;
-
   private componentCdr!: ChangeDetectorRef;
   private hidden = false;
 
   constructor(
+    public fieldMessagesService: FieldMessagesService,
+    public fieldStateService: FieldStateService,
     private resolver: ComponentFactoryResolver,
     private cd: ChangeDetectorRef,
     private formService: FormService,
@@ -75,21 +78,11 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     }
 
     /**
-     * Set up the extension that handles the field messages
-     */
-    this.formFieldMessages = new FormFieldMessages(this.control, this.field);
-
-    /**
-     * Setup the extension that handles the field state updates (disabled, hidden, required)
-     */
-    this.formFieldState = new FormFieldState(this.control, this.field);
-
-    /**
      * Sadly, this is needed, since @HostBinding doesn't support async / Observable streams
      * for setting class names:
      * https://github.com/angular/angular/issues/19483
      */
-    this.formFieldState.visibilityChanges$.pipe(
+    this.fieldStateService.visibilityChanges$.pipe(
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe(hide => this.hidden = hide);
@@ -154,7 +147,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.formFieldMessages.updateVisibleMessages(this.form.getRawValue());
+      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue());
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();
@@ -179,12 +172,12 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     /**
      * Update the field state (disabled, required, hidden)
      */
-    this.formFieldState.updateFieldState(values);
+    this.fieldStateService.updateFieldState(this.control, this.field, values);
 
     /**
      * Update the list of visible messages for this field
      */
-    this.formFieldMessages.updateVisibleMessages(values);
+    this.fieldMessagesService.updateVisibleMessages(this.control, this.field, values);
 
     /**
      * Mark the component for check for the ChangeDetector
