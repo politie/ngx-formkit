@@ -204,8 +204,8 @@ describe('FormComponent', () => {
 
     it('should populate the fieldList', () => {
       fixture.detectChanges();
-      expect(component.fieldList.length).toEqual(3);
-      expect(component.fieldList).toEqual(['value1', 'value2', 'value3']);
+      expect(component.keys.length).toEqual(3);
+      expect(component.keys).toEqual(['value1', 'value2', 'value3']);
     });
   });
 });

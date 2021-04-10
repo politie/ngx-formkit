@@ -7,18 +7,21 @@
   <ng-content *ngIf="readonly" select="[formDescriptionReadOnly]"></ng-content>
 
   <div class="formkit-fields formkit-fields-root">
-    <ng-container *ngFor="let fieldListItem of fieldList">
-      <ng-container *ngIf="fieldListItem.field$ | async as field">
-        <formkit-form-field
-          (visibilityChange)="onFieldVisibilityChange($event)"
-          [form]="form"
-          [control]="form.get(fieldListItem.name)!"
-          [name]="fieldListItem.name"
-          [field]="$any(field)">
-        </formkit-form-field>
-      </ng-container>
+    <ng-container
+      [ngTemplateOutlet]="fieldsTemplate || defaultFieldsTemplate"
+      [ngTemplateOutletContext]="{ fields: fields, keys: keys }">
     </ng-container>
   </div>
+
+  <ng-template #defaultFieldsTemplate let-fields="fields" let-keys="keys">
+    <formkit-form-field
+      *ngFor="let name of keys"
+      [form]="form"
+      [control]="form.controls[name]"
+      [name]="name"
+      [field]="$any(fields[name])">
+    </formkit-form-field>
+  </ng-template>
 
   <ng-content select="[footer]"></ng-content>
   <ng-content select="[submitButton]"></ng-content>

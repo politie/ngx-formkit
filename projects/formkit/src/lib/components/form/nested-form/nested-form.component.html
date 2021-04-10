@@ -1,13 +1,11 @@
 <ng-container *ngIf="form && created" [formGroup]="form">
   <div class="formkit-fields formkit-fields-sub">
-    <ng-container *ngFor="let fieldListItem of fieldList">
+    <ng-container *ngFor="let name of keys">
       <formkit-form-field
-        *ngIf="fieldListItem.field$ | async as field"
-        (visibilityChange)="onFieldVisibilityChange($event)"
         [form]="form"
-        [control]="form.get(fieldListItem.name)!"
-        [name]="fieldListItem.name"
-        [field]="$any(field)">
+        [control]="form.controls[name]"
+        [name]="name"
+        [field]="$any(fields[name])">
       </formkit-form-field>
     </ng-container>
   </div>

@@ -1,13 +1,23 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  TemplateRef
+} from '@angular/core';
 import { merge, Subject, timer } from 'rxjs';
 
 import {
   FieldType,
   FormEventType,
   FormKitModuleConfig,
-  FormUpdateType, IArrayField,
-  IField, IGroupField,
-  TransformValues
+  FormUpdateType,
+  IRepeatableField,
+  IField,
+  IGroupField
 } from '../../../models';
 
 import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
@@ -33,6 +43,7 @@ import { createFormControl, formGroupFromBlueprint } from '../../../helpers';
 })
 export class FormComponent<T> extends FormBaseComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   @Input() readonly = false;
+  @Input() fieldsTemplate!: TemplateRef<any>;
 
   formUpdateType: FormUpdateType = FormUpdateType.Init;
 
@@ -41,7 +52,7 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
 
   constructor(
     private cd: ChangeDetectorRef,
-    private formService: FormService,
+    public formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
     super();
@@ -102,7 +113,9 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
       this.form.valueChanges.pipe(
         filter(() => this.formUpdateType !== FormUpdateType.Reset)
       )
-    ).pipe(takeUntil(this.destroy$)).subscribe(() => this.afterValueUpdateScheduler$.next());
+    ).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => this.afterValueUpdateScheduler$.next());
 
     /**
      * Everything done, update the created prop and emit event

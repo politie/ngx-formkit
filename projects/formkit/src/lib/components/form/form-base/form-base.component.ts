@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { FieldType, FormFields, FormKitFormFieldListItem, IField, IVisibleField } from '../../../models';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { FieldType, FormFields, IField } from '../../../models';
+import { Subject } from 'rxjs';
 import { IFormBaseComponent } from './form-base.component.model';
 
 @Component({
@@ -13,7 +13,7 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
 
   created = false;
   destroy$ = new Subject<boolean>();
-  fieldList: Extract<keyof T, string>[] = [];
+  keys: Extract<keyof T, string>[] = [];
 
   constructor() {}
 
@@ -54,6 +54,6 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
       return;
     }
 
-    this.fieldList.push(name);
+    this.keys.push(name);
   }
 }

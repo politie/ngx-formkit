@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 export interface IFormBaseComponent<T> {
   created: boolean;
   destroy$: Subject<boolean>;
-  fieldList: Extract<keyof T, string>[];
+  keys: Extract<keyof T, string>[];
 
   runSuppliedInputsChecks(): void
 
