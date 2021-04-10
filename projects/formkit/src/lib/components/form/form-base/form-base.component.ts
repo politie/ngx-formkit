@@ -45,32 +45,6 @@ export class FormBaseComponent<T> implements IFormBaseComponent<T>, OnInit, OnDe
     }
   }
 
-
-  /**
-   * Will be called if one of the direct child fields in this form should change the
-   * hidden state. A new value will be emitted to this field via the BehaviorSubject field$.
-   *
-   * @param field object containing the `name` of the field and a boolean indicating if the field
-   * should be hidden.
-   */
-  onFieldVisibilityChange(field: { name: string, hide: boolean }) {
-    const index = this.fieldList.findIndex((fieldItem) => fieldItem.name === field.name);
-
-    if (index < 0) {
-      console.warn(`FormKit: no matching field found for "${name}" to update visibility.`);
-
-      return;
-    }
-
-    /**
-     * Emit a new value for the field$ observable
-     */
-    this.fieldList[index].field$.next({
-      ...this.fieldList[index].field$.getValue(),
-      ...{ hide: field.hide }
-    });
-  }
-
   ngOnDestroy() {
     this.destroy$.next(true);
   }
