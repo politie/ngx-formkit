@@ -1,3 +1,15 @@
+# 2.0.0
+- Removed `hooks` property for fields.
+- Removed `icon` property  for fields.
+- Removed `multiple` option for select field.
+- Removed `transformValues` method.
+- Reworked the entire logic of updating and resetting the values within the form.
+- Added option to use a `templateOutlet` to individually render root form fields using the `[fieldsTemplate]` `@Input()` property.
+- Added the option to nest `Group` and `Array` type fields.
+- Updated all field types to not use `Material` components.
+- Updated input names to prevent `ng-` classes bubbling up the entire DOM tree inside the `formkit-form`.
+- Updated `Array` field to `Repeatable`.
+
 # 1.0.3
 - Hotfix for the NGCC compiler giving errors for `Required` type usage.
 

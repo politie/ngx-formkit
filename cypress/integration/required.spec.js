@@ -4,7 +4,7 @@ describe('E2E Required', () => {
     cy.get('[ng-reflect-title="required"]').as('container');
 
     cy.get('@container').within(() => {
-      cy.get('div[cy-formkit-form]').as('form');
+      cy.get('.formkit-fields-root').as('form');
       cy.get('button[cy-form-submit-button]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('inputField');
       cy.get('input[ng-reflect-name="input"]').as('input');

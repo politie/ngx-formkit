@@ -4,7 +4,7 @@ describe('Kitchen sink fields', () => {
     cy.get('[ng-reflect-title="Kitchen sink"]').as('container');
 
     cy.get('@container').within(() => {
-      cy.get('div[cy-formkit-form]').as('form');
+      cy.get('.formkit-fields-root').as('form');
       cy.get('button[cy-form-submit-button]').as('button');
       cy.get('formkit-form-field[ng-reflect-name="input"]').as('textField');
       cy.get('formkit-form-field[ng-reflect-name="checkbox"]').as('checkboxField');

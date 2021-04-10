@@ -22,7 +22,7 @@ This will install the FormKit library as a dependency in your project. You can n
 Add this component to your host component. This component renders a `<formkit-form>` component and `FormFieldComponent` components for every defined field in your `FormKitFields` list.
 
 ## `FormFieldComponent`
-This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormComponent` to handle these updates and will call all logic in your field configuration, from state management (required, disabled, hidden, loading) to hooks (onInit).
+This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormComponent` to handle these updates and will call all logic in your field management (required, disabled, hidden, loading).
 
 ## `FormKitForm<T>`
 This type is used to create objects for `FormKit`. In a `FormKitFields` list, you define the fields that the form should render.
@@ -136,7 +136,6 @@ Below is a rundown of each option per field object.
 | component | `any` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
 | description | `string` | Description to display above the field. |
 | disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
-| hooks | `{}` | Object with hook definitions for this field. See ['Hooks'](hooks) for example usage. |
 | hidden | `boolean` / `((values: T) => boolean)` | Should the field be hidden based on values of other fields. See ['Hide fields'](#hide-fields) for example usage. |
 | label | `string` | Label for this field. |
 | messages | `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
@@ -149,36 +148,6 @@ Below is a rundown of each option per field object.
 | validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator) |
 | value | `any` | Set a default value to the control. |
 | width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
-
-### Hooks
-You can use hooks to hook into the lifecycle of a `field`. You can use the following hooks:
-
-- `onInit`
-
-To use a hook, define a `hooks` property in the field object and add a function to the hook you want to use:
-
-``` typescript
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    hooks: {
-      onInit: (payload): void => {
-        // do something
-      }
-    }
-  }
-}
-```
-
-The `payload` object has the following properties:
-
-| Property | Type | description |
-|:---|:---|:---|
-| control | `FormControl | FormArray | FormGroup` | The `FormControl` assigned to this field. This `FormControl` is added to the root form and is watched by Angular Reactive Forms. |
-| errors | `ValidationErrors | null` | The current `errors` for the assigned `FormControl`. Will be `null` if there are no errors.
-| values | `Values<T>` | The current values of the root form. This is an object with `{ fieldname: value }` notation. |
-
-> The function shouldn't return anything (`void`).
 
 ### Hide fields
 With conditional hiding, you can hide a field based on the value (or values) of other fields.
@@ -280,6 +249,7 @@ Example:
 | form* | `FormGroup` | The FormGroup to use for this form. | |
 | fields* | `FormFields<T>` | The fields configuration for this form | |
 | readonly | `boolean` | Render the form in readonly mode | `false` |
+| fieldsTemplate | `TemplateRef` | If you want to render all the fields yourself, you can do so by passing a `TemplateRef` to this input. | `DefaultFieldsTemplate` |
 
 *required
 
@@ -349,7 +319,7 @@ The available slots are:
 
 ## Styling
 
-You can bring your own CSS to style `<formkit-form>` instances. Out of the box, the inputs use the styling provided by Angular Material.
+You can bring your own CSS to style `<formkit-form>` instances. Out of the box, the inputs use no styling at all, to be styled by Tailwind or something similar.
 
 To get the most out of the form, you can use the following starting point for the CSS:
 
@@ -450,13 +420,33 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
   @Input() events$!: Subject<FormEvent>;
   @Input() field!: ISingleField<any>;
   @Input() name!: string;
-  @Input() formGroup!: FormGroup;
+  @Input() form!: FormGroup;
 
   ngOnInit() {}
 }
 ```
 
 > Make sure that you add your component to the `entryComponents` in the module.
+
+## Custom Forms
+
+By default, `FormKit` renders all your fields automatically. If you want to have more control, you can supply a `TemplateRef` to the `fieldsTemplate` `@Input` property in `<formkit-form></formkit-form>`. Example:
+
+```angular2html
+<formkit-form [form]="form" [fields]="fields" [fieldsTemplate]="#myCustomFieldsTemplate">
+  <ng-template #customFieldsTemplate let-fields="fields" let-keys="keys">
+    <formkit-form-field
+      *ngFor="let name of keys"
+      [form]="form"
+      [control]="form.controls[name]"
+      [name]="name"
+      [field]="$any(fields[name])">
+    </formkit-form-field>
+  </ng-template>
+</formkit-form>
+```
+
+Inside the template, you'll have access to two variables: `fields` and `keys`. The `fields` variable is the object with your `Field` definitions. The `keys` variable is a array containing all the `keys` in your `fields` definition, so you can easily loop over the fields with `*ngFor`.
 
 ## Field Types
 The following field types are available (you can [add your own](#custom-components)):

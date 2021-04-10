@@ -7,9 +7,9 @@ export type ArrayForm = {
   }
 }
 
-export const arrayFormFields:FormFields<ArrayForm> = {
+export const repeatableFormFields:FormFields<ArrayForm> = {
   array: {
-    type: FieldType.Array,
+    type: FieldType.Repeatable,
     buttonLabel: 'Add field group to array +',
     maxLength: 5,
     fields: {

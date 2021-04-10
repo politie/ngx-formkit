@@ -8,8 +8,7 @@
       </header>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <formkit-form #FormKitForm [form]="form" [fields]="fields">
-        </formkit-form>
+        <formkit-form #FormKitForm [form]="form" [fields]="fields"></formkit-form>
       </form>
 
       <ng-container *ngIf="debug">

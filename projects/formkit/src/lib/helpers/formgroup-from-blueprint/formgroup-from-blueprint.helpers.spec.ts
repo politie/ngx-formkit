@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { FieldType } from '../../models';
 
 describe('Create FormGroup from Blueprint helper', () => {
-  const fieldError = 'FormKit: no \'field\' or no \'Group | Array field\' definition provided.';
+  const fieldError = 'FormKit: no \'field\' or no \'Group | Repeatable field\' definition provided.';
 
   it('should throw error if field is not provided or blueprint is missing', () => {
     expect(() => formGroupFromBlueprint(null as any))
@@ -19,8 +19,8 @@ describe('Create FormGroup from Blueprint helper', () => {
       .toThrowError(fieldError);
 
     expect(() => formGroupFromBlueprint({
-      type: FieldType.Array,
-      blueprint: {
+      type: FieldType.Repeatable,
+      fields: {
         test: {
           type: FieldType.Text,
           value: 'testvalue'
@@ -30,8 +30,8 @@ describe('Create FormGroup from Blueprint helper', () => {
       .not.toThrowError(fieldError);
 
     const group = formGroupFromBlueprint({
-      type: FieldType.Array,
-      blueprint: {
+      type: FieldType.Repeatable,
+      fields: {
         test: {
           type: FieldType.Text,
           value: 'testvalue'

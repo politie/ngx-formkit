@@ -6,7 +6,7 @@ import { messagesFormFields } from './components/inputs/e2e.messages.inputs';
 import { hiddenFormFields } from './components/inputs/e2e.hidden.inputs';
 import { requiredFormFields } from './components/inputs/e2e.required.inputs';
 import { layoutFormFields } from './components/inputs/e2e.layout.inputs';
-import { arrayFormFields } from './components/inputs/e2e.array.inputs';
+import { repeatableFormFields } from './components/inputs/e2e.repeatable.inputs';
 import { checkboxFormFields } from './components/inputs/e2e.checkbox.inputs';
 import { emailFormFields } from './components/inputs/e2e.email.inputs';
 import { dateFormFields } from './components/inputs/e2e.date.inputs';
@@ -66,9 +66,9 @@ export class AppComponent {
 
   fieldTypeFieldSets: { fields: any, message: string, title: string }[] = [
     {
-      title: 'array',
-      message: 'Demo to show Array field. The maximum number of input fields you can add is set to 5 in this configuration.',
-      fields: arrayFormFields
+      title: 'repeatable',
+      message: 'Demo to show Repeatable field. The maximum number of input fields you can add is set to 5 in this configuration.',
+      fields: repeatableFormFields
     },
     {
       title: 'checkbox',

@@ -8,7 +8,7 @@ import { MockComponent } from 'ng-mocks';
 import { FieldType } from '../../models';
 import { NestedFormComponent } from '../form';
 
-describe('ArrayFieldComponent', () => {
+describe('RepeatableFieldComponent', () => {
   let component: RepeatableFieldComponent;
   let fixture: ComponentFixture<RepeatableFieldComponent>;
 

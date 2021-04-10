@@ -20,6 +20,5 @@ describe('FormControl helper', () => {
     const control = createFormControl('test-value', [Validators.required]);
     expect(control.value).toEqual('test-value');
     expect(control.validator?.length).toEqual(1);
-    console.log(control.validator ? control.validator(control) : null);
   });
 });

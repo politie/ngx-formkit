@@ -25,18 +25,19 @@
     [title]="config.title">
   </app-e2e-form-creator>
 
-  <div class="pt-12 pb-6">
-    <h2 class="text-3xl tracking-tight text-gray-900 sm:text-4xl">
-      <span class="block font-extrabold">Available field types</span>
-      <span class="block text-gray-400">13 types, a hidden type and a custom type to choose from.</span>
-    </h2>
+  <div cy-available-field-types>
+    <div class="pt-12 pb-6">
+      <h2 class="text-3xl tracking-tight text-gray-900 sm:text-4xl">
+        <span class="block font-extrabold">Available field types</span>
+        <span class="block text-gray-400">13 types, a hidden type and a custom type to choose from.</span>
+      </h2>
+    </div>
+    <app-e2e-form-creator
+      *ngFor="let config of fieldTypeFieldSets"
+      [debug]="form.controls.toggle.value === true"
+      [fields]="config.fields"
+      [message]="config.message"
+      [title]="config.title">
+    </app-e2e-form-creator>
   </div>
-
-  <app-e2e-form-creator
-    *ngFor="let config of fieldTypeFieldSets"
-    [debug]="form.controls.toggle.value === true"
-    [fields]="config.fields"
-    [message]="config.message"
-    [title]="config.title">
-  </app-e2e-form-creator>
 </div>
