@@ -1,4 +1,4 @@
-export * from './array-field/array-field.component';
+export * from './repeatable-field/repeatable-field.component';
 export * from './checkbox-field/checkbox-field.component';
 export * from './field-base/field-base.component';
 export * from './form';

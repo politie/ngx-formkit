@@ -1,15 +1,15 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { IArrayField } from '../../models/field.model';
+import { IRepeatableField } from '../../models/field.model';
 import { formGroupFromBlueprint } from '../../helpers';
 
 @Component({
-  selector: 'formkit-array-field',
-  templateUrl: './array-field.component.html'
+  selector: 'formkit-repeatable-field',
+  templateUrl: './repeatable-field.component.html'
 })
-export class ArrayFieldComponent {
+export class RepeatableFieldComponent {
   @Input() control!: FormArray;
-  @Input() field!: IArrayField<any, any, any>;
+  @Input() field!: IRepeatableField<any, any, any>;
   @Input() name!: string;
   @Input() form!: FormGroup;
 

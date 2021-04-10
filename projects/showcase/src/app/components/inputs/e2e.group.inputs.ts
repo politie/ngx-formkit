@@ -22,13 +22,13 @@ export const groupFormFields:FormFields<GroupForm> = {
   },
   group: {
     type: FieldType.Group,
-    blueprint: {
+    fields: {
       groupInput: {
         type: FieldType.Text
       },
       childGroup: {
         type: FieldType.Group,
-        blueprint: {
+        fields: {
           childGroupInput: {
             type: FieldType.Text,
             value: 'default value'

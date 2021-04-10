@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ArrayFieldComponent } from './array-field.component';
+import { RepeatableFieldComponent } from './repeatable-field.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormComponent } from '../form/root-form/form.component';
 import { FormFieldComponent } from '../form-field/form-field.component';
@@ -9,8 +9,8 @@ import { FieldType } from '../../models';
 import { NestedFormComponent } from '../form';
 
 describe('ArrayFieldComponent', () => {
-  let component: ArrayFieldComponent;
-  let fixture: ComponentFixture<ArrayFieldComponent>;
+  let component: RepeatableFieldComponent;
+  let fixture: ComponentFixture<RepeatableFieldComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -21,22 +21,22 @@ describe('ArrayFieldComponent', () => {
         NestedFormComponent,
         MockComponent(FormFieldComponent),
         MockComponent(FormComponent),
-        ArrayFieldComponent
+        RepeatableFieldComponent
       ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ArrayFieldComponent);
+    fixture = TestBed.createComponent(RepeatableFieldComponent);
     component = fixture.componentInstance;
     component.form = new FormGroup({
       array: new FormArray([])
     });
     component.name = 'array';
     component.field = {
-      type: FieldType.Array,
-      blueprint: {
+      type: FieldType.Repeatable,
+      fields: {
         test: {
           type: FieldType.Text,
           value: 'test'

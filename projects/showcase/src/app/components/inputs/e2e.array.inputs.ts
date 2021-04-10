@@ -12,7 +12,7 @@ export const arrayFormFields:FormFields<ArrayForm> = {
     type: FieldType.Array,
     buttonLabel: 'Add field group to array +',
     maxLength: 5,
-    blueprint: {
+    fields: {
       firstName: {
         type: FieldType.Text,
         width: 6

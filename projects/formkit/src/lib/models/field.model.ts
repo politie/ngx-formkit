@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export enum FieldType {
-  Array,
+  Repeatable,
   Checkbox,
   Custom,
   Date,
@@ -92,11 +92,11 @@ type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<M
   transform?: (values: Model) => Level[FieldKey] | undefined;
 }
 
-export type IArrayField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
-  type: FieldType.Array;
+export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
+  type: FieldType.Repeatable;
   buttonLabel?: string
   maxLength?: number;
-  blueprint: {
+  fields: {
     [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
   }
 }
@@ -112,7 +112,7 @@ export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFi
 
 export type IGroupField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Group;
-  blueprint: {
+  fields: {
     [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
   }
 }
@@ -173,14 +173,14 @@ export type ISingleField<Model, Level, FieldKey extends keyof Level> =
 ;
 
 export type IField<Model, Level, FieldKey extends keyof Level> =
-  IArrayField<Model, Level, FieldKey> |
+  IRepeatableField<Model, Level, FieldKey> |
   IGroupField<Model, Level, FieldKey> |
   IHiddenField<Model, Level, FieldKey> |
   ISingleField<Model, Level, FieldKey>
 ;
 
 export type IVisibleField<Model, Level, FieldKey extends keyof Level> =
-  IArrayField<Model, Level, FieldKey> |
+  IRepeatableField<Model, Level, FieldKey> |
   IGroupField<Model, Level, FieldKey> |
   ISingleField<Model, Level, FieldKey>
 ;

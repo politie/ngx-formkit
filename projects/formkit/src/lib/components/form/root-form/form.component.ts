@@ -159,8 +159,8 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
   processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     super.processSingleFieldDefinition(name, field);
 
-    if (field.type === FieldType.Array) {
-      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IArrayField<any, any, any>)]));
+    if (field.type === FieldType.Repeatable) {
+      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
     } else if (field.type === FieldType.Group) {
       this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any, any>));
     } else {

@@ -8,7 +8,7 @@ import { SelectFieldComponent } from './components/select-field/select-field.com
 import { FormComponent } from './components/form/root-form/form.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { TextareaFieldComponent } from './components/textarea-field/textarea-field.component';
-import { ArrayFieldComponent } from './components/array-field/array-field.component';
+import { RepeatableFieldComponent } from './components/repeatable-field/repeatable-field.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { GroupFieldComponent } from './components/group-field/group-field.component';
 import { CommonModule } from '@angular/common';
@@ -31,7 +31,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
   declarations: [
     FormFieldDirective,
     HumanizePipe,
-    ArrayFieldComponent,
+    RepeatableFieldComponent,
     CheckboxFieldComponent,
     FieldBaseComponent,
     FormComponent,
@@ -48,7 +48,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
     FormBaseComponent
   ],
   entryComponents: [
-    ArrayFieldComponent,
+    RepeatableFieldComponent,
     CheckboxFieldComponent,
     FieldBaseComponent,
     FormComponent,
@@ -65,7 +65,8 @@ import { TextFieldModule } from '@angular/cdk/text-field';
   exports: [
     HumanizePipe,
     FormComponent,
-    FieldBaseComponent
+    FieldBaseComponent,
+    FormFieldComponent
   ]
 })
 export class FormKitModule {
