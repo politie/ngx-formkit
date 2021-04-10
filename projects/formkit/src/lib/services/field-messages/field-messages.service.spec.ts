@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { FieldType, IVisibleField } from '../../models';
+import { FieldMessage, FieldMessageType, FieldType, IVisibleField } from '../../models';
 import { FieldMessagesService } from './field-messages.service';
 
 describe('FieldMessagesService', () => {
@@ -7,16 +7,63 @@ describe('FieldMessagesService', () => {
   let control: FormControl;
   let field: IVisibleField<any, any, any>;
 
-  // describe('Flow with state properties', () => {
-  //   beforeEach(() => {
-  //     instance = new FormFieldState(new FormControl('test-value', null), {
-  //       type: FieldType.Text,
-  //       hidden: (values) => values.hidden === 'hidden',
-  //       disabled: (values) => values.disabled === 'disabled',
-  //       required: (values) => values.required === 'required'
-  //     });
-  //   });
-  // });
+  describe('Flow with messages property', () => {
+    beforeEach(() => {
+      service = new FieldMessagesService();
+      control = new FormControl('test-value', null);
+      field = {
+        type: FieldType.Text,
+        messages: [
+          {
+            show: payload => {
+              return (payload.control.value !== 'test-value');
+            },
+            type: FieldMessageType.Information,
+            text: 'this is a information message'
+          },
+          {
+            show: true,
+            type: FieldMessageType.Warning,
+            text: 'this is a warning that must always show'
+          },
+          {
+            show: payload => payload.values.input3 === 'input3',
+            text: 'Message that shows when input3 value is input3'
+          }
+        ]
+      };
+    });
+
+    it('should create', () => {
+      expect(service).toBeInstanceOf(FieldMessagesService);
+      expect(control.value).toEqual('test-value');
+    });
+
+    it('should handle updates on messages', () => {
+      const messages: FieldMessage[][] = [];
+      service.list$.subscribe(r => messages.push(r));
+
+      // control.setValue('new-value');
+      service.updateVisibleMessages(control, field, {});
+
+      expect(messages[0].length).toEqual(1);
+      expect(messages[0][0].text).toEqual('this is a warning that must always show');
+
+      control.setValue('new-value');
+      service.updateVisibleMessages(control, field, {});
+
+      expect(messages[1].length).toEqual(2);
+      expect(messages[1][0].text).toEqual('this is a information message');
+      expect(messages[1][1].text).toEqual('this is a warning that must always show');
+
+      service.updateVisibleMessages(control, field, { input3: 'input3' });
+
+      expect(messages[2].length).toEqual(3);
+      expect(messages[2][0].text).toEqual('this is a information message');
+      expect(messages[2][1].text).toEqual('this is a warning that must always show');
+      expect(messages[2][2].text).toEqual('Message that shows when input3 value is input3');
+    });
+  });
 
   describe('Flow without messages property', () => {
     beforeEach(() => {
@@ -39,22 +86,3 @@ describe('FieldMessagesService', () => {
     });
   });
 });
-
-
-// it('should show messages',  () => {
-//   const output = [];
-//
-//   component.messages$.subscribe(r => {
-//     output.push(r);
-//   });
-//
-//   component.updateMessages({ test: '123' });
-//
-//   expect(output.length).toEqual(1);
-//
-//   component.control.setValue('test', { onlySelf: true, emitEvent: false });
-//   component.control.markAsTouched();
-//
-//   component.updateMessages({ test: '123 '});
-//   expect(output.length).toEqual(2);
-// });

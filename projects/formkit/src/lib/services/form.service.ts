@@ -20,7 +20,7 @@ export class FormService {
   }
 
   triggerFormResetByControl(values: Partial<any>) {
-    this.subject$.next({ type: FormEventType.OnResetByControl, values});
+    this.subject$.next({ type: FormEventType.OnResetByControl, values });
   }
 
   triggerFormUpdateChecks(values: any) {
