@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { FormFieldComponent } from './form-field.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config';
 import { FormKitModule } from '../../formkit.module';
+import { FormService } from '../../services';
 
 const field: ISingleField<any, any, any> = {
   type: FieldType.Radio,
@@ -43,6 +44,7 @@ describe('FieldComponent', () => {
   let fixture: ComponentFixture<FormFieldComponent>;
   let events$: Subject<FormEvent>;
   let control: FormControl;
+  let service: FormService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,6 +57,12 @@ describe('FieldComponent', () => {
         MatRadioModule
       ],
       providers: [
+        {
+          provide: FormService,
+          useValue: {
+            formEvents$: new Subject()
+          }
+        },
         {
           provide: FORMKIT_MODULE_CONFIG_TOKEN,
           useFactory: () => ({
@@ -75,7 +83,7 @@ describe('FieldComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FormFieldComponent);
     component = fixture.componentInstance;
-    events$ = new Subject<FormEvent>();
+    service = TestBed.inject(FormService);
     control = new FormControl('initial-value');
 
     component.form = new FormGroup({ 'field-name': control });
@@ -89,50 +97,6 @@ describe('FieldComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show messages',  () => {
-    const output = [];
-
-    component.messages$.subscribe(r => {
-      output.push(r);
-    });
-
-    component.updateMessages({ test: '123' });
-
-    expect(output.length).toEqual(1);
-
-    component.control.setValue('test', { onlySelf: true, emitEvent: false });
-    component.control.markAsTouched();
-
-    component.updateMessages({ test: '123 '});
-    expect(output.length).toEqual(2);
-  });
-
-  it('should update the hidden state', () => {
-    const spy = spyOn(component.visibilityChange, 'emit').and.callFake(() => {});
-    expect(component.field.hide).toBeFalsy();
-    component.updateHiddenState(true);
-    expect(spy).toHaveBeenCalledWith({ name: 'field-name', hide: true });
-    component.updateHiddenState(false);
-    expect(spy).toHaveBeenCalledWith({ name: 'field-name', hide: false });
-  });
-
-  it('should update the disabled state', () => {
-    expect(component.control.enabled).toEqual(true);
-    component.updateDisabledState(true);
-    expect(component.control.enabled).toEqual(false);
-    component.updateDisabledState(false);
-    expect(component.control.enabled).toEqual(true);
-  });
-
-  it('should update the required state', () => {
-    expect(component.control.errors).toEqual(null);
-    component.control.setValue(null);
-    component.updateRequiredState(true);
-    expect(component.control.errors).toEqual({ required: true });
-    component.updateRequiredState(false);
-    expect(component.control.errors).toEqual(null);
-  });
-
   it('should run onAfterUpdate checks', () => {
     component.onAfterUpdateChecks({ testValue: 'test'});
     // Should have the transformed value
@@ -142,7 +106,8 @@ describe('FieldComponent', () => {
   it('should run checks after subject has emitted', () => {
     const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
 
-    events$.next({
+    // @ts-ignore
+    service.formEvents$.next({
       type: FormEventType.OnAfterUpdateChecks,
       values: {}
     });

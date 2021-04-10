@@ -3,26 +3,23 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentFactoryResolver,
-  EventEmitter,
   HostBinding,
   Inject,
   OnInit,
-  Output,
   ViewChild
 } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
-import { Observable, Subject } from 'rxjs';
+import { FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, map, take, takeUntil } from 'rxjs/operators';
+import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseComponent } from '../field-base/field-base.component';
-import { mergeError, removeError } from '../../helpers';
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
+import { FormFieldState } from '../../classes/form-field-state/form-field-state.class';
+import { FormFieldMessages } from '../../classes/form-field-messages/form-field-messages.class';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -35,8 +32,6 @@ import { IFormFieldComponent } from './form-field.component.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit {
-  @Output() visibilityChange: EventEmitter<{ name: string; hide: boolean; }> = new EventEmitter<{name: string; hide: boolean}>()
-
   /**
    * Apply classes to the host component
    */
@@ -47,7 +42,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
-      (this.field.hide) ? 'hidden' : ''
+      (this.hidden) ? 'hidden' : ''
     ].filter(Boolean).join(' ');
   }
 
@@ -56,13 +51,14 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
    */
   @ViewChild(FormFieldDirective, { static: true }) fieldHost!: FormFieldDirective;
 
-  messages$!: Observable<FieldMessage[]>;
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
 
-  private messagesSubject$ = new Subject<FieldMessage[]>();
-  private firstUpdate = true;
+  formFieldState!: FormFieldState;
+  formFieldMessages!: FormFieldMessages;
+
   private componentCdr!: ChangeDetectorRef;
+  private hidden = false;
 
   constructor(
     private resolver: ComponentFactoryResolver,
@@ -78,7 +74,25 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       return;
     }
 
-    this.messages$ = this.messagesSubject$.asObservable();
+    /**
+     * Set up the extension that handles the field messages
+     */
+    this.formFieldMessages = new FormFieldMessages(this.control, this.field);
+
+    /**
+     * Setup the extension that handles the field state updates (disabled, hidden, required)
+     */
+    this.formFieldState = new FormFieldState(this.control, this.field);
+
+    /**
+     * Sadly, this is needed, since @HostBinding doesn't support async / Observable streams
+     * for setting class names:
+     * https://github.com/angular/angular/issues/19483
+     */
+    this.formFieldState.visibilityChanges$.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(hide => this.hidden = hide);
 
     this.renderFieldComponent();
     this.setupOneTimeFormControlEventListener();
@@ -106,6 +120,10 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     this.componentCdr = compRef.injector.get(ChangeDetectorRef);
   }
 
+  /**
+   * Create a listener to reset the entire form when this form field changes
+   * This applies only to controls with teh 'resetFormOnChange' property
+   */
   setupResetListener() {
     this.control.valueChanges.pipe(
       map(value => ({ [this.name]: value })),
@@ -136,7 +154,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.updateMessages(this.form.getRawValue());
+      this.formFieldMessages.updateVisibleMessages(this.form.getRawValue());
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();
@@ -159,115 +177,20 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     }
 
     /**
-     * Dispatch the onInit hook in the first AfterUpdate cycle
-     * so that the formGroup values are filled with the default or passed values
-     * in the create() method.
+     * Update the field state (disabled, required, hidden)
      */
-    if (this.firstUpdate && this.field.hooks?.onInit) {
-      this.firstUpdate = false;
+    this.formFieldState.updateFieldState(values);
 
-      this.field.hooks.onInit({
-        control: this.control as FormControl | FormArray | FormGroup,
-        errors: this.control.errors,
-        values
-      });
-    }
+    /**
+     * Update the list of visible messages for this field
+     */
+    this.formFieldMessages.updateVisibleMessages(values);
 
-    if (this.field.hidden) {
-      this.updateHiddenState(typeof this.field.hidden === 'boolean' ? this.field.hidden : this.field.hidden(values));
-    }
-
-    if (this.field.disabled) {
-      this.updateDisabledState(typeof this.field.disabled === 'boolean' ? this.field.disabled : this.field.disabled(values));
-    }
-
-    if (this.field.required) {
-      this.updateRequiredState(typeof this.field.required === 'boolean' ? this.field.required : this.field.required(values));
-    }
-
-    this.updateMessages(values);
-
+    /**
+     * Mark the component for check for the ChangeDetector
+     */
     if (this.componentCdr) {
       this.componentCdr.markForCheck();
     }
-  }
-
-  updateHiddenState(match: boolean) {
-    if (this.field && this.field.hide !== match) {
-      this.visibilityChange.emit({ name: this.name, hide: match });
-    }
-  }
-
-  updateDisabledState(match: boolean) {
-    if (match && this.control.enabled) {
-      this.control.disable({ onlySelf: true, emitEvent: false });
-    } else if (!match && this.control.disabled) {
-      this.control.enable({ onlySelf: true, emitEvent: false });
-    }
-  }
-
-  updateRequiredState(match: boolean) {
-    if (match) {
-      this.control.setErrors(mergeError(this.control.errors, Validators.required(this.control)));
-    } else {
-      this.control.setErrors(removeError(this.control.errors, 'required'));
-    }
-  }
-
-  updateMessages(values: FormValues<any>) {
-    const messages: FieldMessage[] = [];
-
-    /**
-     * Global defined error messages
-     */
-    if (this.control.errors && this.control.touched) {
-      for (const error of Object.keys(this.control.errors).filter(s => this.config.messages[s])) {
-        const message = this.config.messages[error];
-
-        messages.push({
-          type: FieldMessageType.Error,
-          text: (typeof message === 'string') ? message : message(this.control.errors[error])
-        });
-      }
-    }
-
-    /**
-     * Messages per field
-     */
-    if (this.field.messages) {
-      /**
-       * Payload for the show function parameter
-       */
-      const payload = {
-        control: this.control as FormControl | FormArray | FormGroup,
-        errors: this.control.errors || {},
-        values
-      };
-
-      for (const item of this.field.messages) {
-        let show = false;
-
-        if (typeof item.show === 'boolean') {
-          show = item.show;
-        } else if (typeof item.show === 'function') {
-          show = item.show(payload);
-        }
-
-        /**
-         * If the specific message should show, push it in the messages array
-         */
-        if (show) {
-          messages.push({
-            type: item.type || FieldMessageType.Information,
-            text: (typeof item.text === 'string') ? item.text : item.text(payload)
-          });
-        }
-      }
-    }
-
-    /**
-     * Emit a new value to the messagesSubject$ Subject
-     */
-    this.messagesSubject$.next(messages);
   }
 }
