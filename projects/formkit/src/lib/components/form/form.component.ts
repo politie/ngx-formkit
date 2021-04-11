@@ -13,19 +13,19 @@ import { merge, Subject, timer } from 'rxjs';
 import {
   FieldType,
   FormEventType,
+  FormFields,
   FormKitModuleConfig,
   FormUpdateType,
-  IRepeatableField,
-  IField
-} from '../../../models';
+  IField,
+  IRepeatableField
+} from '../../models';
 
 import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../../config/config.token';
-import { FormService } from '../../../services/form.service';
-import { FormBaseComponent } from '../form-base/form-base.component';
+import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
+import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
-import { FormArray } from '@angular/forms';
-import { createFormControl, formGroupFromBlueprint } from '../../../helpers';
+import { FormArray, FormGroup } from '@angular/forms';
+import { createFormControl, formGroupFromBlueprint } from '../../helpers';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -40,10 +40,15 @@ import { createFormControl, formGroupFromBlueprint } from '../../../helpers';
     FormService
   ]
 })
-export class FormComponent<T> extends FormBaseComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
+export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   @Input() readonly = false;
   @Input() fieldsTemplate!: TemplateRef<any>;
 
+  @Input() form!: FormGroup;
+  @Input() fields!: FormFields<T>;
+
+  created = false;
+  destroy$ = new Subject<boolean>();
   formUpdateType: FormUpdateType = FormUpdateType.Init;
 
   readonly afterValueUpdateScheduler$ = new Subject<void>();
@@ -53,9 +58,7 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
     private cd: ChangeDetectorRef,
     public formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
-  ) {
-    super();
-  }
+  ) { }
 
   get initialFormValues() {
     return this.initialValues;
@@ -74,8 +77,32 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
     );
   }
 
+  runSuppliedInputsChecks() {
+    if (this.created) {
+      throw new Error('FormKit: Form is already created.');
+    }
+
+    /**
+     * Check if there's a FormGroup passed in the [form] attribute / @Input()
+     */
+    if (!this.form || !(this.form instanceof FormGroup)) {
+      throw new Error(`FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.`);
+    }
+
+    /**
+     * Check if there are fields set in the [fields] attribute / @Input()
+     */
+    if (!this.fields || (Object.keys(this.fields).length === 0 && this.fields.constructor === Object)) {
+      throw new Error(`FormKit: <formkit-form> has no fields set in [fields] attribute.`);
+    }
+  }
+
   ngOnInit(): void {
-    super.ngOnInit();
+    this.runSuppliedInputsChecks();
+
+    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
+      this.processSingleFieldDefinition(name, this.fields[name] as IField<T, any, any>);
+    }
 
     /**
      * Store the initialValues of the form. If the form is reset, these
@@ -169,12 +196,16 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
    * @param field definition for this field
    */
   processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
-    super.processSingleFieldDefinition(name, field);
-
-    if (field.type === FieldType.Repeatable) {
+    if (field.type === FieldType.Hidden) {
+      return;
+    } else if (field.type === FieldType.Repeatable) {
       this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
   }
 }

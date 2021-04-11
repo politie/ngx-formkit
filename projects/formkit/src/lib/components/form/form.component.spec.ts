@@ -2,11 +2,11 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FormFieldComponent } from '../../form-field/form-field.component';
+import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
-import { FieldType, FormUpdateType, IFormGroup } from '../../../models';
-import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../../config';
-import { FormService } from '../../../services';
+import { FieldType, FormUpdateType, IFormGroup } from '../../models';
+import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
+import { FormService } from '../../services';
 
 type FormType = {
   value1: string;
@@ -200,12 +200,6 @@ describe('FormComponent', () => {
       const spy = spyOn(component.form, 'addControl').and.callThrough();
       fixture.detectChanges();
       expect(spy).toHaveBeenCalledTimes(3);
-    });
-
-    it('should populate the fieldList', () => {
-      fixture.detectChanges();
-      expect(component.keys.length).toEqual(3);
-      expect(component.keys).toEqual(['value1', 'value2', 'value3']);
     });
   });
 });
