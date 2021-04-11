@@ -4,5 +4,10 @@ import { AbstractControl } from '@angular/forms';
 
 export interface IFieldMessagesService {
   list$: Subject<FieldMessage[]>;
-  updateVisibleMessages(control: AbstractControl, field: IVisibleField<any, any, any>, values: FormValues<any>): void;
+  updateVisibleMessages(
+    control: AbstractControl,
+    field: IVisibleField<any, any, any>,
+    values: FormValues<any>,
+    defaultMessages?: { [key: string]: string | ((error: any) => string) }
+  ): void;
 }

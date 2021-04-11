@@ -77,7 +77,7 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   description?: string;
 
   tooltip?: string;
-  messages?: FieldMessageProperties<Model>[];
+  messages?: false | FieldMessageProperties<Model>[];
 }
 
 type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
