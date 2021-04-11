@@ -3,16 +3,20 @@
     <ng-container [formArrayName]="name">
       <div class="formkit-repeatable-field-group" *ngFor="let child of control.controls; index as i">
 
-        <formkit-nested-form
-          class="formkit-repeatable-form"
-          [form]="$any(child)"
-          [fields]="$any(field.fields)">
-        </formkit-nested-form>
+        <div class="formkit-fields">
+          <formkit-form-field
+            *ngFor="let name of $any(field.fields) | visibleFieldKeys"
+            [form]="$any(child)"
+            [control]="$any(child.get(name))"
+            [name]="name"
+            [field]="$any(field.fields[name])">
+          </formkit-form-field>
+        </div>
 
         <button
+          *ngIf="field.delete !== false"
           class="formkit-repeatable-field-delete"
           type="button"
-          [disabled]="control.controls.length === 1"
           (click)="onRemove(i)">
           &times;
         </button>
@@ -21,7 +25,8 @@
       <button
         class="button formkit-repeatable-field-add"
         type="button"
-        *ngIf="(!field.maxLength) || (field.maxLength && control.controls.length < field.maxLength)"
+        [disabled]="control.invalid"
+        *ngIf="(!field.max) || (field.max && control.controls.length < field.max)"
         (click)="onAdd()">
         {{ field.buttonLabel || '+' }}
       </button>

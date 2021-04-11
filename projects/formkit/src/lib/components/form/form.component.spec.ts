@@ -7,6 +7,7 @@ import { MockComponent } from 'ng-mocks';
 import { FieldType, FormUpdateType, IFormGroup } from '../../models';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
 import { FormService } from '../../services';
+import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
 
 type FormType = {
   value1: string;
@@ -26,6 +27,7 @@ describe('FormComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [
+        VisibleFieldKeysPipe,
         MockComponent(FormFieldComponent),
         FormComponent
       ],

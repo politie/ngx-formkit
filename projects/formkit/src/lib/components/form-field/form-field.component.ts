@@ -147,7 +147,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue());
+      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue(), this.config.messages);
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();
@@ -177,7 +177,10 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     /**
      * Update the list of visible messages for this field
      */
-    this.fieldMessagesService.updateVisibleMessages(this.control, this.field, values);
+
+    if (this.field.messages !== false) {
+      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, values, this.config.messages);
+    }
 
     /**
      * Mark the component for check for the ChangeDetector

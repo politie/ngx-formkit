@@ -1,6 +1,6 @@
 import { FormValues, Options } from './form.model';
 import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export enum FieldType {
   Repeatable,
@@ -88,10 +88,11 @@ type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<M
 
 export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Repeatable;
-  buttonLabel?: string
-  maxLength?: number;
+  buttonLabel?: string;
+  delete?: boolean;
+  max?: number;
   fields: {
-    [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
+    [SubKey in keyof Level[FieldKey]]?: ISingleField<Model, Level[FieldKey], SubKey>;
   }
 }
 

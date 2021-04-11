@@ -1,4 +1,4 @@
-import { FieldMessageType, FieldType, FormFields } from 'formkit';
+import { FieldType, FormFields } from 'formkit';
 import { Validators } from '@angular/forms';
 
 export type RequiredForm = {
@@ -10,7 +10,7 @@ export const requiredFormFields: FormFields<RequiredForm> = {
   input: {
     type: FieldType.Text,
     validators: [Validators.email],
-    required: values => values.checkbox === true
+    required: values => values.checkbox
   },
   checkbox: {
     type: FieldType.Checkbox,

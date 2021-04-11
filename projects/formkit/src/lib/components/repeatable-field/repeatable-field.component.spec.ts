@@ -6,7 +6,7 @@ import { FormComponent } from '../form/form.component';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
 import { FieldType } from '../../models';
-import { NestedFormComponent } from '../form';
+import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
 
 describe('RepeatableFieldComponent', () => {
   let component: RepeatableFieldComponent;
@@ -18,7 +18,7 @@ describe('RepeatableFieldComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [
-        NestedFormComponent,
+        VisibleFieldKeysPipe,
         MockComponent(FormFieldComponent),
         MockComponent(FormComponent),
         RepeatableFieldComponent

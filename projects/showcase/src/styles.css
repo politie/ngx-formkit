@@ -41,6 +41,7 @@ html, body {
   --column-span: 12;
   @apply gap-4;
   @apply grid;
+  @apply w-full;
 
   grid-template-columns: repeat(12, 1fr);
 }
@@ -140,7 +141,7 @@ formkit-radio-field .form-radio-wrapper:not(:last-child) {
   @apply flex-none;
   @apply ml-2;
   @apply p-3;
-  @apply mt-2;
+  @apply mt-1;
   @apply text-xl;
 }
 

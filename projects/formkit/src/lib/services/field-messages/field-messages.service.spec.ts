@@ -39,29 +39,55 @@ describe('FieldMessagesService', () => {
       expect(control.value).toEqual('test-value');
     });
 
-    it('should handle updates on messages', () => {
-      const messages: FieldMessage[][] = [];
-      service.list$.subscribe(r => messages.push(r));
+    it('should handle a always active message', () => {
+      let messages: FieldMessage[] = [];
+      service.list$.subscribe(r => messages = [...messages, ...r]);
 
-      // control.setValue('new-value');
-      service.updateVisibleMessages(control, field, {});
+      service.updateVisibleMessages(control, field, {}, {});
 
-      expect(messages[0].length).toEqual(1);
-      expect(messages[0][0].text).toEqual('this is a warning that must always show');
+      expect(messages.length).toEqual(1);
+      expect(messages[0].text).toEqual('this is a warning that must always show');
+    });
+
+    it('should handle a message based on show()', () => {
+      let messages: FieldMessage[] = [];
+      service.list$.subscribe(r => messages = [...messages, ...r]);
 
       control.setValue('new-value');
-      service.updateVisibleMessages(control, field, {});
+      service.updateVisibleMessages(control, field, {}, {});
 
-      expect(messages[1].length).toEqual(2);
-      expect(messages[1][0].text).toEqual('this is a information message');
-      expect(messages[1][1].text).toEqual('this is a warning that must always show');
+      expect(messages.length).toEqual(2);
+      expect(messages[0].text).toEqual('this is a information message');
+      expect(messages[1].text).toEqual('this is a warning that must always show');
+    });
 
-      service.updateVisibleMessages(control, field, { input3: 'input3' });
+    it('should handle a message based on provided values', () => {
+      let messages: FieldMessage[] = [];
+      service.list$.subscribe(r => messages = [...messages, ...r]);
 
-      expect(messages[2].length).toEqual(3);
-      expect(messages[2][0].text).toEqual('this is a information message');
-      expect(messages[2][1].text).toEqual('this is a warning that must always show');
-      expect(messages[2][2].text).toEqual('Message that shows when input3 value is input3');
+      control.setValue('new-value');
+      service.updateVisibleMessages(control, field, { input3: 'input3' }, {});
+
+      expect(messages.length).toEqual(3);
+      expect(messages[0].text).toEqual('this is a information message');
+      expect(messages[1].text).toEqual('this is a warning that must always show');
+      expect(messages[2].text).toEqual('Message that shows when input3 value is input3');
+    });
+
+    it('should handle a message based on default messages', () => {
+      let messages: FieldMessage[] = [];
+      service.list$.subscribe(r => messages = [...messages, ...r]);
+
+      control.setErrors({ 'testError': true });
+      control.markAsTouched();
+
+      service.updateVisibleMessages(control, field, {}, {
+        'testError': 'This is the text from a default message'
+      });
+
+      expect(messages.length).toEqual(2);
+      expect(messages[0].text).toEqual('This is the text from a default message');
+      expect(messages[1].text).toEqual('this is a warning that must always show');
     });
   });
 
@@ -80,9 +106,10 @@ describe('FieldMessagesService', () => {
     });
 
     it('should handle updates, but should not call anything', () => {
-      const spy = spyOn(service.list$, 'next').and.callThrough();
-      service.updateVisibleMessages(control, field, { required: 'required' });
-      expect(spy).toHaveBeenCalledTimes(0);
+      let messages: FieldMessage[] = [];
+      service.list$.subscribe(r => messages = [...messages, ...r]);
+      service.updateVisibleMessages(control, field, { required: 'required' }, {});
+      expect(messages.length).toEqual(0);
     });
   });
 });

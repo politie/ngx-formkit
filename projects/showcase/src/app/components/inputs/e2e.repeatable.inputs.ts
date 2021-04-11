@@ -12,7 +12,7 @@ export const repeatableFormFields:FormFields<RepeatableForm> = {
   repeatable: {
     type: FieldType.Repeatable,
     buttonLabel: 'Add field group to set +',
-    maxLength: 5,
+    max: 5,
     fields: {
       firstName: {
         type: FieldType.Text,
@@ -21,6 +21,7 @@ export const repeatableFormFields:FormFields<RepeatableForm> = {
       },
       lastName: {
         type: FieldType.Text,
+        value: 'Default value',
         width: 6
       }
     }
