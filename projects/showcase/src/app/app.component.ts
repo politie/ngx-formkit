@@ -28,9 +28,12 @@ export class AppComponent {
   form = new FormGroup({});
   fields: FormFields<any> = {
     toggle: {
-      type: FieldType.Toggle,
+      type: FieldType.Checkbox,
       value: true,
-      label: 'Toggle debug information (raw values object from each form)'
+      option: {
+        id: true,
+        label: 'Toggle debug information (raw values object from each form)'
+      }
     }
   }
 
