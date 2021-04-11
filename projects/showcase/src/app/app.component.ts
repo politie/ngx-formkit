@@ -10,7 +10,6 @@ import { repeatableFormFields } from './components/inputs/e2e.repeatable.inputs'
 import { checkboxFormFields } from './components/inputs/e2e.checkbox.inputs';
 import { emailFormFields } from './components/inputs/e2e.email.inputs';
 import { dateFormFields } from './components/inputs/e2e.date.inputs';
-import { groupFormFields } from './components/inputs/e2e.group.inputs';
 import { numberFormFields } from './components/inputs/e2e.number.inputs';
 import { passwordFormFields } from './components/inputs/e2e.password.inputs';
 import { radioButtonsFormFields } from './components/inputs/e2e.radio-buttons.inputs';
@@ -65,11 +64,7 @@ export class AppComponent {
   ];
 
   fieldTypeFieldSets: { fields: any, message: string, title: string }[] = [
-    {
-      title: 'repeatable',
-      message: 'Demo to show Repeatable field. The maximum number of input fields you can add is set to 5 in this configuration.',
-      fields: repeatableFormFields
-    },
+
     {
       title: 'checkbox',
       message: 'Demo to show Checkbox field',
@@ -84,11 +79,6 @@ export class AppComponent {
       title: 'email',
       message: 'Demo to show Email field',
       fields: emailFormFields
-    },
-    {
-      title: 'group',
-      message: 'Demo to show Group field',
-      fields: groupFormFields
     },
     {
       title: 'number',
@@ -109,6 +99,11 @@ export class AppComponent {
       title: 'radio',
       message: 'Demo to show Radio field',
       fields: radioFormFields
+    },
+    {
+      title: 'repeatable',
+      message: 'Demo to show Repeatable field. The maximum number of input fields you can add is set to 5 in this configuration.',
+      fields: repeatableFormFields
     },
     {
       title: 'select',

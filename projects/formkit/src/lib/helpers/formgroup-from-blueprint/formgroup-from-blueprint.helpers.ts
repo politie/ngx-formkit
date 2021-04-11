@@ -1,9 +1,9 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FieldType, IRepeatableField, IField, IGroupField } from '../../models';
+import { FieldType, IRepeatableField, IField } from '../../models';
 import { createFormControl } from '../create-formcontrol/create-formcontrol.helpers';
 
-export const formGroupFromBlueprint = (field: IRepeatableField<any, any, any> | IGroupField<any, any, any>): FormGroup => {
-  if (!field || !field.fields || typeof field.fields !== 'object' || (field.type !== FieldType.Repeatable && field.type !== FieldType.Group)) {
+export const formGroupFromBlueprint = (field: IRepeatableField<any, any, any>): FormGroup => {
+  if (!field || !field.fields || typeof field.fields !== 'object' || (field.type !== FieldType.Repeatable)) {
     throw new Error(`FormKit: no 'field' or no 'Group | Repeatable field' definition provided.`);
   }
 
@@ -14,8 +14,6 @@ export const formGroupFromBlueprint = (field: IRepeatableField<any, any, any> | 
 
     if (childField.type === FieldType.Repeatable) {
       obj[key] = new FormArray([ formGroupFromBlueprint(childField as unknown as IRepeatableField<any, any, any>) ]);
-    } else if (childField.type === FieldType.Group) {
-      obj[key] = formGroupFromBlueprint(childField as unknown as IGroupField<any, any, any>);
     } else {
       obj[key] = createFormControl(childField.value, childField.validators);
     }

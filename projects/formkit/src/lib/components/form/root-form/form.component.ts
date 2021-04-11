@@ -16,8 +16,7 @@ import {
   FormKitModuleConfig,
   FormUpdateType,
   IRepeatableField,
-  IField,
-  IGroupField
+  IField
 } from '../../../models';
 
 import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
@@ -174,8 +173,6 @@ export class FormComponent<T> extends FormBaseComponent<T> implements IFormCompo
 
     if (field.type === FieldType.Repeatable) {
       this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
-    } else if (field.type === FieldType.Group) {
-      this.form.addControl(name, formGroupFromBlueprint(field as IGroupField<any, any, any>));
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));
     }

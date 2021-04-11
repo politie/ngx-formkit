@@ -10,7 +10,6 @@ import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-fie
 import { TextareaFieldComponent } from './components/textarea-field/textarea-field.component';
 import { RepeatableFieldComponent } from './components/repeatable-field/repeatable-field.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
-import { GroupFieldComponent } from './components/group-field/group-field.component';
 import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
 import { FormKitModuleConfig } from './models/config.model';
@@ -36,7 +35,6 @@ import { TextFieldModule } from '@angular/cdk/text-field';
     FieldBaseComponent,
     FormComponent,
     FormFieldComponent,
-    GroupFieldComponent,
     PasswordFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,
@@ -53,7 +51,6 @@ import { TextFieldModule } from '@angular/cdk/text-field';
     FieldBaseComponent,
     FormComponent,
     FormFieldComponent,
-    GroupFieldComponent,
     PasswordFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,

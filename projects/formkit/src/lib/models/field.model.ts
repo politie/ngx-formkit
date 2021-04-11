@@ -8,7 +8,6 @@ export enum FieldType {
   Custom,
   Date,
   Email,
-  Group,
   Hidden,
   Number,
   Password,
@@ -105,13 +104,6 @@ export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFi
   type: FieldType.Custom;
 }
 
-export type IGroupField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
-  type: FieldType.Group;
-  fields: {
-    [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
-  }
-}
-
 export type IHiddenField<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType.Hidden;
   value?: Level[FieldKey];
@@ -161,14 +153,12 @@ export type ISingleField<Model, Level, FieldKey extends keyof Level> =
 
 export type IField<Model, Level, FieldKey extends keyof Level> =
   IRepeatableField<Model, Level, FieldKey> |
-  IGroupField<Model, Level, FieldKey> |
   IHiddenField<Model, Level, FieldKey> |
   ISingleField<Model, Level, FieldKey>
 ;
 
 export type IVisibleField<Model, Level, FieldKey extends keyof Level> =
   IRepeatableField<Model, Level, FieldKey> |
-  IGroupField<Model, Level, FieldKey> |
   ISingleField<Model, Level, FieldKey>
 ;
 

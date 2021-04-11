@@ -115,28 +115,28 @@ formkit-radio-field .form-radio-wrapper:not(:last-child) {
   @apply text-sm;
 }
 
-.formkit-array-field {
+.formkit-repeatable-field {
   @apply grid;
   @apply gap-4;
   @apply justify-items-start;
 }
 
-.formkit-array-field-group {
+.formkit-repeatable-field-group {
   @apply flex;
   @apply items-start;
   @apply w-full;
 }
 
-.formkit-array-field-group formkit-nested-form {
+.formkit-repeatable-field-group formkit-nested-form {
   @apply flex-1;
 }
 
-.button.formkit-array-field-add {
+.button.formkit-repeatable-field-add {
   @apply bg-white;
   @apply text-black;
 }
 
-.formkit-array-field-delete {
+.formkit-repeatable-field-delete {
   @apply flex-none;
   @apply ml-2;
   @apply p-3;

@@ -1,10 +1,9 @@
 import { FieldType, FormKitModuleConfig } from '../models';
-import { RepeatableFieldComponent } from '../components/repeatable-field/repeatable-field.component';
 import { CheckboxFieldComponent } from '../components/checkbox-field/checkbox-field.component';
-import { GroupFieldComponent } from '../components/group-field/group-field.component';
 import { PasswordFieldComponent } from '../components/password-field/password-field.component';
 import { RadioButtonsFieldComponent } from '../components/radio-buttons-field/radio-buttons-field.component';
 import { RadioFieldComponent } from '../components/radio-field/radio-field.component';
+import { RepeatableFieldComponent } from '../components/repeatable-field/repeatable-field.component';
 import { SelectFieldComponent } from '../components/select-field/select-field.component';
 import { TextareaFieldComponent } from '../components/textarea-field/textarea-field.component';
 import { TextFieldComponent } from '../components/text-field/text-field.component';
@@ -28,18 +27,17 @@ export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
   },
 
   components: {
-    [FieldType.Repeatable]: RepeatableFieldComponent,
     [FieldType.Checkbox]: CheckboxFieldComponent,
     [FieldType.Custom]: FieldBaseComponent,
     [FieldType.Date]: TextFieldComponent,
     [FieldType.Email]: TextFieldComponent,
-    [FieldType.Group]: GroupFieldComponent,
     [FieldType.Hidden]: null,
     [FieldType.Number]: TextFieldComponent,
     [FieldType.Password]: PasswordFieldComponent,
     [FieldType.RadioButton]: RadioButtonsFieldComponent,
     [FieldType.Radio]: RadioFieldComponent,
     [FieldType.Select]: SelectFieldComponent,
+    [FieldType.Repeatable]: RepeatableFieldComponent,
     [FieldType.Textarea]: TextareaFieldComponent,
     [FieldType.Text]: TextFieldComponent,
     [FieldType.Toggle]: ToggleFieldComponent
