@@ -10,15 +10,26 @@ import { TextFieldComponent } from '../components/text-field/text-field.componen
 import { ToggleFieldComponent } from '../components/toggle-field/toggle-field.component';
 import { FieldBaseComponent } from '../components';
 
+export const FORMKIT_DEFAULT_MESSAGES_EN: { [key: string]: string | ((error: any) => string) } = {
+  email: 'This is not a valid email address.',
+  required: 'This field is required.',
+  min: error => `Value should be at least ${error.min}.`,
+  max: error => `Value should be at most ${error.max}.`,
+  minlength: error => `Use a minimum of ${error.requiredLength} characters.`,
+  maxlength: error => `Use a maximum of ${error.requiredLength} characters.`
+};
+
+export const FORMKIT_DEFAULT_MESSAGES_NL: { [key: string]: string | ((error: any) => string) } = {
+  email: 'Dit is geen geldig e-mailadres.',
+  required: 'Dit veld is verplicht.',
+  min: error => `De invoer moet minimaal ${error.min} zijn.`,
+  max: error => `De invoer mag maximaal ${error.max} zijn.`,
+  minlength: error => `Gebruik minimaal ${error.requiredLength} karakters.`,
+  maxlength: error => `Gebruik maximaal ${error.requiredLength} karakters.`
+};
+
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
-  messages: {
-    email: 'This is not a valid email address.',
-    required: 'This field is required.',
-    min: error => `Value should be at least ${error.min}.`,
-    max: error => `Value should be at most ${error.max}.`,
-    minlength: error => `Use a minimum of ${error.requiredLength} characters.`,
-    maxlength: error => `Use a maximum of ${error.requiredLength} characters.`
-  },
+  messages: FORMKIT_DEFAULT_MESSAGES_EN,
 
   updateDebounceTime: 200,
 

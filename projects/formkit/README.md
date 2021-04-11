@@ -138,7 +138,7 @@ Below is a rundown of each option per field object.
 | disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
 | hidden | `boolean` / `((values: T) => boolean)` | Should the field be hidden based on values of other fields. See ['Hide fields'](#hide-fields) for example usage. |
 | label | `string` | Label for this field. |
-| messages | `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
+| messages | `false` or `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
 | required | `boolean` / `((values: T) => boolean)` | Should the field be required based on values of other fields. See ['Required fields'](#required-fields) for example usage.  |
 | placeholder | `string` | Optional placeholder text for input fields (when the user sets focus on a field and the field value is empty, the placeholder is shown). |
 | resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. You can't use this property inside a Array Field type. |
@@ -236,6 +236,40 @@ const fields: FormKitFields<Type> = {
 }
 ```
 
+#### Default messages
+
+You can add or edit default messages if you import the `FormKit` Module. Update the `messages` object in the `forRoot()` payload object:
+
+```ts
+@NgModule({
+  imports: [
+    FormKitModule.forRoot({
+      messages: {
+        required: 'This field is required',
+        min: error => `Value should be at least ${error.min}.`
+      }
+    })
+  ]
+})
+export class AppModule { }
+```
+
+You can also use the provided `FORMKIT_DEFAULT_MESSAGES_NL` object for a Dutch translated set of default messages.
+
+
+#### Disable all messages
+
+If you want to disable all messages (including default messages), simply pass `messages: false` to the field configuration:
+
+```ts
+const fields: FormKitFields<Type> = {
+  myField: {
+    type: FieldType.Text,
+    messages: false
+  }
+}
+```
+
 ## `FormComponent` `@Input()` properties
 
 Example:
@@ -294,6 +328,7 @@ In the `forRoot()`, you can add a configuration object with the following proper
 | Property | Type | Description | Default |
 |:---|:---|:---|:---|
 | text | object | Object with properties to override strings used in the form templates | `{ loading: 'loading' }` |
+| messages | object | Object with default messages for common validator errors | `{...}` |
 | components | `{...}` | Object with `[FieldType.<name>]` properties to globally override components per `Field type` | `default set, see Field Types` |
 
 *= required
