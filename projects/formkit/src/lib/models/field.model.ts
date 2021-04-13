@@ -1,5 +1,5 @@
 import { FormValues, Options } from './form.model';
-import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 export enum FieldType {
@@ -20,7 +20,7 @@ export enum FieldType {
 }
 
 type FieldMessageFunctionPayload<T> = {
-  control: FormControl | FormArray | FormGroup,
+  control: AbstractControl | FormControl | FormArray | FormGroup,
   errors: ValidationErrors | null,
   values: Required<FormValues<T>>
 }
@@ -36,59 +36,53 @@ export type FieldMessage = {
   text: string
 }
 
-export type FieldMessageProperties<T> = {
-  show?: boolean | ((payload : FieldMessageFunctionPayload<T>) => boolean)
-  type?: FieldMessageType,
-  text: string | ((payload : FieldMessageFunctionPayload<T>) => string)
-}
-
-type ConditionalFunction<T> = boolean | ((values: T) => boolean);
+export type FieldMessagesFunction<T> = (payload: FieldMessageFunctionPayload<T>) => { show: boolean, type?: FieldMessageType, text: string }[];
 
 type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType;
   component?: any;
-  required?: ConditionalFunction<Model>;
-  disabled?: ConditionalFunction<Model>;
-  hidden?: ConditionalFunction<Model>;
   resetFormOnChange?: boolean;
 
-  /**
-   * Optional label. This description is placed as the 'label' above the field
-   */
-  label?: string;
+  footer?: {
+    description: string;
+  }
+
+  header?: {
+    description?: string;
+    title?: string;
+    tooltip?: string;
+  }
+
   /**
    * Optional width of the field. Defaults to full width
    */
   width?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
   /**
-   * Optional title. This title is placed above the field
-   */
-  title?: string;
-
-  /**
    * Optional placeholder
    */
   placeholder?: string;
 
-  /**
-   * Optional description. This description is placed inside a <header> **above** the field
-   */
-  description?: string;
+  messages?: false | FieldMessagesFunction<Model>;
 
-  tooltip?: string;
-  messages?: false | FieldMessageProperties<Model>[];
+  status?: (payload: FieldMessageFunctionPayload<Model>) => {
+    required?: boolean;
+    disabled?: boolean;
+    hidden?: boolean;
+  }
 }
 
 type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   value?: Level[FieldKey];
   validators?: ValidatorFn[];
+  class?: string[];
   transform?: (values: Model) => Level[FieldKey] | undefined;
 }
 
 export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Repeatable;
   buttonLabel?: string;
+  class?: string[];
   delete?: boolean;
   max?: number;
   fields: {
@@ -122,6 +116,7 @@ export type IRadioField<Model, Level, FieldKey extends keyof Level> = ISingleFie
 
 export type IToggleField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Toggle;
+  label: string;
 }
 
 export type ISelectField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {

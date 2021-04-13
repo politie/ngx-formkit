@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "cross-env NODE_ENV=production && npm run build:lib && npm run build:app",
+    "build:app": "ng build showcase --prod",
     "build:lib": "ng build formkit --prod",
     "test": "npm run test:lib && npm run build:lib && npm run test:app",
     "test:lib": "jest --config ./jest.lib.config.js",
@@ -63,6 +64,7 @@
     "@typescript-eslint/parser": "4.3.0",
     "autoprefixer": "^10.0.2",
     "codelyzer": "^6.0.0",
+    "cross-env": "^7.0.2",
     "cypress": "^6.4.0",
     "eslint": "^7.19.0",
     "eslint-plugin-import": "2.22.1",

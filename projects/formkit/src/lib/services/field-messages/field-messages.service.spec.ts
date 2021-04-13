@@ -13,11 +13,9 @@ describe('FieldMessagesService', () => {
       control = new FormControl('test-value', null);
       field = {
         type: FieldType.Text,
-        messages: [
+        messages: (payload) => ([
           {
-            show: payload => {
-              return (payload.control.value !== 'test-value');
-            },
+            show: (payload.control.value !== 'test-value'),
             type: FieldMessageType.Information,
             text: 'this is a information message'
           },
@@ -27,10 +25,10 @@ describe('FieldMessagesService', () => {
             text: 'this is a warning that must always show'
           },
           {
-            show: payload => payload.values.input3 === 'input3',
+            show: payload.values.input3 === 'input3',
             text: 'Message that shows when input3 value is input3'
           }
-        ]
+        ])
       };
     });
 

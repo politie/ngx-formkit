@@ -18,6 +18,7 @@ import { selectFormFields } from './components/inputs/e2e.select.inputs';
 import { textFormFields } from './components/inputs/e2e.text.inputs';
 import { textareaFormFields } from './components/inputs/e2e.textarea.inputs';
 import { toggleFormFields } from './components/inputs/e2e.toggle.inputs';
+import { disabledFormFields } from './components/inputs/e2e.disabled.inputs';
 
 @Component({
   selector: 'app-root',
@@ -43,6 +44,11 @@ export class AppComponent {
       title: 'simple',
       message: 'Basic implementation',
       fields: simpleFormFields
+    },
+    {
+      title: 'disabled',
+      message: 'Demo to show the option to make a field disabled based on a condition.',
+      fields: disabledFormFields
     },
     {
       title: 'layout',

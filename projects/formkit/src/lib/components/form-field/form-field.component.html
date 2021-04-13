@@ -1,26 +1,31 @@
-<header *ngIf="field.description || field.title" class="formkit-field-header">
+<header *ngIf="field.header" class="formkit-field-header">
   <div class="formkit-field-header-inner">
-    <span *ngIf="field.title" class="formkit-field-title">{{ field.title }}</span>
+    <span *ngIf="field.header.title" class="formkit-field-title">{{ field.header.title }}</span>
 
     <span
-      *ngIf="field.tooltip"
+      *ngIf="field.header.tooltip"
       class="formkit-field-tooltip"
-      data-tooltip="field.tooltip">
+      [attr.data-tooltip]="field.header.tooltip">
       <span class="formkit-field-tooltip-icon">i</span>
     </span>
   </div>
 
-  <p *ngIf="field.description" class="formkit-field-description">{{ field.description }}</p>
+  <p *ngIf="field.header.description" class="formkit-field-description">{{ field.header.description }}</p>
 </header>
 
 <!-- Field component will be rendered here -->
 <ng-template formkitFormField></ng-template>
 
-<!-- Field messages -->
-<div
-  *ngFor="let message of fieldMessagesService.list$ | async"
-  class="formkit-field-notification"
-  cy-formkit-field-notification
-  [ngClass]="FieldMessageType[message.type].toLowerCase()">
-  <p>{{ message.text }}</p>
+<div class="formkit-field-messages">
+  <div
+    *ngFor="let message of fieldMessagesService.list$ | async"
+    class="formkit-field-notification"
+    cy-formkit-field-notification
+    [ngClass]="FieldMessageType[message.type].toLowerCase()">
+    <p>{{ message.text }}</p>
+  </div>
 </div>
+
+<footer *ngIf="field.footer" class="formkit-field-footer">
+  <p *ngIf="field.footer.description" class="formkit-field-description">{{ field.footer.description }}</p>
+</footer>

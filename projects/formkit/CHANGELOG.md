@@ -1,4 +1,6 @@
-# 2.0.0
+# 2.0.0 - 2.0.2
+This release has a lot of breaking changes:
+
 - Removed `hooks` property for fields.
 - Removed `icon` property  for fields.
 - Removed `multiple` option for select field.
@@ -9,6 +11,8 @@
 - Updated all field types to not use `Material` components.
 - Updated input names to prevent `ng-` classes bubbling up the entire DOM tree inside the `formkit-form`.
 - Updated `Array` field to `Repeatable`.
+- Moved `required`, `disabled` and `hidden` properties to a single `status` function that returns the status per property.
+- Updated: `messages` property is now a function that returns a array of messages.
 
 # 1.0.3
 - Hotfix for the NGCC compiler giving errors for `Required` type usage.

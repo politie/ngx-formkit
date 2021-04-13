@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 import { FormValues, IVisibleField } from '../../models';
 import { mergeError, removeError } from '../../helpers';
-import { AbstractControl, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IFieldStateService } from './field-state.service.model';
 import { Injectable } from '@angular/core';
 
@@ -9,17 +9,22 @@ import { Injectable } from '@angular/core';
 export class FieldStateService implements IFieldStateService {
   public visibilityChanges$ = new Subject<boolean>();
 
-  updateFieldState(control: AbstractControl, field: IVisibleField<any, any, any>, values: FormValues<any>) {
-    if (field.hidden) {
-      this.updateHiddenState(typeof field.hidden === 'boolean' ? field.hidden : field.hidden(values));
-    }
+  updateFieldState(control: AbstractControl | FormControl | FormArray | FormGroup, field: IVisibleField<any, any, any>, values: FormValues<any>) {
 
-    if (field.disabled) {
-      this.updateDisabledState(control, typeof field.disabled === 'boolean' ? field.disabled : field.disabled(values));
-    }
+    if (field.status && typeof field.status === 'function') {
+      const result = field.status({ control, errors: control.errors || {}, values });
 
-    if (field.required) {
-      this.updateRequiredState(control, typeof field.required === 'boolean' ? field.required : field.required(values));
+      if (typeof result.hidden !== 'undefined') {
+        this.updateHiddenState(result.hidden);
+      }
+
+      if (typeof result.disabled !== 'undefined') {
+        this.updateDisabledState(control, result.disabled);
+      }
+
+      if (typeof result.required !== 'undefined') {
+        this.updateRequiredState(control, result.required);
+      }
     }
   }
 

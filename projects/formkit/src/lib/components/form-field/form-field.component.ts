@@ -46,7 +46,8 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
-      (this.hidden) ? 'hidden' : ''
+      (this.hidden) ? 'hidden' : '',
+      (this.field.class) ? this.field.class.join(' ') : ''
     ].filter(Boolean).join(' ');
   }
 
@@ -147,7 +148,9 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue(), this.config.messages);
+      if (this.field.messages !== false) {
+        this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue(), this.config.messages);
+      }
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();

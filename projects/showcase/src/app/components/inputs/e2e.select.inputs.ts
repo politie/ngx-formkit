@@ -12,7 +12,7 @@ export const selectFormFields: FormFields<SelectForm> = {
       label: 'Label 1',
       description: 'Description 1'
     },
-    label: 'Select an option',
+    placeholder: 'Select an option',
     options: [
       {
         id: 1,

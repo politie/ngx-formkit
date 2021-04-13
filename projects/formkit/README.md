@@ -1,5 +1,7 @@
 # ngx-FormKit
 
+Current version: 2.0.2
+
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
 Since the FormKit library is built on top of [Angular Reactive Forms](https://angular.io/guide/reactive-forms), you can use all the built in [Validators](https://angular.io/api/forms/Validators) as well as [custom validator functions](https://angular.io/guide/form-validation#adding-custom-validators-to-reactive-forms). FormKit has dynamic and conditional callback functions per defined `Field`, like:
@@ -14,22 +16,11 @@ Since the FormKit library is built on top of [Angular Reactive Forms](https://an
 npm i @politie/formkit
 ```
 
-This will install the FormKit library as a dependency in your project. You can now use the `FormComponent` component in your project.
+This will install the FormKit library as a dependency in your project.
 
-# Building blocks
+## Import the `FormKitModule`
 
-## `FormComponent`
-Add this component to your host component. This component renders a `<formkit-form>` component and `FormFieldComponent` components for every defined field in your `FormKitFields` list.
-
-## `FormFieldComponent`
-This component is rendered for each field in your form configuration. The component takes care of all logic after an update is done to the model (the form values). It will hook into the `events$` stream of the `FormComponent` to handle these updates and will call all logic in your field management (required, disabled, hidden, loading).
-
-## `FormKitForm<T>`
-This type is used to create objects for `FormKit`. In a `FormKitFields` list, you define the fields that the form should render.
-
-# Import the `FormKitModule`
-
-Add the `FormKitModule` in your `AppModule` and call the `forRoot()` method. You can add configuration as a parameter. When you have multiple modules, you can omit the `forRoot()` method in modules other than `AppModule`.
+Add the `FormKitModule` in your `AppModule` and call the `forRoot()` method. You can add a [optional configuration object](#module-configuration) as a parameter. When you have multiple modules, you can omit the `forRoot()` method in modules other than `AppModule`.
 
 ```ts
 @NgModule({
@@ -40,24 +31,41 @@ Add the `FormKitModule` in your `AppModule` and call the `forRoot()` method. You
 export class AppModule { }
 ```
 
+You can now use the `<formkit-form>` component in your project.
 
-# Setup
+## Create a form
 Add the following options to the component where you want to add a `<formkit-form>`.
 
 ```ts
-import { FormComponent, IFormGroup, FormKitFields } from '@politie/formkit';
+import { FormComponent, IFormGroup, FormKitFields, FieldType } from '@politie/formkit';
 import { ViewChild } from '@angular/core';
 
+type UserForm = {
+  username: string;
+}
+
 export class MyComponent {
-  form = new FormGroup({}) as IFormGroup<Type>;
-  fields: FormKitFields<Type> = {
-    ...
+
+  /**
+   * The IFormGroup interface extends the regular FormGroup by adding strict typings.
+   * You pass this form property to the <formkit-form> in the template.
+   */
+  form = new FormGroup({}) as IFormGroup<UserForm>;
+
+  /**
+   * The fields object contains all your field definitions. You pass this fields
+   * object to the <formkit-form> in the template.
+   */
+  fields: FormKitFields<UserForm> = {
+    username: {
+      type: FieldType.Text
+    }
   };
   /**
    * By using ViewChild, we can use the methods provided in the FormComponent
    * directly in this component class by calling this.form.<method-name>()
    */
-  @ViewChild('myFormKitForm', { static: true }) formComponent: FormComponent<Type>;
+  @ViewChild('userForm', { static: true }) formComponent: FormComponent<UserForm>;
 
   /**
    * Method for handling submits
@@ -68,61 +76,25 @@ export class MyComponent {
 }
 ```
 
-In the template, add the form by adding the `formkit-form` selector. Give it the reference name you've assigned in the `@ViewChild`, for this example: `#myFormKitForm`.
-
-The Form component has a `@Output() EventEmitter` set for the `ngSubmit` event which you can use to call your own method in the host component. In the `[form]` property, you add a `FormKitForm` configuration.
+In your Component template, add the form by adding the `formkit-form` selector. Give it the reference name you've assigned in the `@ViewChild`, for this example: `#userForm`. In the `[form]` property, you add the empty `FormGroup`, in the `[fields]` property, you add your `FormKitFields` definition.
 
 ```angular2html
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <formkit-form #myFormKitForm [fields]="fields" [form]="formGroup">
-    <button
-      type="button"
-      (click)="onSubmit()"
-      [disabled]="form.invalid">
-      Save
-    </button>
-  </formkit-form>
+  <formkit-form #myFormKitForm [fields]="fields" [form]="form"></formkit-form>
+  <button
+    type="button"
+    (click)="onSubmit()"
+    [disabled]="form.invalid">
+    Save
+  </button>
 </form>
 ```
 
-## Create a form
-To create a form, you'll need to create a `FormKitFields` list and a `FormGroup`. The `FormKitFields` type expects an object with your field definitions.
-
-```ts
-import { FormKitFields, FormComponent } from '@politie/formkit';
-import { OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-
-type MyType = {
-  username: string;
-}
-
-export class MyComponent implements OnInit {
-  formGroup = new FormGroup({});
-
-  /* Use the static option if you'd like to use the form in the OnInit
-   * lifecycle
-   */
-  @ViewChild('form', { static: true }) form: FormComponent<Type>;
-
-  /**
-   * The fields for the form in this component. Add a type definition
-   * to strongly type check field names in the configuration.
-   */
-  fields: FormKitFields<MyType> = {
-    username: {
-      type: FieldType.Text
-    }
-  }
-}
-
-```
-
-The above example will render with one field of type `TextField`, bind to the `username` name.
+That's it! You can now dive in the extensive set of configuration options and properties to alter the behavior of the form and form fields.
 
 ## `Field` properties
-Each field object should at least have a `type` option set:
+Each field object should at least have a `type` option set. The type property must be of type `FieldType` which is a enum provided by the `FormKitModule`.
 
 > The object name should match a key in the provided Type definition. Following the example above, you can use `username` as name for a field object.
 
@@ -132,88 +104,113 @@ Below is a rundown of each option per field object.
 
 | Parameter | Type | Description 
 |:---|:---|:---|
-| type* | `FieldType` | The type of field. See [Field Types](#field-types) for available field types. |
-| component | `any` | If you'd like to render a custom component for this field, add the class here. See See ['Custom components'](#custom-components) for example usage. |
-| description | `string` | Description to display above the field. |
-| disabled | `boolean` / `((values: T) => boolean)` | Should the field be disabled based on values of other fields. See ['Disable fields'](#disable-fields) for example usage. |
-| hidden | `boolean` / `((values: T) => boolean)` | Should the field be hidden based on values of other fields. See ['Hide fields'](#hide-fields) for example usage. |
-| label | `string` | Label for this field. |
-| messages | `false` or `FieldMessage[]` | Messages for this field. See ['Field messages'](#field-messages) for example usage. |
-| required | `boolean` / `((values: T) => boolean)` | Should the field be required based on values of other fields. See ['Required fields'](#required-fields) for example usage.  |
+| type* | `FieldType` | The type of field to render. See [Field Types](#field-types) for available field types. |
+| class | `string[]` | Add additional CSS classes which will be placed on the `<formkit-form-field>` in the HTML. |
+| component | `any` | If you'd like to render a custom component for this field, add the class here. See See [Custom components](#custom-components) for example usage. |
+| header | `{ title?: string, description?: string, tooltip?: string }` | Object with properties to add a title, description or tooltip above the field. |
+| footer | `{ description?: string }` | Object with properties to add a description below the field (below the field messages). |
+| messages | `false` or `FieldMessagesFunction<T>` | A function that returns dynamic messages for this field. See [Field messages](#field-messages) for example usage. |
 | placeholder | `string` | Optional placeholder text for input fields (when the user sets focus on a field and the field value is empty, the placeholder is shown). |
 | resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. You can't use this property inside a Array Field type. |
-| title | `string` | Title to display above the field. |
-| tooltip | `string` | Tooltip to display above the field. |
-| transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See ['Transform field values'](#transform-field-values) for example usage. |
-| validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator) |
+| status | `FieldStatusFunction<T>` | A function that should return a object with boolean properties for `hidden`, `disabled`, `required` status. See [Status](#status) for examples. |
+| transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See [Transform field values](#transform-field-values) for example usage. |
+| validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator). |
 | value | `any` | Set a default value to the control. |
 | width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
 
-### Hide fields
-With conditional hiding, you can hide a field based on the value (or values) of other fields.
+### Status
+You can use the `status` property on a field to alter the status of a field dynamically, based on form values or `control` properties. The `status` property asks for a function that returns a object with `disabled`, `hidden` and `required` properties (all optional) that are of type `boolean`. The function has a `payload` paramater with the following properties:
 
-``` typescript
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    hidden: values => values.configuration !== 'local'
-  }
+```ts
+type payload = {
+  control: AbstractControl | FormControl | FormArray | FormGroup, // The FormControl for this field
+  errors: ValidationErrors, // the errors on this field (will be a empty object if there aren't any 
+  values: FormValues<T> // the current values on the form (object)
 }
 ```
 
-In this example, the `myField` field will be hidden when the `configuration` field `value` isn't equal to `local`.
-
-### Required fields
-With conditional required, you'll make the field `required` based on the `value` (or `values`) of other fields.
-
-``` typescript
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    required: values => values.configuration !== 'local'
-  }
+#### Example
+```ts
+type UserForm = {
+  username: string;
+  toggle: boolean;
 }
+
+const fields: FormKitFields<UserForm> = {
+  toggle: {
+    type: FieldType.Toggle,
+    value: false,
+    label: 'Toggle me to show/hide the username field'
+  },
+  username: {
+    type: FieldType.Text,
+    status: (payload) => ({
+      disabled: !payload.values.toggle,
+      hidden: payload.values.toggle
+    })
+  }
+};
 ```
 
-In this example, the `myField` field will be required when the `configuration` field `value` isn't equal to `local`.
+In this example, the `username` field will be `hidden` if the `toggle` field value is truthy. You can use object destructuring as well, to only get the properties needed from the payload object.
 
-> If you want to make a field that's always required, use the `validators` property with Angular's built in `Validators.required` method.
-
-### Disable fields
-You can disable fields based on the values of other fields.
-
-``` typescript
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    disabled: values => values.configuration !== 'local'
-  }
+```ts
+type UserForm = {
+  username: string;
+  toggle: boolean;
 }
+
+const fields: FormKitFields<UserForm> = {
+  toggle: {
+    type: FieldType.Toggle,
+    value: false,
+    label: 'Toggle me to show/hide the username field'
+  },
+  username: {
+    type: FieldType.Text,
+    status: ({ values }) => ({
+      disabled: !values.toggle,
+      required: values.toggle
+    })
+  }
+};
 ```
 
-In this example, the `myField` field will be disabled when the `configuration` field `value` isn't equal to `local`.
+> If you want to make a field always required, it's better to use the `validators` property with Angular built in `Validators.required` method.
 
 ### Field messages
-To add messages, create an array with `FieldMessage` type objects in it. Each message has the following properties:
+To add messages to a field, add a function to the `messages` property that returns an array with `FieldMessage` type objects in it. The function has a payload parameter with the following properties:
+
+```ts
+type payload = {
+  control: AbstractControl | FormControl | FormArray | FormGroup, // The FormControl for this field
+  errors: ValidationErrors, // the errors on this field (will be a empty object if there aren't any 
+  values: FormValues<T> // the current values on the form (object)
+}
+```
+
+Each message in the returned messages array should have the following properties. Asterisk marked properties are required.
 
 | Property | Type | Description |
 |:---|:---|:---|
-| show | `boolean` or `‌(payload : FieldMessageFunctionPayload<T>) => boolean` | Choose when to show your message. |
-| type | `FieldMessageType` | Choose a type of message (defaults to `FieldMessageType.Information` |
-| text | `string` or `‌(payload : FieldMessageFunctionPayload<T>) => string` | Add your text. The function should return a string. |
+| show* | `boolean` | Wether to show this message. |
+| type | `FieldMessageType` | Type of message (defaults to `FieldMessageType.Information`) |
+| text* | `string` | The text for this message. |
 
 #### Always show a message
 
 ```ts
+import { FieldType, FormKitFields } from '@politie/ngx-formkit';
+
 const fields: FormKitFields<Type> = {
   myField: {
     type: FieldType.Text,
-    messages: [
+    messages: (payload) => ([
       {
         show: true,
         text: 'Hello world'
       }
-    ]
+    ])
   }
 }
 ```
@@ -221,45 +218,27 @@ const fields: FormKitFields<Type> = {
 #### Use in combination with a Validator
 
 ```ts
+import { FieldType, FormKitFields } from '@politie/ngx-formkit';
+import { Validators } from '@angular/forms';
+
 const fields: FormKitFields<Type> = {
   myField: {
     type: FieldType.Text,
-    messages: [
+    validators: [Validators.minLength(10)],
+    messages: ({control, errors, values}) => ([
       {
-        show: ({ control, errors }) => (control.value && errors.minlength),
-        text: ({errors}) => {
-          return `Input length: ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
-        }
+        show: Boolean(control.value && errors.minlength),
+        type: FieldType.Error,
+        text: `You've entered ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
       }
-    ]
+    ])
   }
 }
 ```
 
-#### Default messages
-
-You can add or edit default messages if you import the `FormKit` Module. Update the `messages` object in the `forRoot()` payload object:
-
-```ts
-@NgModule({
-  imports: [
-    FormKitModule.forRoot({
-      messages: {
-        required: 'This field is required',
-        min: error => `Value should be at least ${error.min}.`
-      }
-    })
-  ]
-})
-export class AppModule { }
-```
-
-You can also use the provided `FORMKIT_DEFAULT_MESSAGES_NL` object for a Dutch translated set of default messages.
-
-
 #### Disable all messages
 
-If you want to disable all messages (including default messages), simply pass `messages: false` to the field configuration:
+If you want to disable all messages (including default messages) for a field, simply pass `messages: false` to the field configuration:
 
 ```ts
 const fields: FormKitFields<Type> = {
@@ -283,7 +262,7 @@ Example:
 | form* | `FormGroup` | The FormGroup to use for this form. | |
 | fields* | `FormFields<T>` | The fields configuration for this form | |
 | readonly | `boolean` | Render the form in readonly mode | `false` |
-| fieldsTemplate | `TemplateRef` | If you want to render all the fields yourself, you can do so by passing a `TemplateRef` to this input. | `DefaultFieldsTemplate` |
+| fieldsTemplate | `TemplateRef` | If you want to render all the fields yourself, you can pass a `TemplateRef` to this input. See [Custom Forms](#custom-forms) for an example. | `DefaultFieldsTemplate` |
 
 *required
 
@@ -346,11 +325,9 @@ Example:
 ```
 
 The available slots are:
-- `beforeCreated` Visible if the `autoCreate` attribute is set to `false` and before calling `create()`.
-- `formDescription` Visible if `create()` is called, placed above the form fields.
-- `formDescriptionReadOnly` Visible if `create()` is called and the `readonly` attribute is set to `true`.
-- `footer` Visible if `create()` is called, placed below the form fields
-- `submitButton` Visible if `create()` is called, placed below the footer and form fields.
+- `formDescription` Placed above the form fields.
+- `formDescriptionReadOnly` Visible if the `readonly` attribute is set to `true`.
+- `footer` Placed below the form fields.
 
 ## Styling
 
@@ -383,28 +360,51 @@ To get the most out of the form, you can use the following starting point for th
 }
 ```
 
-### Tip: Customising the appearance of Angular Material text fields
+## Module configuration
 
-You can override the appearance of Angular Material text fields used in FormKit by overriding the default options with the `MAT_FORM_FIELD_DEFAULT_OPTIONS` Injection Token:
+You can add a optional configuration object to the `FormKitModule` when importing. This object has a few optional properties you can set:
+
+### Debounce time
+Add a `updateDebounceTime` property in the object to edit the amount of milliseconds it takes before FormKit calls the update logic per field. Defaults to `200`.
+
+### Default messages
+
+You can edit default messages for common `Validators` errors if you import the `FormKit` Module. Update the `messages` object in the `forRoot()` payload object:
 
 ```ts
 @NgModule({
-  providers: [
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: {
-        appearance: 'legacy' | 'outline' | 'standard' | 'fill'
+  imports: [
+    FormKitModule.forRoot({
+      messages: {
+        required: 'This field is required',
+        min: error => `Value should be at least ${error.min}.`
       }
-    }
+    })
   ]
 })
+export class AppModule { }
 ```
 
-## Custom components
+You can also use the provided `FORMKIT_DEFAULT_MESSAGES_NL` object for a Dutch translated set of default messages.
+
+```ts
+import { FORMKIT_DEFAULT_MESSAGES_NL } from '@politie/ngx-formkit';
+
+@NgModule({
+  imports: [
+    FormKitModule.forRoot({
+      messages: FORMKIT_DEFAULT_MESSAGES_NL
+    })
+  ]
+})
+export class AppModule { }
+```
+
+### Custom components
 
 By default, the FormKit uses a set of prebuilt components to build your form. You can add your own custom components. You can choose between updating all fields that match a certain `FieldType` to render your custom component by customising the default set. If you need to update a specific field without changing other fields with the same `FieldType`, you can customise a specific field.
 
-### Customising the default set
+#### Customising the default set
 
 Add the `components` property to the `forRoot()` payload object and add components that you want to override per `FieldType`:
 
@@ -423,20 +423,20 @@ export class AppModule { }
 
 > This will update all fields that use the `FieldType.Text` type as field `type` property to use the `CustomTextInputComponent`.
 
-### Customising a component for a specific field
+#### Customising a component for a specific field
 
 ```ts
-const formConfig: FormKitFields<Type> = {
+const fields: FormKitFields<Type> = {
   myField: {
     type: FieldType.TextField,
-    component: CustomTextInputComponent.
+    component: CustomTextInputComponent
   }
 }
 ```
 
 > This will make sure that field `myField` uses the `CustomTextInputComponent`.
 
-### Creating your custom component
+##### Creating your custom component
 
 You can extend the `FieldBaseComponent`. This component has all `@Input()` properties set (you can override the types).
 
@@ -452,7 +452,6 @@ import { FieldBaseComponent, ISingleField, FormKitForm } from '@politie/formkit'
 export class CustomTextInputComponent extends FieldBaseComponent implements OnInit {
 
   @Input() control!: FormControl | FormArray | FormGroup;
-  @Input() events$!: Subject<FormEvent>;
   @Input() field!: ISingleField<any>;
   @Input() name!: string;
   @Input() form!: FormGroup;
@@ -461,7 +460,7 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
 }
 ```
 
-> Make sure that you add your component to the `entryComponents` in the module.
+> Make sure that you add your component to the `entryComponents` in your  AppModule.
 
 ## Custom Forms
 
@@ -481,7 +480,9 @@ By default, `FormKit` renders all your fields automatically. If you want to have
 </formkit-form>
 ```
 
-Inside the template, you'll have access to two variables: `fields` and `keys`. The `fields` variable is the object with your `Field` definitions. The `keys` variable is a array containing all the `keys` in your `fields` definition, so you can easily loop over the fields with `*ngFor`.
+Inside the template, you'll have access to two variables: `fields` and `keys`. The `fields` variable is the object with your `Field` definitions. The `keys` variable is a array containing all the `keys` in your `fields` definition, so you can easily loop over the fields with `*ngFor`. 
+
+> Make sure that your `<ng-template>` with the templateRef is placed within the `<formkit-form>`.
 
 ## Field Types
 The following field types are available (you can [add your own](#custom-components)):
@@ -498,7 +499,6 @@ The following field types are available (you can [add your own](#custom-componen
 - Text Field
 - Textarea Field
 - Toggle Field
-
 
 ### Note about using `strictTemplates`
 

@@ -14,7 +14,7 @@ export class FieldMessagesService implements IFieldMessagesService {
   public list$ = new Subject<FieldMessage[]>();
 
   updateVisibleMessages(
-    control: AbstractControl,
+    control: AbstractControl | FormControl | FormArray | FormGroup,
     field: IVisibleField<any, any, any>,
     values: FormValues<any>,
     defaultMessages: { [key: string]: string | ((error: any) => string) }
@@ -39,27 +39,14 @@ export class FieldMessagesService implements IFieldMessagesService {
     /**
      * Payload for the show function parameter
      */
-    const payload = {
-      control: control as FormControl | FormArray | FormGroup,
-      errors: control.errors || {},
-      values
-    };
+    const payload = { control, errors: control.errors || {}, values};
 
     if (field.messages) {
       messages = [
         ...messages,
-        ...field.messages
-          .filter(message => {
-            if (typeof message.show === 'function') {
-              return message.show(payload);
-            } else {
-              return (message.show);
-            }
-          })
-          .map(message => ({
-            type: message.type || FieldMessageType.Information,
-            text: (typeof message.text === 'string') ? message.text : message.text(payload)
-          }))
+        ...field.messages(payload)
+          .filter(m => m.show)
+          .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }))
       ];
     }
 

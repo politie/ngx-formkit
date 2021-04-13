@@ -10,7 +10,9 @@ export const requiredFormFields: FormFields<RequiredForm> = {
   input: {
     type: FieldType.Text,
     validators: [Validators.email],
-    required: values => values.checkbox
+    status: ({ values }) => ({
+      required: values.checkbox
+    })
   },
   checkbox: {
     type: FieldType.Checkbox,

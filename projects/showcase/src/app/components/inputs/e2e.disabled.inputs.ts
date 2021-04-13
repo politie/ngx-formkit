@@ -1,27 +1,23 @@
 import { FieldType, FormFields } from 'formkit';
 
-export type HiddenForm = {
-  input: string;
+export type DisabledForm = {
   checkbox: boolean;
   text: string;
 }
 
-export const hiddenFormFields:FormFields<HiddenForm> = {
+export const disabledFormFields:FormFields<DisabledForm> = {
   checkbox: {
     type: FieldType.Checkbox,
     value: false,
     option: {
       id: true,
-      label: 'Hide text field'
+      label: 'Disable text field'
     }
   },
-  input: {
+  text: {
     type: FieldType.Text,
     status: ({ values }) => ({
-      hidden: values.checkbox
+      disabled: values.checkbox
     })
-  },
-  text: {
-    type: FieldType.Text
   }
 };

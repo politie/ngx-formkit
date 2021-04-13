@@ -7,17 +7,17 @@ export type MessagesForm = {
 export const messagesFormFields: FormFields<MessagesForm> = {
   input: {
     type: FieldType.Text,
-    messages: [
+    messages: (payload) => ([
       {
+        show: !payload.control.value || payload.control.value === '',
         type: FieldMessageType.Information,
-        text: 'This message will show if the field is empty',
-        show: ({ control }) => !control.value || control.value === ''
+        text: 'This message will show if the field is empty'
       },
       {
+        show: Boolean(payload.control.value),
         type: FieldMessageType.Information,
-        text: ({ control }) => `You have entered ${control.value.length} characters.`,
-        show: ({ control }) => control.value
+        text: `You have entered ${payload.control.value?.length} characters.`
       }
-    ]
+    ])
   }
 };
