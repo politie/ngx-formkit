@@ -16,15 +16,17 @@
 <!-- Field component will be rendered here -->
 <ng-template formkitFormField></ng-template>
 
-<div class="formkit-field-messages">
-  <div
-    *ngFor="let message of fieldMessagesService.list$ | async"
-    class="formkit-field-notification"
-    cy-formkit-field-notification
-    [ngClass]="FieldMessageType[message.type].toLowerCase()">
-    <p>{{ message.text }}</p>
+<ng-container *ngIf="fieldMessagesService.list$ | async as messages">
+  <div *ngIf="messages.length" class="formkit-field-messages">
+    <div
+      *ngFor="let message of messages"
+      class="formkit-field-notification"
+      cy-formkit-field-notification
+      [ngClass]="FieldMessageType[message.type].toLowerCase()">
+      <p>{{ message.text }}</p>
+    </div>
   </div>
-</div>
+</ng-container>
 
 <footer *ngIf="field.footer" class="formkit-field-footer">
   <p *ngIf="field.footer.description" class="formkit-field-description">{{ field.footer.description }}</p>

@@ -1,3 +1,6 @@
+# 2.0.3
+- Fixed: Empty messages list if no messages or messages: false is now hidden
+
 # 2.0.0 - 2.0.2
 This release has a lot of breaking changes:
 
