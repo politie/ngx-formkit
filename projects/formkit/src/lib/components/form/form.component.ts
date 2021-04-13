@@ -196,9 +196,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
    * @param field definition for this field
    */
   processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
-    if (field.type === FieldType.Hidden) {
-      return;
-    } else if (field.type === FieldType.Repeatable) {
+    if (field.type === FieldType.Repeatable) {
       this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));

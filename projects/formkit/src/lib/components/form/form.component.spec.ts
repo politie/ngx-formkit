@@ -189,7 +189,7 @@ describe('FormComponent', () => {
           resetFormOnChange: true
         },
         value2: {
-          type: FieldType.Text
+          type: FieldType.Hidden
         },
         value3: {
           type: FieldType.Text,
