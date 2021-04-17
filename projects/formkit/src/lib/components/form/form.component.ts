@@ -1,14 +1,15 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
+  Component, ElementRef,
   Inject,
   Input,
   OnDestroy,
-  OnInit,
-  TemplateRef
+  OnInit, QueryList,
+  TemplateRef, ViewChildren
 } from '@angular/core';
-import { merge, Subject, timer } from 'rxjs';
+import { BehaviorSubject, merge, ReplaySubject, Subject, timer } from 'rxjs';
 
 import {
   FieldType,
@@ -26,6 +27,7 @@ import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
 import { FormArray, FormGroup } from '@angular/forms';
 import { createFormControl, formGroupFromBlueprint } from '../../helpers';
+import { FormFieldComponent } from '../form-field/form-field.component';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -40,12 +42,14 @@ import { createFormControl, formGroupFromBlueprint } from '../../helpers';
     FormService
   ]
 })
-export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
+export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnInit, OnDestroy {
   @Input() readonly = false;
   @Input() fieldsTemplate!: TemplateRef<any>;
 
   @Input() form!: FormGroup;
   @Input() fields!: FormFields<T>;
+
+  @ViewChildren(FormFieldComponent) formFieldComponents!: QueryList<FormFieldComponent>;
 
   created = false;
   destroy$ = new Subject<boolean>();
@@ -53,6 +57,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
 
   readonly afterValueUpdateScheduler$ = new Subject<void>();
   private initialValues!: T;
+  private nativeElementsSubject$ = new ReplaySubject<any>(1);
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -66,6 +71,10 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
 
   get scheduler$() {
     return this.afterValueUpdateScheduler$;
+  }
+
+  get nativeElements$() {
+    return this.nativeElementsSubject$;
   }
 
   get value$() {
@@ -95,6 +104,16 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     if (!this.fields || (Object.keys(this.fields).length === 0 && this.fields.constructor === Object)) {
       throw new Error(`FormKit: <formkit-form> has no fields set in [fields] attribute.`);
     }
+  }
+
+  ngAfterViewInit() {
+    const elements: { [key: string]: any } = {};
+
+    for (const field of this.formFieldComponents) {
+      elements[field.name] = field.componentRef.instance.nativeElement?.nativeElement;
+    }
+
+    this.nativeElementsSubject$.next(elements);
   }
 
   ngOnInit(): void {

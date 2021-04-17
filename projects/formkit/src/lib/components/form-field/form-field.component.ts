@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentFactoryResolver,
+  ComponentRef,
   HostBinding,
   Inject,
   OnInit,
@@ -58,6 +59,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
 
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
+  componentRef!: ComponentRef<any>;
 
   private componentCdr!: ChangeDetectorRef;
   private hidden = false;
@@ -106,12 +108,12 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     const ref = this.fieldHost.viewContainerRef;
     ref.clear();
 
-    const compRef = ref.createComponent<any>(factory);
-    compRef.instance.control = this.control;
-    compRef.instance.form = this.form;
-    compRef.instance.field = this.field;
-    compRef.instance.name = this.name;
-    this.componentCdr = compRef.injector.get(ChangeDetectorRef);
+    this.componentRef = ref.createComponent<any>(factory);
+    this.componentRef.instance.control = this.control;
+    this.componentRef.instance.form = this.form;
+    this.componentRef.instance.field = this.field;
+    this.componentRef.instance.name = this.name;
+    this.componentCdr = this.componentRef.injector.get(ChangeDetectorRef);
   }
 
   /**
