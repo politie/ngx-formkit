@@ -7,6 +7,7 @@ export type SimpleForm = {
 export const simpleFormFields: FormFields<SimpleForm> = {
   input: {
     type: FieldType.Text,
+    autofocus: true,
     header: {
       title: 'Simple',
       tooltip: 'Lorem'

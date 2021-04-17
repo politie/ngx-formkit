@@ -107,6 +107,7 @@ export type IHiddenField<Model, Level, FieldKey extends keyof Level> = {
 
 export type IPasswordField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Password;
+  autofocus?: boolean;
 }
 
 export type IRadioField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
@@ -128,12 +129,14 @@ export type ISelectField<Model, Level, FieldKey extends keyof Level> = ISingleFi
 
 export type ITextField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Date | FieldType.Email | FieldType.Number | FieldType.Text;
+  autofocus?: boolean;
 }
 
 export type ITextareaField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Textarea;
   minRows?: number;
   maxRows?: number;
+  autofocus?: boolean;
 }
 
 export type ISingleField<Model, Level, FieldKey extends keyof Level> =
