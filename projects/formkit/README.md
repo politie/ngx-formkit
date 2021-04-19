@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.0.4
+Current version: 2.1.0
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -37,7 +37,7 @@ You can now use the `<formkit-form>` component in your project.
 Add the following options to the component where you want to add a `<formkit-form>`.
 
 ```ts
-import { FormComponent, IFormGroup, FormKitFields, FieldType } from '@politie/formkit';
+import { FormComponent, IFormGroup, FieldType, FormKitFormConfig } from '@politie/formkit';
 import { ViewChild } from '@angular/core';
 
 type UserForm = {
@@ -53,19 +53,21 @@ export class MyComponent {
   form = new FormGroup({}) as IFormGroup<UserForm>;
 
   /**
-   * The fields object contains all your field definitions. You pass this fields
-   * object to the <formkit-form> in the template.
+   * The fields object contains all your field definitions. You pass this config
+   * object to the [config] attribute for <formkit-form> in the template.
    */
-  fields: FormKitFields<UserForm> = {
-    username: {
-      type: FieldType.Text
+  config: FormKitFormConfig<UserForm> = {
+    fields: {
+      username: {
+        type: FieldType.Text
+      }
     }
   };
   /**
    * By using ViewChild, we can use the methods provided in the FormComponent
    * directly in this component class by calling this.form.<method-name>()
    */
-  @ViewChild('userForm', { static: true }) formComponent: FormComponent<UserForm>;
+  @ViewChild('userForm', {static: true}) formComponent: FormComponent<UserForm>;
 
   /**
    * Method for handling submits
@@ -76,12 +78,12 @@ export class MyComponent {
 }
 ```
 
-In your Component template, add the form by adding the `formkit-form` selector. Give it the reference name you've assigned in the `@ViewChild`, for this example: `#userForm`. In the `[form]` property, you add the empty `FormGroup`, in the `[fields]` property, you add your `FormKitFields` definition.
+In your Component template, add the form by adding the `formkit-form` selector. Give it the reference name you've assigned in the `@ViewChild`, for this example: `#userForm`. In the `[form]` property, you add the empty `FormGroup`, in the `[config]` property, you add your `FormKitFormConfig` definition.
 
 ```angular2html
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <formkit-form #myFormKitForm [fields]="fields" [form]="form"></formkit-form>
+  <formkit-form #myFormKitForm [form]="form" [config]="config"></formkit-form>
   <button
     type="button"
     (click)="onSubmit()"
@@ -113,7 +115,6 @@ Below is a rundown of each option per field object.
 | placeholder | `string` | Optional placeholder text for input fields (when the user sets focus on a field and the field value is empty, the placeholder is shown). |
 | resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. You can't use this property inside a Array Field type. |
 | status | `FieldStatusFunction<T>` | A function that should return a object with boolean properties for `hidden`, `disabled`, `required` status. See [Status](#status) for examples. |
-| transform | `(values: T) => T[K]` / `undefined` | Transform the value of this field based on the values of other fields. Takes a function that has the current values as a parameter and should return the type of value given by the generic type in the `FormKitForm` for this field name. See [Transform field values](#transform-field-values) for example usage. |
 | validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator). |
 | value | `any` | Set a default value to the control. |
 | width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
@@ -130,50 +131,59 @@ type payload = {
 ```
 
 #### Example
+
 ```ts
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
+
 type UserForm = {
   username: string;
   toggle: boolean;
 }
 
-const fields: FormKitFields<UserForm> = {
-  toggle: {
-    type: FieldType.Toggle,
-    value: false,
-    label: 'Toggle me to show/hide the username field'
-  },
-  username: {
-    type: FieldType.Text,
-    status: (payload) => ({
-      disabled: !payload.values.toggle,
-      hidden: payload.values.toggle
-    })
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    toggle: {
+      type: FieldType.Toggle,
+      value: false,
+      label: 'Toggle me to show/hide the username field'
+    },
+    username: {
+      type: FieldType.Text,
+      status: (payload) => ({
+        disabled: !payload.values.toggle,
+        hidden: payload.values.toggle
+      })
+    }
   }
-};
+}
 ```
 
 In this example, the `username` field will be `hidden` if the `toggle` field value is truthy. You can use object destructuring as well, to only get the properties needed from the payload object.
 
 ```ts
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
+
 type UserForm = {
   username: string;
   toggle: boolean;
 }
 
-const fields: FormKitFields<UserForm> = {
-  toggle: {
-    type: FieldType.Toggle,
-    value: false,
-    label: 'Toggle me to show/hide the username field'
-  },
-  username: {
-    type: FieldType.Text,
-    status: ({ values }) => ({
-      disabled: !values.toggle,
-      required: values.toggle
-    })
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    toggle: {
+      type: FieldType.Toggle,
+      value: false,
+      label: 'Toggle me to show/hide the username field'
+    },
+    username: {
+      type: FieldType.Text,
+      status: ({ values }) => ({
+        disabled: !values.toggle,
+        required: values.toggle
+      })
+    }
   }
-};
+}
 ```
 
 > If you want to make a field always required, it's better to use the `validators` property with Angular built in `Validators.required` method.
@@ -200,17 +210,24 @@ Each message in the returned messages array should have the following properties
 #### Always show a message
 
 ```ts
-import { FieldType, FormKitFields } from '@politie/ngx-formkit';
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
 
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    messages: (payload) => ([
-      {
-        show: true,
-        text: 'Hello world'
-      }
-    ])
+type UserForm = {
+  username: string;
+  toggle: boolean;
+}
+
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    username: {
+      type: FieldType.Text,
+      messages: (payload) => ([
+        {
+          show: true,
+          text: 'Hello world'
+        }
+      ])
+    }
   }
 }
 ```
@@ -218,20 +235,27 @@ const fields: FormKitFields<Type> = {
 #### Use in combination with a Validator
 
 ```ts
-import { FieldType, FormKitFields } from '@politie/ngx-formkit';
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
 import { Validators } from '@angular/forms';
 
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    validators: [Validators.minLength(10)],
-    messages: ({control, errors, values}) => ([
-      {
-        show: Boolean(control.value && errors.minlength),
-        type: FieldType.Error,
-        text: `You've entered ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
-      }
-    ])
+type UserForm = {
+  username: string;
+  toggle: boolean;
+}
+
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    username: {
+      type: FieldType.Text,
+      validators: [Validators.minLength(10)],
+      messages: ({control, errors, values}) => ([
+        {
+          show: Boolean(control.value && errors.minlength),
+          type: FieldType.Error,
+          text: `You've entered ${errors.minlength.actualLength} / ${errors.minlength.requiredLength} characters.`
+        }
+      ])
+    }
   }
 }
 ```
@@ -241,10 +265,21 @@ const fields: FormKitFields<Type> = {
 If you want to disable all messages (including default messages) for a field, simply pass `messages: false` to the field configuration:
 
 ```ts
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.Text,
-    messages: false
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
+import { Validators } from '@angular/forms';
+
+type UserForm = {
+  username: string;
+  toggle: boolean;
+}
+
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    username: {
+      type: FieldType.Text,
+      validators: [Validators.minLength(10)],
+      messages: false
+    }
   }
 }
 ```
@@ -254,17 +289,60 @@ const fields: FormKitFields<Type> = {
 Example:
 
 ```angular2html
-<formkit-form [fields]="fields"></formkit-form>
+<formkit-form [config]="config" [form]="form"></formkit-form>
 ```
 
 | Property | Type | Description | Default |
 |:---|:---|:---|:---|
 | form* | `FormGroup` | The FormGroup to use for this form. | |
-| fields* | `FormFields<T>` | The fields configuration for this form | |
+| config* | `FormKitFormConfig<T>` | The configuration for this form. The configuration object for a form has the following properties: `fields`, where you add all fields to render for this form and `transforms`. Read more about [Transforming field values](#transforming-field-values). | |
 | readonly | `boolean` | Render the form in readonly mode | `false` |
 | fieldsTemplate | `TemplateRef` | If you want to render all the fields yourself, you can pass a `TemplateRef` to this input. See [Custom Forms](#custom-forms) for an example. | `DefaultFieldsTemplate` |
 
 *required
+
+### Transforming field values
+
+Sometimes, you need to transform the value of a input based on the value(s) of other input(s). You can do this on a per-form basis with FormKit. In your `config` add the `transforms` property to start. This property takes a function that receives the current `values` of the form as a parameter. The `values` will be typed as your provided Type in the config (in the example below: `UserForm`). The function should return a object with the keys of the fields you want to transform.
+
+```ts
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
+import { Validators } from '@angular/forms';
+
+type UserForm = {
+  username: string;
+  toggle: boolean;
+}
+
+const config: FormKitFormConfig<UserForm> = {
+  transforms: values => ({
+    ...(values.toggle && { username: 'default' })
+  }),
+
+  /**
+   * 'Oldschool' syntax:
+   * 
+   * transforms: (values) => {
+   *   return {
+   *     username: values.toggle ? 'default' : undefined
+   *   }
+   * }
+   */
+
+  fields: {
+    toggle: {
+      type: FieldType.Toggle,
+      value: false,
+      label: 'Toggle to change username to default'
+    },
+    username: {
+      type: FieldType.Text
+    }
+  }
+}
+```
+
+The above example uses a shorthand to spread the object into the returned object. You can also use a different approach, as long as the key you want to transform returns either any value (including `null` or `''`) or `undefined`. If you return `undefined` for a key, the transform will be ignored, and the current value of the field will be untouched. In the example above, if the toggle is set to `false`, the `username` field value isn't touched.,
 
 ## `FormComponent` properties
 
@@ -279,6 +357,8 @@ this.myFormKitForm.value$.subscribe();
 | events$ | `Subject<FormEvent>` | Subject for hooking into the `FormComponent` lifecycle |
 | value$ | `FormValues<T>` | Observable that emits each time the form is updated (and after update checks per field are completed). |
 | created | boolean | Will be `true` if the `create()` method is called (automatically or manually). |
+
+> Use any of these properties in `ngAfterViewInit` lifecycle hook of your host component to prevent `undefined` properties.
 
 ## `FormComponent` methods
 
@@ -426,10 +506,20 @@ export class AppModule { }
 #### Customising a component for a specific field
 
 ```ts
-const fields: FormKitFields<Type> = {
-  myField: {
-    type: FieldType.TextField,
-    component: CustomTextInputComponent
+import { FormKitFormConfig, FieldType } from '@politie/ngx-formkit';
+import { Validators } from '@angular/forms';
+
+type UserForm = {
+  username: string;
+  toggle: boolean;
+}
+
+const config: FormKitFormConfig<UserForm> = {
+  fields: {
+    username: {
+      type: FieldType.TextField,
+      component: CustomTextInputComponent
+    }
   }
 }
 ```
@@ -467,7 +557,7 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
 By default, `FormKit` renders all your fields automatically. If you want to have more control, you can supply a `TemplateRef` to the `fieldsTemplate` `@Input` property in `<formkit-form></formkit-form>`. Example:
 
 ```angular2html
-<formkit-form [form]="form" [fields]="fields" [fieldsTemplate]="#myCustomFieldsTemplate">
+<formkit-form [form]="form" [config]="config" [fieldsTemplate]="#myCustomFieldsTemplate">
   <ng-template #customFieldsTemplate let-fields="fields" let-keys="keys">
     <formkit-form-field
       *ngFor="let name of keys"
@@ -502,7 +592,7 @@ The following field types are available (you can [add your own](#custom-componen
 
 ### Note about using `strictTemplates`
 
-Since all published libraries must use the View Engine compiler, something is off with the recognition of a generic type provided in a [@ViewChild](https://angular.io/api/core/ViewChild) which turns the `[fields]` attribute into a error if you provide `FormFields<YourType>`. 
+Since all published libraries must use the View Engine compiler, something is off with the recognition of a generic type provided in a [@ViewChild](https://angular.io/api/core/ViewChild) which turns the `[config]` attribute into a error if you provide `FormKitFormConfig<YourType>`. 
 
 Until this is fixed, we recommend you set the `strictTemplates` under `angulerCompilerOptions` in `tsconfig.json` to false. 
 

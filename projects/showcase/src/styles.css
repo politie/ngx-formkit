@@ -216,3 +216,10 @@ button[disabled] {
   @apply border;
   @apply border-gray-200;
 }
+
+input[disabled] {
+  @apply bg-gray-100;
+  @apply text-gray-400;
+  @apply pointer-events-none;
+  @apply cursor-not-allowed;
+}

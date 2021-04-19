@@ -1,3 +1,8 @@
+# 2.1.0
+- BREAKING: Moved `transform` logic from field to `transforms` for a per-form basis of value transforms.
+- BREAKING: `<formkit-form>` now requires a `[config]` attribute with `fields` instead of `[fields]`.
+- Added: Option for text type fields to have a `autofocus` property. Use this property in your field definition to add the focus directly to this field.
+
 # 2.0.4
 - Fixed: Field with type `Hidden` is now represented in the form raw values.
 
