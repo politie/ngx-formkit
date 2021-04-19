@@ -1,11 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type DateForm = {
   date: string;
 }
 
-export const dateFormFields:FormFields<DateForm> = {
-  date: {
-    type: FieldType.Date
+export const dateFormConfig: FormKitFormConfig<DateForm> = {
+  fields: {
+    date: {
+      type: FieldType.Date
+    }
   }
 };

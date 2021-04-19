@@ -1,29 +1,31 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type SelectForm = {
   select: any;
 }
 
-export const selectFormFields: FormFields<SelectForm> = {
-  select: {
-    type: FieldType.Select,
-    value: {
-      id: 1,
-      label: 'Label 1',
-      description: 'Description 1'
-    },
-    placeholder: 'Select an option',
-    options: [
-      {
+export const selectFormConfig: FormKitFormConfig<SelectForm> = {
+  fields: {
+    select: {
+      type: FieldType.Select,
+      value: {
         id: 1,
         label: 'Label 1',
         description: 'Description 1'
       },
-      {
-        id: 2,
-        label: 'Label 2',
-        description: 'Description 2'
-      }
-    ]
+      placeholder: 'Select an option',
+      options: [
+        {
+          id: 1,
+          label: 'Label 1',
+          description: 'Description 1'
+        },
+        {
+          id: 2,
+          label: 'Label 2',
+          description: 'Description 2'
+        }
+      ]
+    }
   }
 };

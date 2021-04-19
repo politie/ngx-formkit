@@ -1,4 +1,4 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 import { Validators } from '@angular/forms';
 
 export type RepeatableForm = {
@@ -8,21 +8,23 @@ export type RepeatableForm = {
   }
 }
 
-export const repeatableFormFields:FormFields<RepeatableForm> = {
-  repeatable: {
-    type: FieldType.Repeatable,
-    buttonLabel: 'Add field group to set +',
-    max: 5,
-    fields: {
-      firstName: {
-        type: FieldType.Text,
-        validators: [Validators.required],
-        width: 6
-      },
-      lastName: {
-        type: FieldType.Text,
-        value: 'Default value',
-        width: 6
+export const repeatableFormConfig: FormKitFormConfig<RepeatableForm> = {
+  fields: {
+    repeatable: {
+      type: FieldType.Repeatable,
+      buttonLabel: 'Add field group to set +',
+      max: 5,
+      fields: {
+        firstName: {
+          type: FieldType.Text,
+          validators: [Validators.required],
+          width: 6
+        },
+        lastName: {
+          type: FieldType.Text,
+          value: 'Default value',
+          width: 6
+        }
       }
     }
   }

@@ -1,12 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
-import { FormControl } from '@angular/forms';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type NumberForm = {
   number: string;
 }
 
-export const numberFormFields: FormFields<NumberForm> = {
-  number: {
-    type: FieldType.Number
+export const numberFormConfig: FormKitFormConfig<NumberForm> = {
+  fields: {
+    number: {
+      type: FieldType.Number
+    }
   }
 };

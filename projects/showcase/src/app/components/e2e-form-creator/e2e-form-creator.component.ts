@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormComponent, FormFields, IFormGroup } from 'formkit';
+import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { FormComponent, IFormGroup } from 'formkit';
 import { FormGroup } from '@angular/forms';
+import { FormKitFormConfig } from '../../../../../formkit/src/lib';
 
 @Component({
   selector: 'app-e2e-form-creator',
@@ -8,17 +9,15 @@ import { FormGroup } from '@angular/forms';
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class E2eFormCreatorComponent implements OnInit {
+export class E2eFormCreatorComponent {
   @Input() debug!: boolean;
-  @Input() fields!: FormFields<any>;
+  @Input() config!: FormKitFormConfig<any>;
   @Input() title!: string;
   @Input() message!: string;
   @ViewChild('FormKitForm', { static: true }) formComponent!: FormComponent<any>;
   form = new FormGroup({}) as IFormGroup<any>;
 
   constructor() { }
-
-  ngOnInit() { }
 
   onSubmit() {
     console.log(`Form "${this.title}" has been submitted.`);

@@ -26,7 +26,7 @@ describe('E2E Disabled', () => {
     });
 
     it('should enable the input again', () => {
-      cy.get('@checkbox').check({ force: true });
+      cy.get('@checkbox').uncheck({ force: true });
       cy.get('@input').should('be.enabled');
     })
   });

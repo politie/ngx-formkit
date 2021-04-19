@@ -1,11 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type PasswordForm = {
   password: string;
 }
 
-export const passwordFormFields:FormFields<PasswordForm> = {
-  password: {
-    type: FieldType.Password
+export const passwordFormConfig: FormKitFormConfig<PasswordForm> = {
+  fields: {
+    password: {
+      type: FieldType.Password
+    }
   }
 };

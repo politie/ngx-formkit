@@ -1,11 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type TextareaForm = {
   textarea: string;
 }
 
-export const textareaFormFields: FormFields<TextareaForm> = {
-  textarea: {
-    type: FieldType.Textarea
+export const textareaFormConfig: FormKitFormConfig<TextareaForm> = {
+  fields: {
+    textarea: {
+      type: FieldType.Textarea
+    }
   }
 };
