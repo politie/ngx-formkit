@@ -9,7 +9,7 @@
   <div class="formkit-fields formkit-fields-root">
     <ng-container
       [ngTemplateOutlet]="fieldsTemplate || defaultFieldsTemplate"
-      [ngTemplateOutletContext]="{ fields: fields, keys: $any(fields) | visibleFieldKeys }">
+      [ngTemplateOutletContext]="{ fields: config.fields, keys: $any(config.fields) | visibleFieldKeys }">
     </ng-container>
   </div>
 

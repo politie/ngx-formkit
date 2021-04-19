@@ -1,9 +1,9 @@
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { FieldMessage, FormValues, IVisibleField } from '../../models';
 import { AbstractControl } from '@angular/forms';
 
 export interface IFieldMessagesService {
-  list$: Subject<FieldMessage[]>;
+  list$: ReplaySubject<FieldMessage[]>;
   updateVisibleMessages(
     control: AbstractControl,
     field: IVisibleField<any, any, any>,

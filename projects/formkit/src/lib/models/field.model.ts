@@ -1,9 +1,8 @@
-import { FormValues, Options } from './form.model';
+import { FormValueTransformFunction, Options } from './form.model';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 export enum FieldType {
-  Repeatable,
   Checkbox,
   Custom,
   Date,
@@ -13,6 +12,7 @@ export enum FieldType {
   Password,
   RadioButton,
   Radio,
+  Repeatable,
   Select,
   Text,
   Textarea,
@@ -20,9 +20,9 @@ export enum FieldType {
 }
 
 type FieldMessageFunctionPayload<T> = {
-  control: AbstractControl | FormControl | FormArray | FormGroup,
-  errors: ValidationErrors | null,
-  values: Required<FormValues<T>>
+  control: AbstractControl | FormControl | FormArray | FormGroup;
+  errors: ValidationErrors | null;
+  values: T;
 }
 
 export enum FieldMessageType {
@@ -161,9 +161,12 @@ export type IVisibleField<Model, Level, FieldKey extends keyof Level> =
   ISingleField<Model, Level, FieldKey>
 ;
 
-export type FormFields<Model, Level = Model> = {
-  [Key in keyof Level]?: IField<Model, Level, Key>;
-};
+export type FormKitFormConfig<Model, Level = Model> = {
+  transforms?: FormValueTransformFunction<Model>;
+  fields: {
+    [Key in keyof Level]?: IField<Model, Level, Key>;
+  }
+}
 
 export type FormKitFormFieldListItem<T> = {
   name: Extract<keyof T, string>;

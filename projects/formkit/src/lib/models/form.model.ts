@@ -27,13 +27,9 @@ export type FormEvent = {
   values: FormValues<any>;
 }
 
-export type TransformValues<T, A = T> = {
-  omit?: Extract<keyof T, string>[];
-  transform?: (values: T) => {
-    from: Extract<keyof T, string>,
-    to: Extract<keyof A, string> | { [K in Extract<keyof A, string>]?: A[K] }
-  }[]
-}
+export type FormValueTransformFunction<T, A = T> = (values: T) => {
+  [Key in Extract<keyof A, string>]?: A[Key] | undefined
+};
 
 type STATUS = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
 

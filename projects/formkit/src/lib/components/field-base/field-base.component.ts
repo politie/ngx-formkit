@@ -27,7 +27,7 @@ export class FieldBaseComponent implements IFieldBaseComponent, AfterViewInit, O
   destroy$ = new Subject<boolean>();
 
   ngAfterViewInit() {
-    if (this.field.hasOwnProperty('autofocus') && this.input && this.input.nativeElement) {
+    if (this.field && this.field.hasOwnProperty('autofocus') && this.input && this.input.nativeElement) {
       this.input.nativeElement.focus();
     }
   }

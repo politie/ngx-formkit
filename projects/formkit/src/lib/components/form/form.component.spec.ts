@@ -12,8 +12,9 @@ import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
 type FormType = {
   value1: string;
   value2: string;
-  value3: string;
-  value3edit: string[];
+  value3: {
+    input: string;
+  };
 }
 
 describe('FormComponent', () => {
@@ -47,9 +48,11 @@ describe('FormComponent', () => {
     component = fixture.componentInstance as FormComponent<FormType>;
     service = TestBed.inject(FormService);
 
-    component.fields = {
-      value1: {
-        type: FieldType.Text
+    component.config = {
+      fields: {
+        value1: {
+          type: FieldType.Text
+        }
       }
     };
 
@@ -85,37 +88,44 @@ describe('FormComponent', () => {
     });
   });
 
-  describe('Possible [fields] attribute errors', () => {
-    const errorMessage = 'FormKit: <formkit-form> has no fields set in [fields] attribute.';
+  describe('Possible [config] attribute errors', () => {
+    const errorMessage = 'FormKit: <formkit-form> has no config set in [config] attribute.';
     beforeEach(() => {
       component.form = new FormGroup({});
     });
 
     it('should not create if no fields definition is supplied', () => {
-      component.fields = null as any;
+      component.config = null as any;
+      expect(() => component.ngOnInit()).toThrowError(errorMessage);
+    });
+
+    it('should not create if no fields definition is supplied', () => {
+      component.config = { } as any;
       expect(() => component.ngOnInit()).toThrowError(errorMessage);
     });
 
     it('should not create if fields definition is empty', () => {
-      component.fields = {} as any;
-      expect(() => component.ngOnInit()).toThrowError(errorMessage);
+      component.config = { fields: {} } as any;
+      expect(() => component.ngOnInit()).toThrowError('FormKit: <formkit-form> has no fields set in the [config] attribute');
     });
   });
 
   describe('Create happy flow', () => {
     beforeEach(() => {
       component.form = new FormGroup({});
-      component.fields = {
-        value1: {
-          type: FieldType.Text,
-          value: 'testvalue'
+      component.config = {
+        fields: {
+          value1: {
+            type: FieldType.Text,
+            value: 'testvalue'
+          }
         }
       };
       fixture.detectChanges();
     });
 
     it('should store the initial values', fakeAsync(() => {
-      component.scheduler$.subscribe(r => {
+      component.transformedValues$.subscribe(r => {
         expect(r).toEqual({
           value1: 'testvalue'
         });
@@ -146,17 +156,24 @@ describe('FormComponent', () => {
   describe('Control with resetFormOnChange prop', () => {
     beforeEach(() => {
       component.form = new FormGroup({});
-      component.fields = {
-        value1: {
-          type: FieldType.Text,
-          resetFormOnChange: true
-        },
-        value2: {
-          type: FieldType.Text
-        },
-        value3: {
-          type: FieldType.Text,
-          value: 'initial-value-3'
+      component.config = {
+        fields: {
+          value1: {
+            type: FieldType.Text,
+            resetFormOnChange: true
+          },
+          value2: {
+            type: FieldType.Text
+          },
+          value3: {
+            type: FieldType.Repeatable,
+            fields: {
+              input: {
+                type: FieldType.Text,
+                value: 'initial-value-3'
+              }
+            }
+          }
         }
       };
     });
@@ -175,7 +192,7 @@ describe('FormComponent', () => {
       expect(component.form.getRawValue()).toEqual({
         value1: 'value-with-reset',
         value2: null,
-        value3: 'initial-value-3'
+        value3: [{ input: 'initial-value-3' }]
       });
     }));
   });
@@ -183,17 +200,23 @@ describe('FormComponent', () => {
   describe('adding fields to the formGroup and populate fieldList', () => {
     beforeEach(() => {
       component.form = new FormGroup({});
-      component.fields = {
-        value1: {
-          type: FieldType.Text,
-          resetFormOnChange: true
-        },
-        value2: {
-          type: FieldType.Hidden
-        },
-        value3: {
-          type: FieldType.Text,
-          value: 'initial-value-3'
+      component.config = {
+        fields: {
+          value1: {
+            type: FieldType.Text,
+            resetFormOnChange: true
+          },
+          value2: {
+            type: FieldType.Hidden
+          },
+          value3: {
+            type: FieldType.Repeatable,
+            fields: {
+              input: {
+                type: FieldType.Text
+              }
+            }
+          }
         }
       };
     });
@@ -202,6 +225,103 @@ describe('FormComponent', () => {
       const spy = spyOn(component.form, 'addControl').and.callThrough();
       fixture.detectChanges();
       expect(spy).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('Transform values function', () => {
+
+    beforeEach(() => {
+      component.form = new FormGroup({});
+      component.config = {
+        fields: {
+          value1: {
+            type: FieldType.Text
+          },
+          value2: {
+            type: FieldType.Text
+          },
+          value3: {
+            type: FieldType.Repeatable,
+            fields: {
+              input: {
+                type: FieldType.Text,
+                value: 'initial-value-3'
+              }
+            }
+          }
+        }
+      };
+    });
+
+    it('should handle empty transform', () => {
+      component.config.transforms = () => ({});
+      fixture.detectChanges();
+
+      const transformed = component.transformFormValuesByFormTransformFunction(component.form.getRawValue());
+      expect(transformed).toEqual({
+        value1: null,
+        value2: null,
+        value3: [{ input: 'initial-value-3' }]
+      });
+    });
+
+    it('should handle undefined transform', () => {
+      component.config.transforms = (values) => ({
+        value2: values.value1 === 'test-value-1' ? 'transformed-value-2' : undefined,
+        value3: values.value1 === 'test-value-1' ? { input: 'transformed-value-3' } : undefined
+      });
+
+      fixture.detectChanges();
+
+      const spy = spyOn(component.form.controls.value2, 'setValue').and.callThrough();
+
+      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
+        value1: null,
+        value2: null,
+        value3: [{ input: 'initial-value-3' }]
+      });
+
+      expect(spy).toHaveBeenCalledTimes(0);
+
+      component.form.controls.value1.setValue('test-value-1');
+
+      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
+        value1: 'test-value-1',
+        value2: 'transformed-value-2',
+        value3: [{ input: 'transformed-value-3' }]
+      });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('transformed-value-2', { emitEvent: false, onlySelf: true });
+    });
+
+    it('should handle shorthand transform', () => {
+      component.config.transforms = (values) => ({
+        ...(values.value1 === 'test-value-1' && { value2: 'transformed-value-2' })
+      });
+
+      fixture.detectChanges();
+
+      const spy = spyOn(component.form.controls.value2, 'setValue').and.callThrough();
+
+      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
+        value1: null,
+        value2: null,
+        value3: [{ input: 'initial-value-3' }]
+      });
+
+      expect(spy).toHaveBeenCalledTimes(0);
+
+      component.form.controls.value1.setValue('test-value-1');
+
+      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
+        value1: 'test-value-1',
+        value2: 'transformed-value-2',
+        value3: [{ input: 'initial-value-3' }]
+      });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('transformed-value-2', { emitEvent: false, onlySelf: true });
     });
   });
 });

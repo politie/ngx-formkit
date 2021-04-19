@@ -5,7 +5,6 @@ export interface IFormComponent<T> {
   formUpdateType: FormUpdateType;
   value$: Observable<Partial<T>>;
   initialFormValues: T;
-  scheduler$: Subject<void>;
   created: boolean;
   destroy$: Subject<boolean>;
 
@@ -14,6 +13,4 @@ export interface IFormComponent<T> {
   processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>): void
 
   patch(patch: Partial<T>): void
-
-  setupAfterValueUpdateScheduler(): void
 }

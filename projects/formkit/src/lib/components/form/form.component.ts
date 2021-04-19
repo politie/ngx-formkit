@@ -1,33 +1,31 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component, ElementRef,
+  Component,
   Inject,
   Input,
   OnDestroy,
-  OnInit, QueryList,
-  TemplateRef, ViewChildren
+  OnInit,
+  TemplateRef
 } from '@angular/core';
-import { BehaviorSubject, merge, ReplaySubject, Subject, timer } from 'rxjs';
+import { merge, Observable, Subject, timer } from 'rxjs';
 
 import {
   FieldType,
-  FormEventType,
-  FormFields,
+  FormKitFormConfig,
   FormKitModuleConfig,
   FormUpdateType,
+  FormValueTransformFunction,
   IField,
   IRepeatableField
 } from '../../models';
 
-import { debounce, delay, filter, map, takeUntil, tap } from 'rxjs/operators';
+import { debounce, delay, filter, map, share, startWith, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
 import { FormArray, FormGroup } from '@angular/forms';
-import { createFormControl, formGroupFromBlueprint } from '../../helpers';
-import { FormFieldComponent } from '../form-field/form-field.component';
+import { createFormControl, formGroupFromBlueprint, utilities } from '../../helpers';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -42,48 +40,35 @@ import { FormFieldComponent } from '../form-field/form-field.component';
     FormService
   ]
 })
-export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnInit, OnDestroy {
+export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   @Input() readonly = false;
   @Input() fieldsTemplate!: TemplateRef<any>;
 
   @Input() form!: FormGroup;
-  @Input() fields!: FormFields<T>;
-
-  @ViewChildren(FormFieldComponent) formFieldComponents!: QueryList<FormFieldComponent>;
+  @Input() config!: FormKitFormConfig<T>;
 
   created = false;
   destroy$ = new Subject<boolean>();
   formUpdateType: FormUpdateType = FormUpdateType.Init;
 
-  readonly afterValueUpdateScheduler$ = new Subject<void>();
+  public transformedValues$!: Observable<T>;
+
   private initialValues!: T;
-  private nativeElementsSubject$ = new ReplaySubject<any>(1);
+  private valueChanges$!: Observable<T>;
+  private fieldResetWatcher$!: Observable<T>;
 
   constructor(
     private cd: ChangeDetectorRef,
     public formService: FormService,
-    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
+    @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private moduleConfig: Required<FormKitModuleConfig>
   ) { }
 
   get initialFormValues() {
     return this.initialValues;
   }
 
-  get scheduler$() {
-    return this.afterValueUpdateScheduler$;
-  }
-
-  get nativeElements$() {
-    return this.nativeElementsSubject$;
-  }
-
   get value$() {
-    return this.formService.formEvents$.pipe(
-      filter(event => event.type === FormEventType.OnAfterUpdateChecks),
-      delay(25),
-      map(() => this.form.getRawValue()),
-      takeUntil(this.destroy$)
-    );
+    return this.transformedValues$;
   }
 
   runSuppliedInputsChecks() {
@@ -98,29 +83,23 @@ export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnIni
       throw new Error(`FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.`);
     }
 
+    if (!this.config || (Object.keys(this.config).length === 0 && this.config.constructor === Object)) {
+      throw new Error(`FormKit: <formkit-form> has no config set in [config] attribute.`);
+    }
+
     /**
      * Check if there are fields set in the [fields] attribute / @Input()
      */
-    if (!this.fields || (Object.keys(this.fields).length === 0 && this.fields.constructor === Object)) {
-      throw new Error(`FormKit: <formkit-form> has no fields set in [fields] attribute.`);
+    if (!this.config.fields || (Object.keys(this.config.fields).length === 0 && this.config.fields.constructor === Object)) {
+      throw new Error(`FormKit: <formkit-form> has no fields set in the [config] attribute.`);
     }
-  }
-
-  ngAfterViewInit() {
-    const elements: { [key: string]: any } = {};
-
-    for (const field of this.formFieldComponents) {
-      elements[field.name] = field.componentRef.instance.nativeElement?.nativeElement;
-    }
-
-    this.nativeElementsSubject$.next(elements);
   }
 
   ngOnInit(): void {
     this.runSuppliedInputsChecks();
 
-    for (const name of Object.keys(this.fields) as Extract<keyof T, string>[]) {
-      this.processSingleFieldDefinition(name, this.fields[name] as IField<T, any, any>);
+    for (const name of Object.keys(this.config.fields) as Extract<keyof T, string>[]) {
+      this.processSingleFieldDefinition(name, this.config.fields[name] as IField<T, any, any>);
     }
 
     /**
@@ -129,16 +108,27 @@ export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnIni
      */
     this.initialValues = this.form.getRawValue();
 
-    /**
-     * Set up the AfterValueUpdateScheduler.
-     * This scheduler is responsible for emitting events to child FormField components
-     */
-    this.setupAfterValueUpdateScheduler();
+    /* Add a few observables to keep an eye on the different streams of data */
+    this.valueChanges$ = this.form.valueChanges.pipe(
+      filter(() => this.formUpdateType !== FormUpdateType.Reset),
+      share()
+    );
 
-    /**
-     * Trigger a event emit for the first time checks
-     */
-    this.afterValueUpdateScheduler$.next();
+    this.fieldResetWatcher$ = this.formService.fieldEvents$.pipe(
+      filter(() => this.formUpdateType === FormUpdateType.User),
+      map(event => event.values as T),
+      tap(values => {
+        this.formUpdateType = FormUpdateType.Reset;
+        this.form.reset({ ...this.initialValues, ...values }, { emitEvent: false, onlySelf: true });
+      }),
+      share()
+    );
+
+    this.transformedValues$ = merge(this.fieldResetWatcher$, this.valueChanges$).pipe(
+      debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.moduleConfig.updateDebounceTime) : 0)),
+      map(() => (this.config.transforms) ? this.transformFormValuesByFormTransformFunction(this.form.getRawValue()) : this.form.getRawValue()),
+      share()
+    );
 
     /**
      * Watch form changes and apply the AfterValueChangesChecks on changes.
@@ -146,21 +136,12 @@ export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnIni
      * property (these fields have their own valueChanges listener and will trigger
      * the updateScheduler accordingly.
      */
-    merge(
-      this.formService.fieldEvents$.pipe(
-        filter(() => this.formUpdateType === FormUpdateType.User),
-        map(event => event.values),
-        tap(values => {
-          this.formUpdateType = FormUpdateType.Reset;
-          this.form.reset({ ...this.initialValues, ...values }, { emitEvent: false, onlySelf: true });
-        })
-      ),
-      this.form.valueChanges.pipe(
-        filter(() => this.formUpdateType !== FormUpdateType.Reset)
-      )
-    ).pipe(
+    this.transformedValues$.pipe(
       takeUntil(this.destroy$)
-    ).subscribe(() => this.afterValueUpdateScheduler$.next());
+    ).subscribe(values => {
+      this.formUpdateType = FormUpdateType.User;
+      this.formService.triggerFormUpdateChecks(values);
+    });
 
     /**
      * Everything done, update the created prop and emit event
@@ -182,30 +163,22 @@ export class FormComponent<T> implements IFormComponent<T>, AfterViewInit, OnIni
    */
   patch(patch: Partial<T>) {
     this.formUpdateType = FormUpdateType.Patch;
-    this.form.patchValue(patch, { onlySelf: false, emitEvent: false });
-    this.afterValueUpdateScheduler$.next();
+    this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
   }
 
-  /**
-   * Adds a subscription to the global afterValueUpdateScheduler$ observable with some delay.
-   */
-  setupAfterValueUpdateScheduler() {
-    if (this.created) {
-      return;
+  transformFormValuesByFormTransformFunction(currentValues: T): T {
+    const result: Partial<T> = (this.config.transforms as FormValueTransformFunction<T>)(currentValues) as Partial<T>;
+
+    if (!utilities.isEmptyObject(result)) {
+      for (const field of (Object.keys(result) as Extract<keyof T, string>[]).filter(key => typeof result[key] !== 'undefined')) {
+        const control = this.form.controls[field];
+        control.setValue((control instanceof FormArray) ? [result[field]]: result[field], { onlySelf: true, emitEvent: false });
+      }
+
+      return this.form.getRawValue();
     }
 
-    this.afterValueUpdateScheduler$.pipe(
-      debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.config.updateDebounceTime) : 0)),
-      map(() => this.form.getRawValue()),
-      takeUntil(this.destroy$)
-    ).subscribe(values => {
-        this.formUpdateType = FormUpdateType.User;
-        /**
-         * For the first update cycle, we emit a FirstUpdateComplete Event, so
-         * that Fields can run a OnInit Hook.
-         */
-        this.formService.triggerFormUpdateChecks(values);
-    });
+    return currentValues;
   }
 
   /**

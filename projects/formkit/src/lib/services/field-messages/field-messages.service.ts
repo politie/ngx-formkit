@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { FieldMessage, FieldMessageType, FormValues, IVisibleField } from '../../models';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { IFieldMessagesService } from './field-messages.service.model';
@@ -11,7 +11,7 @@ import { Injectable } from '@angular/core';
 // @dynamic
 @Injectable()
 export class FieldMessagesService implements IFieldMessagesService {
-  public list$ = new Subject<FieldMessage[]>();
+  public list$ = new ReplaySubject<FieldMessage[]>(1);
 
   updateVisibleMessages(
     control: AbstractControl | FormControl | FormArray | FormGroup,
@@ -40,6 +40,7 @@ export class FieldMessagesService implements IFieldMessagesService {
      * Payload for the show function parameter
      */
     const payload = { control, errors: control.errors || {}, values};
+
 
     if (field.messages) {
       messages = [

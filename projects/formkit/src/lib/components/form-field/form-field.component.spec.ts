@@ -18,13 +18,6 @@ import { FormService } from '../../services';
 const field: ISingleField<any, any, any> = {
   type: FieldType.Radio,
   options: [],
-  transform: values => {
-    if (values.testValue === 'test') {
-      return 'new-value';
-    } else {
-      return undefined;
-    }
-  },
   messages: (payload) => ([
     {
       show: (payload.control.value !== 'initial-value'),
@@ -98,8 +91,7 @@ describe('FieldComponent', () => {
 
   it('should run onAfterUpdate checks', () => {
     component.onAfterUpdateChecks({ testValue: 'test'});
-    // Should have the transformed value
-    expect(component.control.value).toEqual('new-value');
+    expect(component.control.value).toEqual('initial-value');
   });
 
   it('should run checks after subject has emitted', () => {
