@@ -12,7 +12,7 @@ import {
 import { FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, distinctUntilChanged, map, startWith, take, takeUntil } from 'rxjs/operators';
+import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
@@ -135,7 +135,6 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   setupFormEventListener() {
     this.formService.formEvents$.pipe(
       map<FormEvent, FormValues<any>>(event => event.values),
-      startWith(this.form.getRawValue()),
       takeUntil(this.destroy$)
     ).subscribe(values => {
       this.onAfterUpdateChecks(values);

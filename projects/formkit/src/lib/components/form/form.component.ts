@@ -20,7 +20,7 @@ import {
   IRepeatableField
 } from '../../models';
 
-import { debounce, delay, filter, map, share, startWith, takeUntil, tap } from 'rxjs/operators';
+import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
@@ -142,6 +142,12 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
       this.formUpdateType = FormUpdateType.User;
       this.formService.triggerFormUpdateChecks(values);
     });
+
+    /**
+     * We should wait one tick before we trigger the updateChecks
+     * in order for the CD cycle to handle conditional properties in the FormGroup and FormControls work properly
+     */
+    setTimeout(() => this.formService.triggerFormUpdateChecks(this.form.getRawValue()));
 
     /**
      * Everything done, update the created prop and emit event

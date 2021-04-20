@@ -1,3 +1,6 @@
+# 2.1.1
+- Fixed timing issue with initializing the form with default values and running updateChecks where the checks received the wrong values.
+
 # 2.1.0
 - BREAKING: Moved `transform` logic from field to `transforms` for a per-form basis of value transforms.
 - BREAKING: `<formkit-form>` now requires a `[config]` attribute with `fields` instead of `[fields]`.
