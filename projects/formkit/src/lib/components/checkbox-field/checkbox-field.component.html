@@ -1,6 +1,29 @@
 <ng-container [formGroup]="form" *ngIf="field">
-  <label class="inline-flex items-center form-checkbox-wrapper">
-    <input type="checkbox" class="form-checkbox" [formControlName]="name" [value]="field.option.id">
-    <span class="form-checkbox-label">{{ field.option.label }}</span>
-  </label>
+  <ng-container *ngIf="field.options" [formArrayName]="name">
+    <label *ngFor="let child of $any(control).controls; let i = index;" class="inline-flex items-center form-checkbox-wrapper">
+      <input type="checkbox" class="form-checkbox" [formControlName]="i">
+      <span class="form-checkbox-label">
+        <span class="label">
+          {{ field.options[i].label }}
+        </span>
+        <span *ngIf="field.options[i].description" class="description">
+          {{ field.options[i].description }}
+        </span>
+      </span>
+    </label>
+  </ng-container>
+
+  <ng-container *ngIf="field.option">
+    <label class="inline-flex items-center form-checkbox-wrapper">
+      <input type="checkbox" class="form-checkbox" [formControlName]="name">
+      <span class="form-checkbox-label">
+        <span class="label">
+          {{ field.option.label }}
+        </span>
+        <span *ngIf="field.option.description" class="description">
+          {{ field.option.description }}
+        </span>
+      </span>
+    </label>
+  </ng-container>
 </ng-container>

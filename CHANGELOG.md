@@ -1,3 +1,6 @@
+# 2.1.3
+- Added option to add multiple checkboxes
+
 # 2.1.2
 - Updated textarea field with `rows` property to set height instead of `minRows` and `maxRows`.
 

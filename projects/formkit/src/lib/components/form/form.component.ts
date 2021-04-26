@@ -15,7 +15,7 @@ import {
   FormKitFormConfig,
   FormKitModuleConfig,
   FormUpdateType,
-  FormValueTransformFunction,
+  FormValueTransformFunction, ICheckboxesField,
   IField,
   IRepeatableField
 } from '../../models';
@@ -24,7 +24,7 @@ import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { createFormControl, formGroupFromBlueprint, utilities } from '../../helpers';
 
 /**
@@ -196,6 +196,13 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     if (field.type === FieldType.Repeatable) {
       this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
+    } else if (field.type === FieldType.Checkbox && field.hasOwnProperty('options')) {
+      const controls = (field as ICheckboxesField<any, any, any>).options.map((_, i) => {
+        const value = Array.isArray(field.value) && field.value[i] ? field.value[i] : false;
+
+        return createFormControl(value, null);
+      });
+      this.form.addControl(name, new FormArray(controls, field.validators));
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));
     }

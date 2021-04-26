@@ -94,6 +94,11 @@ export type ICheckboxField<Model, Level, FieldKey extends keyof Level> = ISingle
   option: Options;
 }
 
+export type ICheckboxesField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
+  type: FieldType.Checkbox;
+  options: Options[];
+}
+
 export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Custom;
 }
@@ -139,6 +144,7 @@ export type ITextareaField<Model, Level, FieldKey extends keyof Level> = ISingle
 
 export type ISingleField<Model, Level, FieldKey extends keyof Level> =
   ICheckboxField<Model, Level, FieldKey> |
+  ICheckboxesField<Model, Level, FieldKey> |
   ICustomField<Model, Level, FieldKey> |
   IPasswordField<Model, Level, FieldKey> |
   IRadioField<Model, Level, FieldKey> |
