@@ -76,7 +76,6 @@ type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<M
   value?: Level[FieldKey];
   validators?: ValidatorFn[];
   class?: string[];
-  transform?: (values: Model) => Level[FieldKey] | undefined;
 }
 
 export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
@@ -134,8 +133,7 @@ export type ITextField<Model, Level, FieldKey extends keyof Level> = ISingleFiel
 
 export type ITextareaField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Textarea;
-  minRows?: number;
-  maxRows?: number;
+  rows?: number;
   autofocus?: boolean;
 }
 

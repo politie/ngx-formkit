@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.1.0
+Current version: 2.1.2
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -80,7 +80,7 @@ export class MyComponent {
 
 In your Component template, add the form by adding the `formkit-form` selector. Give it the reference name you've assigned in the `@ViewChild`, for this example: `#userForm`. In the `[form]` property, you add the empty `FormGroup`, in the `[config]` property, you add your `FormKitFormConfig` definition.
 
-```angular2html
+```html
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <formkit-form #myFormKitForm [form]="form" [config]="config"></formkit-form>
@@ -288,7 +288,7 @@ const config: FormKitFormConfig<UserForm> = {
 
 Example:
 
-```angular2html
+```html
 <formkit-form [config]="config" [form]="form"></formkit-form>
 ```
 
@@ -398,7 +398,7 @@ The `<formkit-form>` offers several content slots for you to project content in.
 
 Example:
 
-```angular2html
+```html
 <div formDescription>
   Content will be placed in the `formDescription` content slot.
 </div>
@@ -556,7 +556,7 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
 
 By default, `FormKit` renders all your fields automatically. If you want to have more control, you can supply a `TemplateRef` to the `fieldsTemplate` `@Input` property in `<formkit-form></formkit-form>`. Example:
 
-```angular2html
+```html
 <formkit-form [form]="form" [config]="config" [fieldsTemplate]="#myCustomFieldsTemplate">
   <ng-template #customFieldsTemplate let-fields="fields" let-keys="keys">
     <formkit-form-field

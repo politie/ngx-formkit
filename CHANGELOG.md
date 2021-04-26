@@ -1,3 +1,6 @@
+# 2.1.2
+- Updated textarea field with `rows` property to set height instead of `minRows` and `maxRows`.
+
 # 2.1.1
 - Fixed timing issue with initializing the form with default values and running updateChecks where the checks received the wrong values.
 

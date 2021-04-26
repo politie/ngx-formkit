@@ -7,7 +7,8 @@ export type TextareaForm = {
 export const textareaFormConfig: FormKitFormConfig<TextareaForm> = {
   fields: {
     textarea: {
-      type: FieldType.Textarea
+      type: FieldType.Textarea,
+      rows: 6
     }
   }
 };

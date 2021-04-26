@@ -3,9 +3,7 @@
     class="form-textarea formkit-input"
     [formControlName]="name"
     [placeholder]="field.placeholder || ''"
-    cdkTextareaAutosize
-    [cdkAutosizeMinRows]="field.minRows || 4"
-    [cdkAutosizeMaxRows]="field.maxRows || 10">
+    [rows]="field.rows || 4">
   </textarea>
 </ng-container>
 
