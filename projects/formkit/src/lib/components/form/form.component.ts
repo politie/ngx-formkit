@@ -15,16 +15,18 @@ import {
   FormKitFormConfig,
   FormKitModuleConfig,
   FormUpdateType,
-  FormValueTransformFunction, ICheckboxesField,
+  FormValueTransformFunction,
+  ICheckboxesField,
   IField,
-  IRepeatableField
+  IRepeatableField,
+  IVisibleField
 } from '../../models';
 
 import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormGroup } from '@angular/forms';
 import { createFormControl, formGroupFromBlueprint, utilities } from '../../helpers';
 
 /**
@@ -173,12 +175,22 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   }
 
   transformFormValuesByFormTransformFunction(currentValues: T): T {
-    const result: Partial<T> = (this.config.transforms as FormValueTransformFunction<T>)(currentValues) as Partial<T>;
+    const transforms: Partial<T> = (this.config.transforms as FormValueTransformFunction<T>)(currentValues) as Partial<T>;
 
-    if (!utilities.isEmptyObject(result)) {
-      for (const field of (Object.keys(result) as Extract<keyof T, string>[]).filter(key => typeof result[key] !== 'undefined')) {
-        const control = this.form.controls[field];
-        control.setValue((control instanceof FormArray) ? [result[field]]: result[field], { onlySelf: true, emitEvent: false });
+    if (!utilities.isEmptyObject(transforms)) {
+      for (const key of (Object.keys(transforms) as Extract<keyof T, string>[]).filter(k => typeof transforms[k] !== 'undefined')) {
+        const control = this.form.controls[key];
+        const field = this.config.fields[key] as IVisibleField<any, any, any>;
+
+        if (!control || !field) {
+          continue;
+        }
+
+        if (field.type === FieldType.Repeatable) {
+          control.setValue([transforms[key]], { onlySelf: true, emitEvent: false });
+        } else {
+          control.setValue(transforms[key], { onlySelf: true, emitEvent: false });
+        }
       }
 
       return this.form.getRawValue();

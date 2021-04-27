@@ -14,6 +14,6 @@ export class CheckboxFieldComponent extends FieldBaseComponent {
   @Input() field!: ICheckboxField<any, any, any> | ICheckboxesField<any, any, any>;
 
   @HostBinding('class') get fieldClasses(): string {
-    return this.field.hasOwnProperty('options') ? 'checkbox-field-multiple' : 'checkbox-field-single';
+    return this.field?.hasOwnProperty('options') ? 'checkbox-field-multiple' : 'checkbox-field-single';
   }
 }

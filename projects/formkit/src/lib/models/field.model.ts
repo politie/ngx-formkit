@@ -21,7 +21,7 @@ export enum FieldType {
 
 type FieldMessageFunctionPayload<T> = {
   control: AbstractControl | FormControl | FormArray | FormGroup;
-  errors: ValidationErrors | null;
+  errors: ValidationErrors;
   values: T;
 }
 
