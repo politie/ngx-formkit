@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.1.3
+Current version: 2.1.4
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -589,6 +589,43 @@ The following field types are available (you can [add your own](#custom-componen
 - Text Field
 - Textarea Field
 - Toggle Field
+
+## Validators
+
+FormKit ships with a few extra Validators:
+
+### arrayMinChecked(`min: number`)
+Useful for checkbox lists (checks truthy values in the `control` value).
+
+### arrayMaxChecked(`max: number`)
+Useful for checkbox lists (checks truthy values in the `control` value).
+
+These validators can be imported by importing the `FormKitValidators` class and calling one of the static methods:
+
+Example:
+
+```ts
+import { FieldType, FormKitValidators, FormKitFormConfig } from '@politie/ngx-formkit';
+
+const config: FormKitFormConfig<Type> = {
+  fields: {
+    list: {
+      type: FieldType.Checkbox,
+      options: [
+        {
+          id: 1,
+          label: 'My label'
+        },
+        {
+          id: 2,
+          label: 'My second label'
+        }
+      ]
+    },
+    validators: [FormKitValidators.arrayMinChecked(1)]
+  }
+}
+```
 
 ### Note about using `strictTemplates`
 

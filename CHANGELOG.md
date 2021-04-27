@@ -1,3 +1,7 @@
+# 2.1.4
+- Added Validators class, starting with validator methods for checkboxes field
+- 
+
 # 2.1.3
 - Added option to add multiple checkboxes
 
