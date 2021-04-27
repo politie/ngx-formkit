@@ -20,6 +20,7 @@ import { textFormConfig } from './components/inputs/e2e.text.inputs';
 import { textareaFormConfig } from './components/inputs/e2e.textarea.inputs';
 import { toggleFormConfig } from './components/inputs/e2e.toggle.inputs';
 import { transformsFormConfig } from './components/inputs/e2e.transforms.inputs';
+import { checkboxesFormConfig } from './components/inputs/e2e.checkboxes.inputs';
 
 @Component({
   selector: 'app-root',
@@ -85,6 +86,11 @@ export class AppComponent {
       title: 'checkbox',
       message: 'Demo to show Checkbox field',
       formConfig: checkboxFormConfig
+    },
+    {
+      title: 'checkboxes',
+      message: 'Demo to show Checkbox field with multiple options',
+      formConfig: checkboxesFormConfig
     },
     {
       title: 'date',
