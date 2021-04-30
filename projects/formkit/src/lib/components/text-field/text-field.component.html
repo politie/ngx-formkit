@@ -3,6 +3,6 @@
     #input
     class="form-input formkit-input"
     [type]="type"
-    [placeholder]="field.placeholder || ''"
+    [placeholder]="field.placeholder || field.header?.title || name || ''"
     [formControlName]="name">
 </ng-container>

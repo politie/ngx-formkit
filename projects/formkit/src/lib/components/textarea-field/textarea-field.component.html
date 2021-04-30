@@ -2,7 +2,7 @@
   <textarea
     class="form-textarea formkit-input"
     [formControlName]="name"
-    [placeholder]="field.placeholder || ''"
+    [placeholder]="field.placeholder || field.header?.title || name || ''"
     [rows]="field.rows || 4">
   </textarea>
 </ng-container>

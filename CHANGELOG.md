@@ -1,3 +1,6 @@
+# 2.1.6
+- UPDATED: Placeholder now uses the `placeholder` property, with a fallback (in order) to `header.title`, `name` or a empty string.
+
 # 2.1.5
 - FIXED: Issue where a Select field with a option list observable that has a single option and `autoSelectFirstOption` to true would trigger a `value$` update due to emitting a new value. This could result in a endless loop of updates, if you use the `value$` observable to change the form again in your own logic.
 - ADDED: Manual `triggerUpdateChecks` method to run all after update checks per field.
