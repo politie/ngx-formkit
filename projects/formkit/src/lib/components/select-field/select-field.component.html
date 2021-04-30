@@ -4,6 +4,9 @@
     [formControlName]="name"
     *ngIf="options$ | async as options"
     [compareWith]="compareFunction">
+
+    <option [ngValue]="null" [disabled]="true" *ngIf="field.placeholder">{{ field.placeholder }}</option>
+
     <option *ngFor="let option of options" [ngValue]="option" [disabled]="option.disabled ? option.disabled : false">
       {{ option.label }}
     </option>

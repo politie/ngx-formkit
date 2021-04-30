@@ -39,7 +39,7 @@ export class SelectFieldComponent extends FieldBaseComponent implements OnInit, 
   }
 
   compareFunction(option: Options, value: Options) {
-    return (option && value && option.id === value.id);
+    return ((option === null && value === null) || (option && value && option.id === value.id));
   }
 
   ngOnDestroy() {

@@ -61,7 +61,15 @@ import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
     HumanizePipe,
     FormComponent,
     FieldBaseComponent,
-    FormFieldComponent
+    FormFieldComponent,
+    PasswordFieldComponent,
+    RadioButtonsFieldComponent,
+    RadioFieldComponent,
+    RepeatableFieldComponent,
+    SelectFieldComponent,
+    TextFieldComponent,
+    TextareaFieldComponent,
+    ToggleFieldComponent
   ]
 })
 export class FormKitModule {
