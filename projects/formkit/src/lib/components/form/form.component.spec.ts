@@ -4,10 +4,11 @@ import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
-import { FieldType, FormUpdateType, IFormGroup } from '../../models';
+import { FieldType, IFormGroup } from '../../models';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
 import { FormService } from '../../services';
 import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
+import { take } from 'rxjs/operators';
 
 type FormType = {
   value1: string;
@@ -133,7 +134,7 @@ describe('FormComponent', () => {
 
       tick(25);
 
-      expect(component.initialFormValues).toEqual({
+      expect(component.form.getRawValue()).toEqual({
         value1: 'testvalue'
       });
 
@@ -180,7 +181,12 @@ describe('FormComponent', () => {
 
     it('should run ValueChanges checks for this form', fakeAsync(() => {
       fixture.detectChanges();
-      component.formUpdateType = FormUpdateType.User;
+
+      component.form.patchValue({
+        value1: 'update-from-user'
+      });
+
+      tick(400);
 
       const spy = spyOn(component.form, 'reset').and.callThrough();
       component.formService.triggerFormResetByControl({ value1: 'value-with-reset' });
@@ -253,75 +259,87 @@ describe('FormComponent', () => {
       };
     });
 
-    it('should handle empty transform', () => {
+    it('should handle empty transform', fakeAsync(() => {
       component.config.transforms = () => ({});
       fixture.detectChanges();
 
-      const transformed = component.transformFormValuesByFormTransformFunction(component.form.getRawValue());
-      expect(transformed).toEqual({
-        value1: null,
-        value2: null,
-        value3: [{ input: 'initial-value-3' }]
+      component.value$.subscribe(r => {
+        expect(r).toEqual({
+          value1: 'value-1',
+          value2: 'value-2',
+          value3: [{ input: 'value-3' }]
+        });
       });
-    });
 
-    it('should handle undefined transform', () => {
+      component.form.setValue({
+        value1: 'value-1',
+        value2: 'value-2',
+        value3: [{ input: 'value-3' }]
+      });
+
+      tick(FORMKIT_MODULE_DEFAULT_CONFIG.updateDebounceTime);
+    }));
+
+    it('should handle undefined transform', fakeAsync(() => {
       component.config.transforms = (values) => ({
         value2: values.value1 === 'test-value-1' ? 'transformed-value-2' : undefined,
         value3: values.value1 === 'test-value-1' ? { input: 'transformed-value-3' } : undefined
       });
 
       fixture.detectChanges();
+      component.form.setValue(component.form.getRawValue());
 
       const spy = spyOn(component.form.controls.value2, 'setValue').and.callThrough();
 
-      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
-        value1: null,
-        value2: null,
-        value3: [{ input: 'initial-value-3' }]
-      });
+      tick(FORMKIT_MODULE_DEFAULT_CONFIG.updateDebounceTime);
 
       expect(spy).toHaveBeenCalledTimes(0);
 
+      component.value$.pipe(take(1)).subscribe(r => {
+        expect(r).toEqual({
+          value1: 'test-value-1',
+          value2: 'transformed-value-2',
+          value3: [{ input: 'transformed-value-3' }]
+        });
+      });
+
       component.form.controls.value1.setValue('test-value-1');
 
-      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
-        value1: 'test-value-1',
-        value2: 'transformed-value-2',
-        value3: [{ input: 'transformed-value-3' }]
-      });
+      tick(FORMKIT_MODULE_DEFAULT_CONFIG.updateDebounceTime);
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith('transformed-value-2', { emitEvent: false, onlySelf: true });
-    });
+    }));
 
-    it('should handle shorthand transform', () => {
+    it('should handle shorthand transform', fakeAsync(() => {
       component.config.transforms = (values) => ({
         ...(values.value1 === 'test-value-1' && { value2: 'transformed-value-2' })
       });
 
       fixture.detectChanges();
 
+      component.form.setValue(component.form.getRawValue());
+
       const spy = spyOn(component.form.controls.value2, 'setValue').and.callThrough();
 
-      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
-        value1: null,
-        value2: null,
-        value3: [{ input: 'initial-value-3' }]
-      });
+      tick(FORMKIT_MODULE_DEFAULT_CONFIG.updateDebounceTime);
 
       expect(spy).toHaveBeenCalledTimes(0);
 
+      component.value$.pipe(take(1)).subscribe(r => {
+        expect(r).toEqual({
+          value1: 'test-value-1',
+          value2: 'transformed-value-2',
+          value3: [{ input: 'initial-value-3' }]
+        });
+      });
+
       component.form.controls.value1.setValue('test-value-1');
 
-      expect(component.transformFormValuesByFormTransformFunction(component.form.getRawValue())).toEqual({
-        value1: 'test-value-1',
-        value2: 'transformed-value-2',
-        value3: [{ input: 'initial-value-3' }]
-      });
+      tick(FORMKIT_MODULE_DEFAULT_CONFIG.updateDebounceTime);
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith('transformed-value-2', { emitEvent: false, onlySelf: true });
-    });
+    }));
   });
 });

@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.1.4
+Current version: 2.1.5
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -370,8 +370,8 @@ this.myFormKitForm.patch(...);
 
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
-| create | `values (T)` | If you set the `autoCreate` property in `<formkit-form>` to false, you have to call this method yourself. You can provide a object of values to patch the form before all schedulers are set. This allows you to have initial values for resets (in your field definitions) and a different starting value for the form. | |
 | patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties. This method is useful if you have fields set with the `resetFormOnChange` property, to bypass reset behaviour if you call `patchValue` on the `FormGroup` directly. | `void` |
+| triggerUpdateChecks | `values` (optional) | Trigger the update checks manually. Normally, this is done automatically on each change in the form. `void` |
 
 > **Important:** If you want to use properties or methods on the `FormComponent` `ViewChild`, you should trigger them after Angular `AfterViewInit` checks are done, to prevent issues with input properties or methods that aren't defined yet. So, for example:
 > ```typescript

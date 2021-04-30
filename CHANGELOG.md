@@ -1,6 +1,9 @@
+# 2.1.5
+- FIXED: Issue where a Select field with a option list observable that has a single option and `autoSelectFirstOption` to true would trigger a `value$` update due to emitting a new value. This could result in a endless loop of updates, if you use the `value$` observable to change the form again in your own logic.
+- ADDED: Manual `triggerUpdateChecks` method to run all after update checks per field.
+
 # 2.1.4
 - Added Validators class, starting with validator methods for checkboxes field
-- 
 
 # 2.1.3
 - Added option to add multiple checkboxes

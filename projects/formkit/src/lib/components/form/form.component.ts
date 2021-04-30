@@ -50,11 +50,11 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   @Input() config!: FormKitFormConfig<T>;
 
   created = false;
-  destroy$ = new Subject<boolean>();
-  formUpdateType: FormUpdateType = FormUpdateType.Init;
 
   public transformedValues$!: Observable<T>;
 
+  private destroy$ = new Subject<boolean>();
+  private formUpdateType: FormUpdateType = FormUpdateType.Init;
   private initialValues!: T;
   private valueChanges$!: Observable<T>;
   private fieldResetWatcher$!: Observable<T>;
@@ -65,15 +65,45 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private moduleConfig: Required<FormKitModuleConfig>
   ) { }
 
-  get initialFormValues() {
-    return this.initialValues;
-  }
-
   get value$() {
     return this.transformedValues$;
   }
 
-  runSuppliedInputsChecks() {
+  ngOnInit(): void {
+    this.runSuppliedInputsChecks();
+
+    for (const name of Object.keys(this.config.fields) as Extract<keyof T, string>[]) {
+      this.processSingleFieldDefinition(name, this.config.fields[name] as IField<T, any, any>);
+    }
+
+    this.create();
+  }
+
+  /**
+   * You can use the trigger update function to trigger a update of all fields.
+   * Normally, all fields will update on every change in the form.
+   */
+  triggerUpdateChecks(values: T | null = null): void {
+    this.formService.triggerFormUpdateChecks(values ?? this.form.getRawValue());
+  }
+
+  /**
+   * Use the patch property to reliably patch the form with new values.
+   * This is useful if you have a field with `resetFormOnChange` properties
+   * set in your fields definition.
+   *
+   * @param patch the values to use for patching
+   */
+  patch(patch: Partial<T>) {
+    this.formUpdateType = FormUpdateType.Patch;
+    this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+  }
+
+  private runSuppliedInputsChecks() {
     if (this.created) {
       throw new Error('FormKit: Form is already created.');
     }
@@ -97,13 +127,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    this.runSuppliedInputsChecks();
-
-    for (const name of Object.keys(this.config.fields) as Extract<keyof T, string>[]) {
-      this.processSingleFieldDefinition(name, this.config.fields[name] as IField<T, any, any>);
-    }
-
+  private create(): void {
     /**
      * Store the initialValues of the form. If the form is reset, these
      * will be the fallback values.
@@ -142,14 +166,14 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(values => {
       this.formUpdateType = FormUpdateType.User;
-      this.formService.triggerFormUpdateChecks(values);
+      this.triggerUpdateChecks(values);
     });
 
     /**
      * We should wait one tick before we trigger the updateChecks
      * in order for the CD cycle to handle conditional properties in the FormGroup and FormControls work properly
      */
-    setTimeout(() => this.formService.triggerFormUpdateChecks(this.form.getRawValue()));
+    setTimeout(() => this.triggerUpdateChecks());
 
     /**
      * Everything done, update the created prop and emit event
@@ -162,23 +186,12 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
-  /**
-   * Use the patch property to reliably patch the form with new values.
-   * This is useful if you have a field with `resetFormOnChange` properties
-   * set in your fields definition.
-   *
-   * @param patch the values to use for patching
-   */
-  patch(patch: Partial<T>) {
-    this.formUpdateType = FormUpdateType.Patch;
-    this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
-  }
-
-  transformFormValuesByFormTransformFunction(currentValues: T): T {
+  private transformFormValuesByFormTransformFunction(currentValues: T): T {
     const transforms: Partial<T> = (this.config.transforms as FormValueTransformFunction<T>)(currentValues) as Partial<T>;
 
     if (!utilities.isEmptyObject(transforms)) {
       for (const key of (Object.keys(transforms) as Extract<keyof T, string>[]).filter(k => typeof transforms[k] !== 'undefined')) {
+
         const control = this.form.controls[key];
         const field = this.config.fields[key] as IVisibleField<any, any, any>;
 
@@ -205,7 +218,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
    * @param name the current field name
    * @param field definition for this field
    */
-  processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
+  private processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     if (field.type === FieldType.Repeatable) {
       this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
     } else if (field.type === FieldType.Checkbox && field.hasOwnProperty('options')) {
@@ -218,9 +231,5 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     } else {
       this.form.addControl(name, createFormControl(field.value, field.validators));
     }
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
   }
 }

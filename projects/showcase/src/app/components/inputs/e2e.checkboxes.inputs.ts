@@ -23,23 +23,19 @@ export const checkboxesFormConfig: FormKitFormConfig<CheckboxesForm> = {
       options: [
         {
           id: 1,
-          label: 'First label',
-          description: 'First description'
+          label: 'First label'
         },
         {
           id: 2,
-          label: 'Second label',
-          description: 'Second description'
+          label: 'Second label'
         },
         {
           id: 3,
-          label: 'Third label',
-          description: 'Third description'
+          label: 'Third label'
         },
         {
           id: 4,
-          label: 'Fourth label',
-          description: 'Fourth description'
+          label: 'Fourth label'
         }
       ]
     }

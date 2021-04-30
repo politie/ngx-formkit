@@ -32,7 +32,7 @@ export class SelectFieldComponent extends FieldBaseComponent implements OnInit, 
     this.options$.pipe(takeUntil(this.destroy$)).subscribe(options => {
       if (options && options.length === 1 && this.control.value === null && this.field.autoselectSingleOption === true) {
         if (!options[0].disabled) {
-          this.control.setValue(options[0], { emitEvent: true });
+          this.control.setValue(options[0], { emitEvent: false });
         }
       }
     });
