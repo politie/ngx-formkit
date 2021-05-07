@@ -16,7 +16,6 @@
   <ng-template #defaultFieldsTemplate let-fields="fields" let-keys="keys">
     <formkit-form-field
       *ngFor="let name of keys"
-      [form]="form"
       [control]="form.controls[name]"
       [name]="name"
       [field]="$any(fields[name])">

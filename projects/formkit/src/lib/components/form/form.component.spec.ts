@@ -2,13 +2,11 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { FormComponent } from './form.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FormFieldComponent } from '../form-field/form-field.component';
-import { MockComponent } from 'ng-mocks';
 import { FieldType, IFormGroup } from '../../models';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from '../../config';
 import { FormService } from '../../services';
-import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
 import { take } from 'rxjs/operators';
+import { FormKitModule } from '../../formkit.module';
 
 type FormType = {
   value1: string;
@@ -26,12 +24,8 @@ describe('FormComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        FormKitModule,
         ReactiveFormsModule
-      ],
-      declarations: [
-        VisibleFieldKeysPipe,
-        MockComponent(FormFieldComponent),
-        FormComponent
       ],
       providers: [
         FormService,
@@ -186,12 +180,12 @@ describe('FormComponent', () => {
         value1: 'update-from-user'
       });
 
-      tick(400);
+      tick(500);
 
       const spy = spyOn(component.form, 'reset').and.callThrough();
       component.formService.triggerFormResetByControl({ value1: 'value-with-reset' });
 
-      tick();
+      tick(500);
 
       expect(spy).toHaveBeenCalled();
 

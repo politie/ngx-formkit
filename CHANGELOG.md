@@ -1,3 +1,9 @@
+# 2.1.9
+- Added `onSubmitClick()` method that return a boolean indicating if a form is valid. This method marks all child fields as `touched`, forcing validation states on each field. You can call this method on submit to test if the form is valid and force error states if a field isn't valid.
+- Added `submitClickedFormInvalid` content slot. In this content slot, you can add a form wide error message if something is wrong if a user clicks the submit button.
+- These two fixes are done in accordance with the rule of thumb to not disable submit buttons when there are no cues that something is wrong in the form.
+- RENAMED: `cy-formkit-field-notification` to `data-cy-formkit-field-notification`.
+
 # 2.1.8
 - HOTFIX: Also export `CheckboxField`.
 

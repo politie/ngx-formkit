@@ -77,8 +77,6 @@ describe('FieldComponent', () => {
     component = fixture.componentInstance;
     service = TestBed.inject(FormService);
     control = new FormControl('initial-value');
-
-    component.form = new FormGroup({ 'field-name': control });
     component.control = control;
     component.name = 'field-name';
     component.field = field as any;
