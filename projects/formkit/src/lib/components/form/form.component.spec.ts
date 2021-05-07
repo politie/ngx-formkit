@@ -232,6 +232,37 @@ describe('FormComponent', () => {
       fixture.detectChanges();
       expect(spy).toHaveBeenCalledTimes(3);
     });
+  })
+
+  describe('submit action', () => {
+    it('should call submit logic and return true if no errors', fakeAsync(() => {
+      const touchedSpy = spyOn(component.form, 'markAllAsTouched').and.callThrough();
+
+      component.submitAttempt$.subscribe(r => {
+        expect(r).toEqual(true);
+      });
+
+      const a = component.onSubmitClick();
+      tick();
+
+      expect(touchedSpy).toHaveBeenCalled();
+      expect(a).toEqual(true);
+    }));
+
+    it('should return false if errors are found', fakeAsync(() => {
+      const touchedSpy = spyOn(component.form, 'markAllAsTouched').and.callThrough();
+
+      component.form.setErrors({ required: true });
+      component.submitAttempt$.subscribe(r => {
+        expect(r).toEqual(true);
+      });
+
+      const a = component.onSubmitClick();
+      tick();
+
+      expect(touchedSpy).toHaveBeenCalled();
+      expect(a).toEqual(false);
+    }));
   });
 
   describe('Transform values function', () => {

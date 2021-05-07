@@ -24,5 +24,10 @@
   </ng-template>
 
   <ng-content select="[footer]"></ng-content>
+
+  <div *ngIf="submitAttempt$ | async">
+    <ng-content *ngIf="form.invalid" select="[submitClickedFormInvalid]"></ng-content>
+  </div>
+
   <ng-content select="[submitButton]"></ng-content>
 </ng-container>

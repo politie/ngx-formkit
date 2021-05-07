@@ -52,18 +52,22 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   created = false;
 
   public transformedValues$!: Observable<T>;
+  public submitAttempt$: Observable<boolean>;
 
   private destroy$ = new Subject<boolean>();
   private formUpdateType: FormUpdateType = FormUpdateType.Init;
   private initialValues!: T;
   private valueChanges$!: Observable<T>;
   private fieldResetWatcher$!: Observable<T>;
+  private submitSubject$ = new Subject<boolean>();
 
   constructor(
     private cd: ChangeDetectorRef,
     public formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private moduleConfig: Required<FormKitModuleConfig>
-  ) { }
+  ) {
+    this.submitAttempt$ = this.submitSubject$.asObservable();
+  }
 
   get value$() {
     return this.transformedValues$;
@@ -97,6 +101,17 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   patch(patch: Partial<T>) {
     this.formUpdateType = FormUpdateType.Patch;
     this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
+  }
+
+  /**
+   * On submit, trigger the submitted$ observable. If the form isn't valid
+   * and a form message is present, this will be displayed.
+   */
+  onSubmitClick(): boolean {
+    this.form.markAllAsTouched();
+    this.submitSubject$.next(true);
+
+    return this.form.valid;
   }
 
   ngOnDestroy() {
@@ -166,6 +181,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(values => {
       this.formUpdateType = FormUpdateType.User;
+      this.submitSubject$.next(false);
       this.triggerUpdateChecks(values);
     });
 

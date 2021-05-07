@@ -7,4 +7,6 @@ export interface IFormComponent<T> {
   patch(patch: Partial<T>): void
 
   triggerUpdateChecks(values: T | null): void
+
+  onSubmitClick(): boolean
 }
