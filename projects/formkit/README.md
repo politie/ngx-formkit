@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.1.6
+Current version: 2.1.8
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -67,7 +67,7 @@ export class MyComponent {
    * By using ViewChild, we can use the methods provided in the FormComponent
    * directly in this component class by calling this.form.<method-name>()
    */
-  @ViewChild('userForm', {static: true}) formComponent: FormComponent<UserForm>;
+  @ViewChild('userForm', { static: true }) formComponent: FormComponent<UserForm>;
 
   /**
    * Method for handling submits
@@ -96,7 +96,7 @@ In your Component template, add the form by adding the `formkit-form` selector. 
 That's it! You can now dive in the extensive set of configuration options and properties to alter the behavior of the form and form fields.
 
 ## `Field` properties
-Each field object should at least have a `type` option set. The type property must be of type `FieldType` which is a enum provided by the `FormKitModule`.
+Each field object should at least have a `type` option set. The type property must be of type `FieldType` which is a `enum` type provided by the `FormKitModule`.
 
 > The object name should match a key in the provided Type definition. Following the example above, you can use `username` as name for a field object.
 
@@ -118,6 +118,53 @@ Below is a rundown of each option per field object.
 | validators | `ValidatorFn[]` | Optional array of [Validator functions](https://angular.io/api/forms/Validator). |
 | value | `any` | Set a default value to the control. |
 | width | `1` - `12` | If you want to limit the with of the field, add the `width` property to your field. You can choose a value between `1` and `12` to span your field over the available grid columns. |
+
+### Settings for specific field types
+
+#### CheckboxField
+| Parameter | Type | Description
+|:---|:---|:---|
+| option | `Options` | If you want to render a single checkbox, use the `option` property. |
+| options | `Options[]` | If you want to render multiple checkboxes, use the `options` property. |
+
+#### PasswordField
+| Parameter | Type | Description
+|:---|:---|:---|
+| autofocus | `boolean` | Add focus to this field when rendering the form. |
+
+#### RadioField & RadioButtonsField
+| Parameter | Type | Description
+|:---|:---|:---|
+| options | `Options[]` | List of options to render. |
+
+#### RepeatableField
+| Parameter | Type | Description
+|:---|:---|:---|
+| delete | `boolean` | Render a delete button per field group? |
+| max | `number` | The maximum number of field groups that can be added to this repeatable field. Omit this property for unlimited additions. |
+| fields | `{[key: string]: IField}` | The field definitions per FieldGroup in this repeatable field. The keys should match child key names in the given field key for the repeatable field. |
+
+#### SelectField
+| Parameter | Type | Description
+|:---|:---|:---|
+| autoSelectSingleOption | `boolean` | If only one option in the options list, should the select box select it? |
+| options | `Options[] or Observable<Options[]>` | List of options to render. |
+| emptyOptionsText | `string` | Text to show if there are no options available. |
+
+#### TextField
+| Parameter | Type | Description
+|:---|:---|:---|
+| autofocus | `boolean` | Add focus to this field when rendering the form. |
+
+#### TextareaField
+| Parameter | Type | Description
+|:---|:---|:---|
+| autofocus | `boolean` | Add focus to this field when rendering the form. |
+
+#### ToggleField
+| Parameter | Type | Description
+|:---|:---|:---|
+| label | `string` | Label to render next to the toggle. |
 
 ### Status
 You can use the `status` property on a field to alter the status of a field dynamically, based on form values or `control` properties. The `status` property asks for a function that returns a object with `disabled`, `hidden` and `required` properties (all optional) that are of type `boolean`. The function has a `payload` paramater with the following properties:
@@ -408,6 +455,7 @@ The available slots are:
 - `formDescription` Placed above the form fields.
 - `formDescriptionReadOnly` Visible if the `readonly` attribute is set to `true`.
 - `footer` Placed below the form fields.
+- `submitClickedFormInvalid` Visible if the submit button is clicked and the formComponent `onSubmitClick()` method is called and if the form is `invalid`. You can use this area for a form wide error message.
 
 ## Styling
 

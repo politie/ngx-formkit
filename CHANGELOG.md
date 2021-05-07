@@ -1,3 +1,10 @@
+# 2.1.8
+- HOTFIX: Also export `CheckboxField`.
+
+# 2.1.7
+- UPDATED: FormKitModule now exports all field types, so you can use these components without using a `<formkit-form>`.
+- UPDATED: Select field now has a `placeholder` option that sets a disabled option to the `null` value.
+
 # 2.1.6
 - UPDATED: Placeholder now uses the `placeholder` property, with a fallback (in order) to `header.title`, `name` or a empty string.
 
