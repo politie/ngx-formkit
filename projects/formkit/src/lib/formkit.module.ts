@@ -58,6 +58,7 @@ import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
     ToggleFieldComponent
   ],
   exports: [
+    CheckboxFieldComponent,
     HumanizePipe,
     FormComponent,
     FieldBaseComponent,
