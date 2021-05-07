@@ -1,4 +1,5 @@
 import { FieldType, FormKitFormConfig } from 'formkit';
+import { Validators } from '@angular/forms';
 
 export type SelectForm = {
   select: any;
@@ -8,12 +9,9 @@ export const selectFormConfig: FormKitFormConfig<SelectForm> = {
   fields: {
     select: {
       type: FieldType.Select,
-      value: {
-        id: 1,
-        label: 'Label 1',
-        description: 'Description 1'
-      },
-      placeholder: 'Select an option',
+      validators: [Validators.required],
+      value: null,
+      placeholder: 'Choose...',
       options: [
         {
           id: 1,
