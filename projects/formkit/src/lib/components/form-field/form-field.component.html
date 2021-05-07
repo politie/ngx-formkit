@@ -21,7 +21,7 @@
     <div
       *ngFor="let message of messages"
       class="formkit-field-notification"
-      cy-formkit-field-notification
+      data-cy-formkit-field-notification
       [ngClass]="FieldMessageType[message.type].toLowerCase()">
       <p>{{ message.text }}</p>
     </div>

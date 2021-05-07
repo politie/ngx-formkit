@@ -76,6 +76,10 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   ngOnInit(): void {
     this.runSuppliedInputsChecks();
 
+    if (!this.readonly) {
+      this.form.disable({ emitEvent: false });
+    }
+
     for (const name of Object.keys(this.config.fields) as Extract<keyof T, string>[]) {
       this.processSingleFieldDefinition(name, this.config.fields[name] as IField<T, any, any>);
     }
