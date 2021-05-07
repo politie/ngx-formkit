@@ -21,7 +21,6 @@ export class FieldBaseComponent implements IFieldBaseComponent, AfterViewInit, O
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
   @Input() field!: ISingleField<any, any, any>;
   @Input() name!: string;
-  @Input() form!: FormGroup;
   @ViewChild('input') input!: ElementRef;
 
   destroy$ = new Subject<boolean>();

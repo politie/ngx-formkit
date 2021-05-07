@@ -1,7 +1,7 @@
-<ng-container [formGroup]="form" *ngIf="field">
+<ng-container *ngIf="field">
   <textarea
     class="form-textarea formkit-input"
-    [formControlName]="name"
+    [formControl]="control"
     [placeholder]="field.placeholder || field.header?.title || name || ''"
     [rows]="field.rows || 4">
   </textarea>

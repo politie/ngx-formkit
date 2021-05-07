@@ -1,11 +1,11 @@
-<ng-container [formGroup]="form" *ngIf="field">
+<ng-container *ngIf="field">
   <div class="formkit-radio-buttons-field">
     <ng-container *ngFor="let option of field.options; let i = index">
       <input
         type="radio"
         class="type-radio"
         [name]="name"
-        [formControlName]="name"
+        [formControl]="control"
         [id]="name + '_' + option.id"
         [value]="option.id">
       <label

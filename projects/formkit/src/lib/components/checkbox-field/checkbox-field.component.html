@@ -1,5 +1,5 @@
-<ng-container [formGroup]="form" *ngIf="field">
-  <ng-container *ngIf="field.options" [formArrayName]="name">
+<ng-container *ngIf="field">
+  <ng-container *ngIf="field.options" [formGroup]="$any(control)">
     <label *ngFor="let child of $any(control).controls; let i = index;" class="inline-flex items-center form-checkbox-wrapper">
       <input type="checkbox" class="form-checkbox" [formControlName]="i">
       <span class="form-checkbox-label">
@@ -15,7 +15,7 @@
 
   <ng-container *ngIf="field.option">
     <label class="inline-flex items-center form-checkbox-wrapper">
-      <input type="checkbox" class="form-checkbox" [formControlName]="name">
+      <input type="checkbox" class="form-checkbox" [formControl]="control">
       <span class="form-checkbox-label">
         <span class="label">
           {{ field.option.label }}

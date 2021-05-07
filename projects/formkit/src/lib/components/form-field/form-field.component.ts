@@ -21,6 +21,7 @@ import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { FieldStateService } from '../../services/field-state/field-state.service';
 import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
+import { FormGroup } from '@angular/forms';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -110,7 +111,6 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
 
     this.componentRef = ref.createComponent<any>(factory);
     this.componentRef.instance.control = this.control;
-    this.componentRef.instance.form = this.form;
     this.componentRef.instance.field = this.field;
     this.componentRef.instance.name = this.name;
     this.componentCdr = this.componentRef.injector.get(ChangeDetectorRef);

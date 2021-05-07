@@ -1,12 +1,11 @@
-<ng-container [formGroup]="form" *ngIf="field">
+<ng-container *ngIf="field">
   <div class="formkit-repeatable-field">
-    <ng-container [formArrayName]="name">
+    <ng-container [formGroup]="$any(control)">
       <div class="formkit-repeatable-field-group" *ngFor="let child of control.controls; index as i">
 
         <div class="formkit-fields">
           <formkit-form-field
             *ngFor="let name of $any(field.fields) | visibleFieldKeys"
-            [form]="$any(child)"
             [control]="$any(child.get(name))"
             [name]="name"
             [field]="$any(field.fields[name])">
