@@ -15,7 +15,7 @@ import { FormFieldDirective } from './directives/form-field/form-field.directive
 import { FormKitModuleConfig } from './models/config.model';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
 import { ToggleFieldComponent } from './components/toggle-field/toggle-field.component';
-import { FieldBaseComponent } from './components/field-base/field-base.component';
+import { FieldBaseDirective } from './directives/field-base/field-base.directive';
 import { TextFieldComponent } from './components/text-field/text-field.component';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
@@ -32,7 +32,7 @@ import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
     HumanizePipe,
     RepeatableFieldComponent,
     CheckboxFieldComponent,
-    FieldBaseComponent,
+    FieldBaseDirective,
     FormComponent,
     FormFieldComponent,
     PasswordFieldComponent,
@@ -46,7 +46,6 @@ import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
   entryComponents: [
     RepeatableFieldComponent,
     CheckboxFieldComponent,
-    FieldBaseComponent,
     FormComponent,
     FormFieldComponent,
     PasswordFieldComponent,
@@ -61,7 +60,7 @@ import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
     CheckboxFieldComponent,
     HumanizePipe,
     FormComponent,
-    FieldBaseComponent,
+    FieldBaseDirective,
     FormFieldComponent,
     PasswordFieldComponent,
     RadioButtonsFieldComponent,

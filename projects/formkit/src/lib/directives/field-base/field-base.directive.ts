@@ -1,23 +1,13 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ISingleField } from '../../models';
 import { Subject } from 'rxjs';
-import { IFieldBaseComponent } from './field-base.component.model';
+import { IFieldBaseDirective } from './field-base.directive.model';
 
-@Component({
-  selector: 'formkit-field-base',
-  template: '<p>FieldBaseComponent. You can extend this component.</p>',
-  changeDetection: ChangeDetectionStrategy.OnPush
+@Directive({
+  selector: '[formkitFieldBase]'
 })
-export class FieldBaseComponent implements IFieldBaseComponent, AfterViewInit, OnDestroy {
+export class FieldBaseDirective implements IFieldBaseDirective, AfterViewInit, OnDestroy {
   @Input() control!: AbstractControl | FormControl | FormArray | FormGroup;
   @Input() field!: ISingleField<any, any, any>;
   @Input() name!: string;

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 import { ICheckboxesField, ICheckboxField } from '../../models/field.model';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 
 @Component({
   selector: 'formkit-checkbox-field',
@@ -9,7 +9,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class CheckboxFieldComponent extends FieldBaseComponent {
+export class CheckboxFieldComponent extends FieldBaseDirective {
   @Input() control!: FormControl | FormArray;
   @Input() field!: ICheckboxField<any, any, any> | ICheckboxesField<any, any, any>;
 

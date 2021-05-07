@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IPasswordField } from '../../models';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 
 @Component({
   selector: 'formkit-password-field',
@@ -9,7 +9,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class PasswordFieldComponent extends FieldBaseComponent {
+export class PasswordFieldComponent extends FieldBaseDirective {
   @Input() control!: FormControl;
   @Input() field!: IPasswordField<any, any, any>;
   @Input() showPasswords = false;

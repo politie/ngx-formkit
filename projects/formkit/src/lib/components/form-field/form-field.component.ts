@@ -16,7 +16,7 @@ import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operator
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { FieldStateService } from '../../services/field-state/field-state.service';
@@ -37,7 +37,7 @@ import { FormGroup } from '@angular/forms';
     FieldStateService
   ]
 })
-export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit {
+export class FormFieldComponent extends FieldBaseDirective implements IFormFieldComponent, OnInit {
   /**
    * Apply classes to the host component
    */

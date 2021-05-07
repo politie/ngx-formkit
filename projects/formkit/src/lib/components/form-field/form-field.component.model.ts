@@ -1,7 +1,7 @@
 import { FieldMessageType, FieldType, FormValues } from '../../models';
-import { IFieldBaseComponent } from '../field-base/field-base.component.model';
+import { IFieldBaseDirective } from '../../directives/field-base/field-base.directive.model';
 
-export interface IFormFieldComponent extends IFieldBaseComponent {
+export interface IFormFieldComponent extends IFieldBaseDirective {
   FieldType: typeof FieldType;
   FieldMessageType: typeof FieldMessageType;
 

@@ -8,7 +8,6 @@ import { SelectFieldComponent } from '../components/select-field/select-field.co
 import { TextareaFieldComponent } from '../components/textarea-field/textarea-field.component';
 import { TextFieldComponent } from '../components/text-field/text-field.component';
 import { ToggleFieldComponent } from '../components/toggle-field/toggle-field.component';
-import { FieldBaseComponent } from '../components';
 
 export const FORMKIT_DEFAULT_MESSAGES_EN: { [key: string]: string | ((error: any) => string) } = {
   email: 'This is not a valid email address.',
@@ -39,7 +38,7 @@ export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
 
   components: {
     [FieldType.Checkbox]: CheckboxFieldComponent,
-    [FieldType.Custom]: FieldBaseComponent,
+    [FieldType.Custom]: null,
     [FieldType.Date]: TextFieldComponent,
     [FieldType.Email]: TextFieldComponent,
     [FieldType.Hidden]: null,
