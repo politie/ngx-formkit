@@ -41,7 +41,12 @@ describe('FieldMessagesService', () => {
       let messages: FieldMessage[] = [];
       service.list$.subscribe(r => messages = [...messages, ...r]);
 
-      service.updateVisibleMessages(control, field, {}, {});
+      service.updateVisibleMessages({
+        control,
+        field,
+        values: {},
+        defaultMessages: {}
+      });
 
       expect(messages.length).toEqual(1);
       expect(messages[0].text).toEqual('this is a warning that must always show');
@@ -52,7 +57,13 @@ describe('FieldMessagesService', () => {
       service.list$.subscribe(r => messages = [...messages, ...r]);
 
       control.setValue('new-value');
-      service.updateVisibleMessages(control, field, {}, {});
+
+      service.updateVisibleMessages({
+        control,
+        field,
+        values: {},
+        defaultMessages: {}
+      });
 
       expect(messages.length).toEqual(2);
       expect(messages[0].text).toEqual('this is a information message');
@@ -64,7 +75,13 @@ describe('FieldMessagesService', () => {
       service.list$.subscribe(r => messages = [...messages, ...r]);
 
       control.setValue('new-value');
-      service.updateVisibleMessages(control, field, { input3: 'input3' }, {});
+
+      service.updateVisibleMessages({
+        control,
+        field,
+        values: { input3: 'input3' },
+        defaultMessages: {}
+      });
 
       expect(messages.length).toEqual(3);
       expect(messages[0].text).toEqual('this is a information message');
@@ -79,8 +96,13 @@ describe('FieldMessagesService', () => {
       control.setErrors({ 'testError': true });
       control.markAsTouched();
 
-      service.updateVisibleMessages(control, field, {}, {
-        'testError': 'This is the text from a default message'
+      service.updateVisibleMessages({
+        control,
+        field,
+        values: { },
+        defaultMessages: {
+          'testError': 'This is the text from a default message'
+        }
       });
 
       expect(messages.length).toEqual(2);
@@ -106,7 +128,7 @@ describe('FieldMessagesService', () => {
     it('should handle updates, but should not call anything', () => {
       let messages: FieldMessage[] = [];
       service.list$.subscribe(r => messages = [...messages, ...r]);
-      service.updateVisibleMessages(control, field, { required: 'required' }, {});
+      service.updateVisibleMessages({ control, field, values: { required: 'required' }, defaultMessages: {} });
       expect(messages.length).toEqual(0);
     });
   });

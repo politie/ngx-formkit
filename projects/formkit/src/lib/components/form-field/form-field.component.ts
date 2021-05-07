@@ -151,7 +151,12 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       takeUntil(this.destroy$)
     ).subscribe(() => {
       if (this.field.messages !== false) {
-        this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue(), this.config.messages);
+        this.fieldMessagesService.updateVisibleMessages({
+          control: this.control,
+          defaultMessages: this.config.messages,
+          field: this.field,
+          values: (this.control.root as FormGroup).getRawValue()
+        });
       }
 
       if (this.componentCdr) {
@@ -176,7 +181,12 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
      */
 
     if (this.field.messages !== false) {
-      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, values, this.config.messages);
+      this.fieldMessagesService.updateVisibleMessages({
+        control: this.control,
+        field: this.field,
+        defaultMessages: this.config.messages,
+        values
+      });
     }
 
     /**

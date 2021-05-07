@@ -1,7 +1,6 @@
 import { ReplaySubject } from 'rxjs';
-import { FieldMessage, FieldMessageType, FormValues, IVisibleField } from '../../models';
-import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { IFieldMessagesService } from './field-messages.service.model';
+import { FieldMessage, FieldMessageType } from '../../models';
+import { IFieldMessagesService, UpdateVisibleMessagesPayload } from './field-messages.service.model';
 import { Injectable } from '@angular/core';
 
 /**
@@ -13,25 +12,20 @@ import { Injectable } from '@angular/core';
 export class FieldMessagesService implements IFieldMessagesService {
   public list$ = new ReplaySubject<FieldMessage[]>(1);
 
-  updateVisibleMessages(
-    control: AbstractControl | FormControl | FormArray | FormGroup,
-    field: IVisibleField<any, any, any>,
-    values: FormValues<any>,
-    defaultMessages: { [key: string]: string | ((error: any) => string) }
-  ) {
+  updateVisibleMessages(payload: UpdateVisibleMessagesPayload) {
 
     let messages: FieldMessage[] = [];
 
     /**
      * Loop through the default error messages and set them
      */
-    if (control.errors && control.touched) {
-      for (const error of Object.keys(control.errors).filter(s => defaultMessages[s])) {
-        const message = defaultMessages[error];
+    if (payload.control.errors && payload.control.touched) {
+      for (const error of Object.keys(payload.control.errors).filter(s => payload.defaultMessages[s])) {
+        const message = payload.defaultMessages[error];
 
         messages.push({
           type: FieldMessageType.Error,
-          text: (typeof message === 'string') ? message : message(control.errors[error])
+          text: (typeof message === 'string') ? message : message(payload.control.errors[error])
         });
       }
     }
@@ -39,13 +33,13 @@ export class FieldMessagesService implements IFieldMessagesService {
     /**
      * Payload for the show function parameter
      */
-    const payload = { control, errors: control.errors || {}, values};
+    const callbackPayload = { control: payload.control, errors: payload.control.errors || {}, values: payload.values};
 
 
-    if (field.messages) {
+    if (payload.field.messages) {
       messages = [
         ...messages,
-        ...field.messages(payload)
+        ...payload.field.messages(callbackPayload)
           .filter(m => m.show)
           .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }))
       ];
