@@ -1,5 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { FieldType, IRepeatableField, IField } from '../../models';
+import { FieldType, IField, IRepeatableField } from '../../models';
 import { createFormControl } from '../create-formcontrol/create-formcontrol.helpers';
 
 export const formGroupFromBlueprint = (field: IRepeatableField<any, any, any>): FormGroup => {
@@ -15,7 +15,10 @@ export const formGroupFromBlueprint = (field: IRepeatableField<any, any, any>): 
     if (childField.type === FieldType.Repeatable) {
       obj[key] = new FormArray([ formGroupFromBlueprint(childField as unknown as IRepeatableField<any, any, any>) ]);
     } else {
-      obj[key] = createFormControl(childField.value, childField.validators);
+      obj[key] = createFormControl(childField.value, {
+        validators: childField.validators,
+        updateOn: childField.updateOn || 'change'
+      });
     }
   }
 

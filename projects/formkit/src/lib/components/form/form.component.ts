@@ -26,7 +26,7 @@ import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
-import { FormArray, FormGroup } from '@angular/forms';
+import { AbstractControlOptions, FormArray, FormGroup } from '@angular/forms';
 import { createFormControl, formGroupFromBlueprint, utilities } from '../../helpers';
 
 /**
@@ -240,16 +240,29 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
    */
   private processSingleFieldDefinition(name: Extract<keyof T, string>, field: IField<T, any, any>) {
     if (field.type === FieldType.Repeatable) {
-      this.form.addControl(name, new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)]));
-    } else if (field.type === FieldType.Checkbox && field.hasOwnProperty('options')) {
-      const controls = (field as ICheckboxesField<any, any, any>).options.map((_, i) => {
-        const value = Array.isArray(field.value) && field.value[i] ? field.value[i] : false;
-
-        return createFormControl(value, null);
-      });
-      this.form.addControl(name, new FormArray(controls, field.validators));
+      this.form.addControl(
+        name,
+        new FormArray([formGroupFromBlueprint(field as IRepeatableField<any, any, any>)], {
+          updateOn: field.updateOn || 'change'
+        })
+      );
     } else {
-      this.form.addControl(name, createFormControl(field.value, field.validators));
+      const options: AbstractControlOptions = {
+        validators: field.validators,
+        updateOn: field.updateOn || 'change'
+      };
+
+      if (field.type === FieldType.Checkbox && field.hasOwnProperty('options')) {
+        const controls = (field as ICheckboxesField<any, any, any>).options.map((_, i) => {
+          const value = Array.isArray(field.value) && field.value[i] ? field.value[i] : false;
+
+          return createFormControl(value);
+        });
+
+        this.form.addControl(name, new FormArray(controls, options));
+      } else {
+        this.form.addControl(name, createFormControl(field.value, options));
+      }
     }
   }
 }

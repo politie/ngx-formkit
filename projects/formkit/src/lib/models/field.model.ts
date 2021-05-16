@@ -70,6 +70,8 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
     disabled?: boolean;
     hidden?: boolean;
   }
+
+  updateOn?: 'change' | 'blur' | 'submit';
 }
 
 type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {
@@ -107,6 +109,7 @@ export type IHiddenField<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType.Hidden;
   value?: Level[FieldKey];
   validators?: ValidatorFn[];
+  updateOn?: 'change' | 'blur' | 'submit';
 }
 
 export type IPasswordField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {

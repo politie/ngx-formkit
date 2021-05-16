@@ -1,3 +1,3 @@
-import { FormControl, ValidatorFn } from '@angular/forms';
+import { AbstractControlOptions, FormControl } from '@angular/forms';
 
-export const createFormControl = (value: any = null, validators: ValidatorFn[] | null | undefined = null): FormControl => new FormControl(value, validators);
+export const createFormControl = (value: any = null, options: AbstractControlOptions = {}): FormControl => new FormControl(value, options);
