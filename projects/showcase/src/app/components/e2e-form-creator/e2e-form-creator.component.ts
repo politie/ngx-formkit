@@ -20,6 +20,8 @@ export class E2eFormCreatorComponent {
   constructor() { }
 
   onSubmit() {
-    console.log(`Form "${this.title}" has been submitted.`);
+    if (this.formComponent.onSubmitClick()) {
+      console.log(`Form "${this.title}" has been submitted.`);
+    }
   }
 }

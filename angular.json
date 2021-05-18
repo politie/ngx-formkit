@@ -40,9 +40,8 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "ngx-build-plus:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "extraWebpackConfig": "webpack.config.js",
             "outputPath": "dist/showcase",
             "index": "projects/showcase/src/index.html",
             "main": "projects/showcase/src/main.ts",
@@ -54,15 +53,12 @@
               "projects/showcase/src/assets"
             ],
             "styles": [
-              "projects/showcase/src/material.scss",
-              "projects/showcase/src/styles.css",
-              "node_modules/material-design-icons/iconfont/material-icons.css"
+              "projects/showcase/src/styles.css"
             ],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "extraWebpackConfig": "webpack.config.js",
               "fileReplacements": [
                 {
                   "replace": "projects/showcase/src/environments/environment.ts",
@@ -93,18 +89,13 @@
           }
         },
         "serve": {
-          "builder": "ngx-build-plus:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "extraWebpackConfig": "webpack.config.js",
             "browserTarget": "showcase:build",
-            "hmr": true,
-            "hmrWarning": false
+            "hmr": true
           },
           "configurations": {
             "production": {
-              "customWebpackConfig": {
-                "path": "./webpack.config.js"
-              },
               "browserTarget": "showcase:build:production"
             }
           }

@@ -1,16 +1,13 @@
+const mode = process.env.TAILWIND_MODE === 'watch' ? 'jit' : 'aot';
+
+console.log('-----------', mode);
+
 module.exports = {
-  purge: {
-    content: [
-      "./**/*.html",
-      "./**/*.ts"
-    ],
-    options: {
-      safelist: [
-        ':host',
-        '::ng-deep'
-      ]
-    }
-  },
+  mode: mode,
+  purge: [
+    './projects/**/*.{html,ts}',
+    './src/safelist.txt'
+  ],
   theme: {
     screens: {
       sm: '640px',
