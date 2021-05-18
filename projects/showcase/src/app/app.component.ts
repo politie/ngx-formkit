@@ -49,6 +49,8 @@ export class AppComponent {
       message: 'Basic implementation',
       formConfig: simpleFormConfig
     },
+    {
+      title: 'Disabled',
       message: 'Demo to show the option to make a field disabled based on a condition.',
       formConfig: disabledFormConfig
     },
