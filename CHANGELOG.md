@@ -1,3 +1,6 @@
+# 2.1.10
+- Fixed bug with `readonly` to be set if `formkit-form` is used inside `*ngIf`.
+
 # 2.1.9
 - Added `onSubmitClick()` method that return a boolean indicating if a form is valid. This method marks all child fields as `touched`, forcing validation states on each field. You can call this method on submit to test if the form is valid and force error states if a field isn't valid.
 - Added `submitClickedFormInvalid` content slot. In this content slot, you can add a form wide error message if something is wrong if a user clicks the submit button.

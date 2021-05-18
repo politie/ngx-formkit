@@ -76,7 +76,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   ngOnInit(): void {
     this.runSuppliedInputsChecks();
 
-    if (!this.readonly) {
+    if (this.readonly) {
       this.form.disable({ emitEvent: false });
     }
 
