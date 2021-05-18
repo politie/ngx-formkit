@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentFactoryResolver,
+  ComponentRef,
   HostBinding,
   Inject,
   OnInit,
@@ -15,11 +16,12 @@ import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operator
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { FieldStateService } from '../../services/field-state/field-state.service';
 import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
+import { FormGroup } from '@angular/forms';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -35,7 +37,7 @@ import { FieldMessagesService } from '../../services/field-messages/field-messag
     FieldStateService
   ]
 })
-export class FormFieldComponent extends FieldBaseComponent implements IFormFieldComponent, OnInit {
+export class FormFieldComponent extends FieldBaseDirective implements IFormFieldComponent, OnInit {
   /**
    * Apply classes to the host component
    */
@@ -46,7 +48,8 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
-      (this.hidden) ? 'hidden' : ''
+      (this.hidden) ? 'hidden' : '',
+      (this.field.class) ? this.field.class.join(' ') : ''
     ].filter(Boolean).join(' ');
   }
 
@@ -57,6 +60,7 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
 
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
+  componentRef!: ComponentRef<any>;
 
   private componentCdr!: ChangeDetectorRef;
   private hidden = false;
@@ -105,12 +109,11 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     const ref = this.fieldHost.viewContainerRef;
     ref.clear();
 
-    const compRef = ref.createComponent<any>(factory);
-    compRef.instance.control = this.control;
-    compRef.instance.form = this.form;
-    compRef.instance.field = this.field;
-    compRef.instance.name = this.name;
-    this.componentCdr = compRef.injector.get(ChangeDetectorRef);
+    this.componentRef = ref.createComponent<any>(factory);
+    this.componentRef.instance.control = this.control;
+    this.componentRef.instance.field = this.field;
+    this.componentRef.instance.name = this.name;
+    this.componentCdr = this.componentRef.injector.get(ChangeDetectorRef);
   }
 
   /**
@@ -147,7 +150,14 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.fieldMessagesService.updateVisibleMessages(this.control, this.field, this.form.getRawValue());
+      if (this.field.messages !== false) {
+        this.fieldMessagesService.updateVisibleMessages({
+          control: this.control,
+          defaultMessages: this.config.messages,
+          field: this.field,
+          values: (this.control.root as FormGroup).getRawValue()
+        });
+      }
 
       if (this.componentCdr) {
         this.componentCdr.markForCheck();
@@ -161,14 +171,6 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
    * @param values the current (raw) values in the form
    */
   onAfterUpdateChecks(values: FormValues<any>) {
-    if (typeof this.field.transform !== 'undefined') {
-      const value = this.field.transform(values);
-
-      if (typeof value !== 'undefined') {
-        this.control.setValue(value, { emitEvent: false });
-      }
-    }
-
     /**
      * Update the field state (disabled, required, hidden)
      */
@@ -177,7 +179,15 @@ export class FormFieldComponent extends FieldBaseComponent implements IFormField
     /**
      * Update the list of visible messages for this field
      */
-    this.fieldMessagesService.updateVisibleMessages(this.control, this.field, values);
+
+    if (this.field.messages !== false) {
+      this.fieldMessagesService.updateVisibleMessages({
+        control: this.control,
+        field: this.field,
+        defaultMessages: this.config.messages,
+        values
+      });
+    }
 
     /**
      * Mark the component for check for the ChangeDetector

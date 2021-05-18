@@ -1,8 +1,8 @@
 module.exports = {
   purge: {
     content: [
-      "./projects/showcase/src/**/*.html",
-      "./projects/showcase/src/**/*.ts"
+      "./**/*.html",
+      "./**/*.ts"
     ],
     options: {
       safelist: [

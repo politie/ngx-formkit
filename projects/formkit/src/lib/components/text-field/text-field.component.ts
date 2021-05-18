@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FieldType, ITextField } from '../../models';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 import { FormControl } from '@angular/forms';
 
 @Component({
@@ -9,7 +9,7 @@ import { FormControl } from '@angular/forms';
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TextFieldComponent extends FieldBaseComponent implements OnInit {
+export class TextFieldComponent extends FieldBaseDirective implements OnInit {
   @Input() control!: FormControl;
   @Input() field!: ITextField<any, any, any>;
   type = 'text';

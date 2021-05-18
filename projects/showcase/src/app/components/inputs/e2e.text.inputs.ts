@@ -1,11 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type TextForm = {
   text: string;
 }
 
-export const textFormFields: FormFields<TextForm> = {
-  text: {
-    type: FieldType.Text
+export const textFormConfig: FormKitFormConfig<TextForm> = {
+  fields: {
+    text: {
+      type: FieldType.Text
+    }
   }
 };

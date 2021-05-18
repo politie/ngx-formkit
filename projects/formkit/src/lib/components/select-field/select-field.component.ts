@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ISelectField, Options } from '../../models';
 import { isObservable, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 
 @Component({
   selector: 'formkit-select-field',
@@ -11,7 +11,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SelectFieldComponent extends FieldBaseComponent implements OnInit, OnDestroy {
+export class SelectFieldComponent extends FieldBaseDirective implements OnInit, OnDestroy {
   @Input() control!: FormControl;
   @Input() field!: ISelectField<any, any, any>;
 
@@ -32,14 +32,14 @@ export class SelectFieldComponent extends FieldBaseComponent implements OnInit, 
     this.options$.pipe(takeUntil(this.destroy$)).subscribe(options => {
       if (options && options.length === 1 && this.control.value === null && this.field.autoselectSingleOption === true) {
         if (!options[0].disabled) {
-          this.control.setValue(options[0], { emitEvent: true });
+          this.control.setValue(options[0], { emitEvent: false });
         }
       }
     });
   }
 
   compareFunction(option: Options, value: Options) {
-    return (option && value && option.id === value.id);
+    return ((option === null && value === null) || (option && value && option.id === value.id));
   }
 
   ngOnDestroy() {

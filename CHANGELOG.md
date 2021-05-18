@@ -1,4 +1,52 @@
-# 2.0.0
+# 2.1.10
+- Fixed bug with `readonly` to be set if `formkit-form` is used inside `*ngIf`.
+
+# 2.1.9
+- Added `onSubmitClick()` method that return a boolean indicating if a form is valid. This method marks all child fields as `touched`, forcing validation states on each field. You can call this method on submit to test if the form is valid and force error states if a field isn't valid.
+- Added `submitClickedFormInvalid` content slot. In this content slot, you can add a form wide error message if something is wrong if a user clicks the submit button.
+- These two fixes are done in accordance with the rule of thumb to not disable submit buttons when there are no cues that something is wrong in the form.
+- RENAMED: `cy-formkit-field-notification` to `data-cy-formkit-field-notification`.
+
+# 2.1.8
+- HOTFIX: Also export `CheckboxField`.
+
+# 2.1.7
+- UPDATED: FormKitModule now exports all field types, so you can use these components without using a `<formkit-form>`.
+- UPDATED: Select field now has a `placeholder` option that sets a disabled option to the `null` value.
+
+# 2.1.6
+- UPDATED: Placeholder now uses the `placeholder` property, with a fallback (in order) to `header.title`, `name` or a empty string.
+
+# 2.1.5
+- FIXED: Issue where a Select field with a option list observable that has a single option and `autoSelectFirstOption` to true would trigger a `value$` update due to emitting a new value. This could result in a endless loop of updates, if you use the `value$` observable to change the form again in your own logic.
+- ADDED: Manual `triggerUpdateChecks` method to run all after update checks per field.
+
+# 2.1.4
+- Added Validators class, starting with validator methods for checkboxes field
+
+# 2.1.3
+- Added option to add multiple checkboxes
+
+# 2.1.2
+- Updated textarea field with `rows` property to set height instead of `minRows` and `maxRows`.
+
+# 2.1.1
+- Fixed timing issue with initializing the form with default values and running updateChecks where the checks received the wrong values.
+
+# 2.1.0
+- BREAKING: Moved `transform` logic from field to `transforms` for a per-form basis of value transforms.
+- BREAKING: `<formkit-form>` now requires a `[config]` attribute with `fields` instead of `[fields]`.
+- Added: Option for text type fields to have a `autofocus` property. Use this property in your field definition to add the focus directly to this field.
+
+# 2.0.4
+- Fixed: Field with type `Hidden` is now represented in the form raw values.
+
+# 2.0.3
+- Fixed: Empty messages list if no messages or messages: false is now hidden.
+
+# 2.0.0 - 2.0.2
+This release has a lot of breaking changes:
+
 - Removed `hooks` property for fields.
 - Removed `icon` property  for fields.
 - Removed `multiple` option for select field.
@@ -9,6 +57,8 @@
 - Updated all field types to not use `Material` components.
 - Updated input names to prevent `ng-` classes bubbling up the entire DOM tree inside the `formkit-form`.
 - Updated `Array` field to `Repeatable`.
+- Moved `required`, `disabled` and `hidden` properties to a single `status` function that returns the status per property.
+- Updated: `messages` property is now a function that returns a array of messages.
 
 # 1.0.3
 - Hotfix for the NGCC compiler giving errors for `Required` type usage.

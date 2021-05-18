@@ -18,31 +18,23 @@ import { FormService } from '../../services';
 const field: ISingleField<any, any, any> = {
   type: FieldType.Radio,
   options: [],
-  transform: values => {
-    if (values.testValue === 'test') {
-      return 'new-value';
-    } else {
-      return undefined;
-    }
-  },
-  messages: [
+  messages: (payload) => ([
     {
-      show: ({control}) => (control.value !== 'initial-value'),
+      show: (payload.control.value !== 'initial-value'),
       type: FieldMessageType.Information,
-      text: (payload) => 'this is a information message'
+      text: 'this is a information message'
     },
     {
       show: true,
       type: FieldMessageType.Warning,
-      text: (payload) => 'this is a warning that must always show'
+      text: 'this is a warning that must always show'
     }
-  ]
+  ])
 };
 
 describe('FieldComponent', () => {
   let component: FormFieldComponent;
   let fixture: ComponentFixture<FormFieldComponent>;
-  let events$: Subject<FormEvent>;
   let control: FormControl;
   let service: FormService;
 
@@ -85,8 +77,6 @@ describe('FieldComponent', () => {
     component = fixture.componentInstance;
     service = TestBed.inject(FormService);
     control = new FormControl('initial-value');
-
-    component.form = new FormGroup({ 'field-name': control });
     component.control = control;
     component.name = 'field-name';
     component.field = field as any;
@@ -99,8 +89,7 @@ describe('FieldComponent', () => {
 
   it('should run onAfterUpdate checks', () => {
     component.onAfterUpdateChecks({ testValue: 'test'});
-    // Should have the transformed value
-    expect(component.control.value).toEqual('new-value');
+    expect(component.control.value).toEqual('initial-value');
   });
 
   it('should run checks after subject has emitted', () => {

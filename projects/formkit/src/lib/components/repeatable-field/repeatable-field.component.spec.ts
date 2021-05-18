@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RepeatableFieldComponent } from './repeatable-field.component';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FormComponent } from '../form/root-form/form.component';
+import { FormComponent } from '../form/form.component';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { MockComponent } from 'ng-mocks';
 import { FieldType } from '../../models';
-import { NestedFormComponent } from '../form';
+import { VisibleFieldKeysPipe } from '../../pipes/visible-field-keys.pipe';
 
 describe('RepeatableFieldComponent', () => {
   let component: RepeatableFieldComponent;
@@ -18,7 +18,7 @@ describe('RepeatableFieldComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [
-        NestedFormComponent,
+        VisibleFieldKeysPipe,
         MockComponent(FormFieldComponent),
         MockComponent(FormComponent),
         RepeatableFieldComponent

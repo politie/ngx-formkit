@@ -1,16 +1,18 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type checkboxForm = {
   checkbox: boolean;
 }
 
-export const checkboxFormFields:FormFields<checkboxForm> = {
-  checkbox: {
-    type: FieldType.Checkbox,
-    option: {
-      id: 1,
-      label: 'Checkbox'
-    },
-    value: false
+export const checkboxFormConfig: FormKitFormConfig<checkboxForm> = {
+  fields: {
+    checkbox: {
+      type: FieldType.Checkbox,
+      option: {
+        id: 1,
+        label: 'Checkbox'
+      },
+      value: false
+    }
   }
 };

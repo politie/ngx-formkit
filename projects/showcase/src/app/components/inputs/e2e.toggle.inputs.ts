@@ -1,14 +1,16 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type ToggleForm = {
   toggle: boolean;
 }
 
-export const toggleFormFields: FormFields<ToggleForm> = {
-  toggle: {
-    type: FieldType.Toggle,
-    value: false,
-    label: 'Toggle me'
+export const toggleFormConfig: FormKitFormConfig<ToggleForm> = {
+  fields: {
+    toggle: {
+      type: FieldType.Toggle,
+      value: false,
+      label: 'Toggle me'
+    }
   }
 };
 

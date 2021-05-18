@@ -1,11 +1,13 @@
-import { FieldType, FormFields } from 'formkit';
+import { FieldType, FormKitFormConfig } from 'formkit';
 
 export type EmailForm = {
   email: string;
 }
 
-export const emailFormFields:FormFields<EmailForm> = {
-  email: {
-    type: FieldType.Email
+export const emailFormConfig:FormKitFormConfig<EmailForm> = {
+  fields: {
+    email: {
+      type: FieldType.Email
+    }
   }
 };

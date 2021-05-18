@@ -9,14 +9,13 @@
   <div class="formkit-fields formkit-fields-root">
     <ng-container
       [ngTemplateOutlet]="fieldsTemplate || defaultFieldsTemplate"
-      [ngTemplateOutletContext]="{ fields: fields, keys: keys }">
+      [ngTemplateOutletContext]="{ fields: config.fields, keys: $any(config.fields) | visibleFieldKeys }">
     </ng-container>
   </div>
 
   <ng-template #defaultFieldsTemplate let-fields="fields" let-keys="keys">
     <formkit-form-field
       *ngFor="let name of keys"
-      [form]="form"
       [control]="form.controls[name]"
       [name]="name"
       [field]="$any(fields[name])">
@@ -24,5 +23,10 @@
   </ng-template>
 
   <ng-content select="[footer]"></ng-content>
+
+  <div *ngIf="submitAttempt$ | async">
+    <ng-content *ngIf="form.invalid" select="[submitClickedFormInvalid]"></ng-content>
+  </div>
+
   <ng-content select="[submitButton]"></ng-content>
 </ng-container>

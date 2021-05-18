@@ -11,4 +11,16 @@ describe('Utilities', () => {
       expect(utilities.isEmptyObject(() => {})).toEqual(false);
     });
   });
+
+  describe('truthyArrayValuesLength utility', () => {
+    it('it should return the length of the truthy values in the array', () => {
+      expect(utilities.truthyArrayValuesLength(null as any)).toEqual(0);
+      expect(utilities.truthyArrayValuesLength([false])).toEqual(0);
+      expect(utilities.truthyArrayValuesLength([false, false])).toEqual(0);
+      expect(utilities.truthyArrayValuesLength([true])).toEqual(1);
+      expect(utilities.truthyArrayValuesLength([true, 1, {}])).toEqual(3);
+      expect(utilities.truthyArrayValuesLength([null, 0, undefined])).toEqual(0);
+      expect(utilities.truthyArrayValuesLength(['', ''])).toEqual(0);
+    });
+  });
 });

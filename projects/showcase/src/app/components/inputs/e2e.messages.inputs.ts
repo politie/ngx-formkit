@@ -1,23 +1,29 @@
-import { FieldMessageType, FieldType, FormFields } from 'formkit';
+import { FieldMessageType, FieldType, FormKitFormConfig } from 'formkit';
 
 export type MessagesForm = {
   input: string;
+  input2: string;
 }
 
-export const messagesFormFields: FormFields<MessagesForm> = {
-  input: {
-    type: FieldType.Text,
-    messages: [
-      {
-        type: FieldMessageType.Information,
-        text: 'This message will show if the field is empty',
-        show: ({ control }) => !control.value || control.value === ''
-      },
-      {
-        type: FieldMessageType.Information,
-        text: ({ control }) => `You have entered ${control.value.length} characters.`,
-        show: ({ control }) => control.value
-      }
-    ]
+export const messagesFormConfig: FormKitFormConfig<MessagesForm> = {
+  fields: {
+    input2: {
+      type: FieldType.Text
+    },
+    input: {
+      type: FieldType.Text,
+      messages: (payload) => ([
+        {
+          show: Boolean(!payload.values.input),
+          type: FieldMessageType.Information,
+          text: 'This message will show if the field is empty'
+        },
+        {
+          show: Boolean(payload.control.value),
+          type: FieldMessageType.Information,
+          text: `You have entered ${payload.control.value?.length} characters.`
+        }
+      ])
+    }
   }
 };

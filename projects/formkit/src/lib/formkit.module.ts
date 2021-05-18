@@ -5,22 +5,20 @@ import { RadioButtonsFieldComponent } from './components/radio-buttons-field/rad
 import { RadioFieldComponent } from './components/radio-field/radio-field.component';
 import { PasswordFieldComponent } from './components/password-field/password-field.component';
 import { SelectFieldComponent } from './components/select-field/select-field.component';
-import { FormComponent } from './components/form/root-form/form.component';
+import { FormComponent } from './components/form/form.component';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { TextareaFieldComponent } from './components/textarea-field/textarea-field.component';
 import { RepeatableFieldComponent } from './components/repeatable-field/repeatable-field.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
-import { GroupFieldComponent } from './components/group-field/group-field.component';
 import { CommonModule } from '@angular/common';
 import { FormFieldDirective } from './directives/form-field/form-field.directive';
 import { FormKitModuleConfig } from './models/config.model';
 import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './config';
 import { ToggleFieldComponent } from './components/toggle-field/toggle-field.component';
-import { FieldBaseComponent } from './components/field-base/field-base.component';
+import { FieldBaseDirective } from './directives/field-base/field-base.directive';
 import { TextFieldComponent } from './components/text-field/text-field.component';
-import { NestedFormComponent } from './components/form/nested-form/nested-form.component';
-import { FormBaseComponent } from './components/form/form-base/form-base.component';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
 
 @NgModule({
   imports: [
@@ -30,30 +28,26 @@ import { TextFieldModule } from '@angular/cdk/text-field';
   ],
   declarations: [
     FormFieldDirective,
+    VisibleFieldKeysPipe,
     HumanizePipe,
     RepeatableFieldComponent,
     CheckboxFieldComponent,
-    FieldBaseComponent,
+    FieldBaseDirective,
     FormComponent,
     FormFieldComponent,
-    GroupFieldComponent,
     PasswordFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,
     SelectFieldComponent,
     TextFieldComponent,
     TextareaFieldComponent,
-    ToggleFieldComponent,
-    NestedFormComponent,
-    FormBaseComponent
+    ToggleFieldComponent
   ],
   entryComponents: [
     RepeatableFieldComponent,
     CheckboxFieldComponent,
-    FieldBaseComponent,
     FormComponent,
     FormFieldComponent,
-    GroupFieldComponent,
     PasswordFieldComponent,
     RadioButtonsFieldComponent,
     RadioFieldComponent,
@@ -63,10 +57,19 @@ import { TextFieldModule } from '@angular/cdk/text-field';
     ToggleFieldComponent
   ],
   exports: [
+    CheckboxFieldComponent,
     HumanizePipe,
     FormComponent,
-    FieldBaseComponent,
-    FormFieldComponent
+    FieldBaseDirective,
+    FormFieldComponent,
+    PasswordFieldComponent,
+    RadioButtonsFieldComponent,
+    RadioFieldComponent,
+    RepeatableFieldComponent,
+    SelectFieldComponent,
+    TextFieldComponent,
+    TextareaFieldComponent,
+    ToggleFieldComponent
   ]
 })
 export class FormKitModule {

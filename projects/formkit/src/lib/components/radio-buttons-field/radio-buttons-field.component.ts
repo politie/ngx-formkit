@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IRadioField } from '../../models';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 
 @Component({
   selector: 'formkit-radio-buttons-field',
@@ -9,7 +9,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class RadioButtonsFieldComponent extends FieldBaseComponent {
+export class RadioButtonsFieldComponent extends FieldBaseDirective {
   @Input() control!: FormControl;
   @Input() field!: IRadioField<any, any, any>;
 }

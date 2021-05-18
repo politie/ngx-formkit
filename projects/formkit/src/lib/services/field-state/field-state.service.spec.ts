@@ -13,9 +13,11 @@ describe('FieldStateService', () => {
       control = new FormControl('test-value', null);
       field = {
         type: FieldType.Text,
-        hidden: (values) => values.hidden === 'hidden',
-        disabled: (values) => values.disabled === 'disabled',
-        required: (values) => values.required === 'required'
+        status: ({ values}) => ({
+          hidden: values.hidden === 'hidden',
+          disabled: values.disabled === 'disabled',
+          required: values.required === 'required'
+        })
       };
     });
 

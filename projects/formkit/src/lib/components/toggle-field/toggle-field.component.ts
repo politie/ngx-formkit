@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IToggleField } from '../../models';
-import { FieldBaseComponent } from '../field-base/field-base.component';
+import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 
 @Component({
   selector: 'formkit-toggle-field',
@@ -9,7 +9,7 @@ import { FieldBaseComponent } from '../field-base/field-base.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: block; }']
 })
-export class ToggleFieldComponent extends FieldBaseComponent {
+export class ToggleFieldComponent extends FieldBaseDirective {
   @Input() control!: FormControl;
   @Input() field!: IToggleField<any, any, any>;
 }

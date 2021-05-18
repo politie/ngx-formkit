@@ -1,8 +1,15 @@
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { FieldMessage, FormValues, IVisibleField } from '../../models';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+
+export type UpdateVisibleMessagesPayload = {
+  control: AbstractControl | FormControl | FormArray | FormGroup;
+  field: IVisibleField<any, any, any>;
+  values: FormValues<any>;
+  defaultMessages: { [key: string]: string | ((error: any) => string) };
+};
 
 export interface IFieldMessagesService {
-  list$: Subject<FieldMessage[]>;
-  updateVisibleMessages(control: AbstractControl, field: IVisibleField<any, any, any>, values: FormValues<any>): void;
+  list$: ReplaySubject<FieldMessage[]>;
+  updateVisibleMessages(payload: UpdateVisibleMessagesPayload): void;
 }
