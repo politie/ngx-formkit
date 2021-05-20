@@ -9,9 +9,9 @@ export class FormKitValidators {
         throw new Error('Trying to use a Array validator on a non array value.');
       }
 
-      const actual = utilities.truthyArrayValuesLength(control.value);
+      const actual = control.value.length;
 
-      return actual >= min ? null : { arrayminchecked: { min, actual } };
+      return control.value.length >= min ? null : { arrayminchecked: { min, actual } };
     };
   }
 
@@ -22,7 +22,7 @@ export class FormKitValidators {
         throw new Error('Trying to use a Array validator on a non array value.');
       }
 
-      const actual = utilities.truthyArrayValuesLength(control.value);
+      const actual = control.value.length;
 
       return actual <= max ? null : { arraymaxchecked: { max, actual } };
     };

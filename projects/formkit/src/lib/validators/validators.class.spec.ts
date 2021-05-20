@@ -22,20 +22,12 @@ describe('Validators', () => {
       });
     });
 
-    it('should return error if truthy length is less than min', () => {
-      const control = new FormControl([false, false]);
-
-      expect(arrayMinCheckedValidator(control)).toEqual({
-        arrayminchecked: {
-          actual: 0,
-          min: 1
-        }
-      });
-    });
-
     it('should return null if truthy length is equal or larger than min', () => {
-      const control = new FormControl([true]);
-      expect(arrayMinCheckedValidator(control)).toEqual(null);
+      const control1 = new FormControl(['a']);
+      expect(arrayMinCheckedValidator(control1)).toEqual(null);
+
+      const control2 = new FormControl(['a', 'b']);
+      expect(arrayMinCheckedValidator(control2)).toEqual(null);
     });
   });
 
@@ -48,7 +40,7 @@ describe('Validators', () => {
     });
 
     it('should return error if length is larger than max', () => {
-      const control = new FormControl([true, true, true]);
+      const control = new FormControl(['a', 'b', 'c']);
       expect(arrayMaxCheckedValidator(control)).toEqual({
         arraymaxchecked: {
           actual: 3,
@@ -58,12 +50,12 @@ describe('Validators', () => {
     });
 
     it('should return error if truthy length is equal to max', () => {
-      const control = new FormControl([true, true]);
+      const control = new FormControl(['a', 'b']);
       expect(arrayMaxCheckedValidator(control)).toEqual(null);
     });
 
     it('should return error if truthy length is less to max', () => {
-      const control = new FormControl([true]);
+      const control = new FormControl(['a']);
       expect(arrayMaxCheckedValidator(control)).toEqual(null);
     });
   });
