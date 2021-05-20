@@ -87,7 +87,7 @@ export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFiel
   delete?: boolean;
   max?: number;
   fields: {
-    [SubKey in keyof Level[FieldKey]]?: IField<Model, Level[FieldKey], SubKey>;
+    [SubKey: string]: IField<Model, any, any>;
   }
 }
 
