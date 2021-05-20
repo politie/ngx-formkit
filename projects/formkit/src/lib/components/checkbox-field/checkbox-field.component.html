@@ -1,7 +1,11 @@
 <ng-container *ngIf="field">
   <ng-container *ngIf="field.options" [formGroup]="$any(control)">
-    <label *ngFor="let child of $any(control).controls; let i = index;" class="inline-flex items-center form-checkbox-wrapper">
-      <input type="checkbox" class="form-checkbox" [formControlName]="i">
+    <label *ngFor="let option of field.options; let i = index;" class="inline-flex items-center form-checkbox-wrapper">
+      <input
+        type="checkbox"
+        class="form-checkbox"
+        (change)="onCheckboxChange($any($event), option)"
+        [checked]="control.value.indexOf(option.id) > -1">
       <span class="form-checkbox-label">
         <span class="label">
           {{ field.options[i].label }}
@@ -13,15 +17,16 @@
     </label>
   </ng-container>
 
-  <ng-container *ngIf="field.option">
+  <!-- Single checkbox -->
+  <ng-container *ngIf="!field.options">
     <label class="inline-flex items-center form-checkbox-wrapper">
       <input type="checkbox" class="form-checkbox" [formControl]="control">
       <span class="form-checkbox-label">
         <span class="label">
-          {{ field.option.label }}
+          {{ field.label }}
         </span>
-        <span *ngIf="field.option.description" class="description">
-          {{ field.option.description }}
+        <span *ngIf="field.description" class="description">
+          {{ field.description }}
         </span>
       </span>
     </label>
