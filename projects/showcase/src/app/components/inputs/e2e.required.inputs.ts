@@ -17,10 +17,7 @@ export const requiredFormConfig: FormKitFormConfig<RequiredForm> = {
     },
     checkbox: {
       type: FieldType.Checkbox,
-      option: {
-        id: 'basic-1',
-        label: 'Check to make Textfield required'
-      }
+      label: 'Toggle required text field'
     }
   }
 };

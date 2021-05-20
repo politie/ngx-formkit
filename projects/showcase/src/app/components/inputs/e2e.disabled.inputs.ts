@@ -9,11 +9,7 @@ export const disabledFormConfig: FormKitFormConfig<DisabledForm> = {
   fields: {
     checkbox: {
       type: FieldType.Checkbox,
-      value: false,
-      option: {
-        id: true,
-        label: 'Disable text field'
-      }
+      label: 'Disable text field'
     },
     text: {
       type: FieldType.Text,

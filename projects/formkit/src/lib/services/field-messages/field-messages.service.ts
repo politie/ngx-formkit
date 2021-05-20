@@ -35,7 +35,6 @@ export class FieldMessagesService implements IFieldMessagesService {
      */
     const callbackPayload = { control: payload.control, errors: payload.control.errors || {}, values: payload.values};
 
-
     if (payload.field.messages) {
       messages = [
         ...messages,

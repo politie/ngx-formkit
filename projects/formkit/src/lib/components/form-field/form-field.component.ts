@@ -6,13 +6,13 @@ import {
   ComponentRef,
   HostBinding,
   Inject,
-  OnInit,
+  OnInit, Optional,
   ViewChild
 } from '@angular/core';
 import { FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
+import { delay, distinctUntilChanged, map, subscribeOn, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
@@ -64,13 +64,14 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
 
   private componentCdr!: ChangeDetectorRef;
   private hidden = false;
+  private standaloneField = false;
 
   constructor(
     public fieldMessagesService: FieldMessagesService,
     public fieldStateService: FieldStateService,
     private resolver: ComponentFactoryResolver,
     private cd: ChangeDetectorRef,
-    private formService: FormService,
+    @Optional() private formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
     super();
@@ -80,6 +81,8 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     if (!this.field || !this.control) {
       return;
     }
+
+    this.standaloneField = Boolean(this.control.root === this.control);
 
     /**
      * Sadly, this is needed, since @HostBinding doesn't support async / Observable streams
@@ -93,9 +96,14 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
 
     this.renderFieldComponent();
     this.setupOneTimeFormControlEventListener();
-    this.setupFormEventListener();
 
-    if (this.field.resetFormOnChange) {
+    if (this.standaloneField) {
+      this.setupStandaloneEventListener();
+    } else {
+      this.setupFormEventListener();
+    }
+
+    if (this.field.resetFormOnChange && !this.standaloneField) {
       this.setupResetListener();
     }
   }
@@ -141,6 +149,14 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     });
   }
 
+  setupStandaloneEventListener() {
+    this.control.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(values => {
+      this.onAfterUpdateChecks(values);
+    });
+  }
+
   /**
    * Sets up a one time control listener to match messages with the current control state
    */
@@ -155,7 +171,7 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
           control: this.control,
           defaultMessages: this.config.messages,
           field: this.field,
-          values: (this.control.root as FormGroup).getRawValue()
+          values: this.standaloneField ? this.control.value : (this.control.root as FormGroup).getRawValue()
         });
       }
 
@@ -179,7 +195,6 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     /**
      * Update the list of visible messages for this field
      */
-
     if (this.field.messages !== false) {
       this.fieldMessagesService.updateVisibleMessages({
         control: this.control,

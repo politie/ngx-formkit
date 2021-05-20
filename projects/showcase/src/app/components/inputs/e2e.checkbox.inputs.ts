@@ -8,11 +8,7 @@ export const checkboxFormConfig: FormKitFormConfig<checkboxForm> = {
   fields: {
     checkbox: {
       type: FieldType.Checkbox,
-      option: {
-        id: 1,
-        label: 'Checkbox'
-      },
-      value: false
+      label: 'Checkbox label'
     }
   }
 };

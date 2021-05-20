@@ -5,7 +5,7 @@ export type RepeatableForm = {
   repeatable: {
     firstName: string;
     lastName: string;
-  }
+  }[]
 }
 
 export const repeatableFormConfig: FormKitFormConfig<RepeatableForm> = {

@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RadioButtonsFieldComponent } from './radio-buttons-field.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { HumanizePipe } from '../../pipes';
 
 describe('RadioButtonsFieldComponent', () => {
@@ -12,8 +11,7 @@ describe('RadioButtonsFieldComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
-        MatIconModule
+        ReactiveFormsModule
       ],
       declarations: [
         HumanizePipe,

@@ -17,7 +17,9 @@ describe('FormControl helper', () => {
   });
 
   it('should return a FormControl with value and validators', () => {
-    const control = createFormControl('test-value', [Validators.required]);
+    const control = createFormControl('test-value', {
+      validators: [Validators.required]
+    });
     expect(control.value).toEqual('test-value');
     expect(control.validator?.length).toEqual(1);
   });

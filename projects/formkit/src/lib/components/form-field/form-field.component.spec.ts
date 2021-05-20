@@ -1,15 +1,12 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormFieldComponent } from './form-field.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIconModule } from '@angular/material/icon';
-import { FieldMessageType, FieldType, FormEvent, FormEventType, ISingleField } from '../../models';
+import { FieldMessageType, FieldType, FormEventType, ISingleField } from '../../models';
 import { Subject } from 'rxjs';
 import { RadioFieldComponent } from '../radio-field/radio-field.component';
 import { MockProvider } from 'ng-mocks';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
-import { MatRadioModule } from '@angular/material/radio';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config';
 import { FormKitModule } from '../../formkit.module';
@@ -43,10 +40,7 @@ describe('FieldComponent', () => {
       imports: [
         BrowserDynamicTestingModule,
         ReactiveFormsModule,
-        FormKitModule,
-        MatTooltipModule,
-        MatIconModule,
-        MatRadioModule
+        FormKitModule
       ],
       providers: [
         {
@@ -72,35 +66,61 @@ describe('FieldComponent', () => {
     .compileComponents();
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormFieldComponent);
-    component = fixture.componentInstance;
-    service = TestBed.inject(FormService);
-    control = new FormControl('initial-value');
-    component.control = control;
-    component.name = 'field-name';
-    component.field = field as any;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should run onAfterUpdate checks', () => {
-    component.onAfterUpdateChecks({ testValue: 'test'});
-    expect(component.control.value).toEqual('initial-value');
-  });
-
-  it('should run checks after subject has emitted', () => {
-    const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
-
-    // @ts-ignore
-    service.formEvents$.next({
-      type: FormEventType.OnAfterUpdateChecks,
-      values: {}
+  describe('standalone fields', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FormFieldComponent);
+      component = fixture.componentInstance;
+      component.control = new FormControl('initial-value');
+      component.name = 'field-name';
+      component.field = field as any;
+      fixture.detectChanges();
     });
 
-    expect(spy).toHaveBeenCalled();
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should run checks after value change', () => {
+      const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
+      component.control.setValue('1234');
+      expect(spy).toHaveBeenCalledWith('1234');
+    });
+  });
+
+  describe('FormKitForm fields', () => {
+    beforeEach(() => {
+      const group = new FormGroup({
+        control: new FormControl('initial-value')
+      });
+
+      fixture = TestBed.createComponent(FormFieldComponent);
+      component = fixture.componentInstance;
+      service = TestBed.inject(FormService);
+      component.control = (group.get('control') as FormControl);
+      component.name = 'field-name';
+      component.field = field as any;
+      fixture.detectChanges();
+    });
+
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should run onAfterUpdate checks', () => {
+      component.onAfterUpdateChecks({ testValue: 'test'});
+      expect(component.control.value).toEqual('initial-value');
+    });
+
+    it('should run checks after subject has emitted', () => {
+      const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
+
+      // @ts-ignore
+      service.formEvents$.next({
+        type: FormEventType.OnAfterUpdateChecks,
+        values: {}
+      });
+
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });

@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CheckboxFieldComponent } from './checkbox-field.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 
 describe('CheckboxFieldComponent', () => {
   let component: CheckboxFieldComponent;
@@ -11,8 +10,7 @@ describe('CheckboxFieldComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
-        MatCheckboxModule
+        ReactiveFormsModule
       ],
       declarations: [
         CheckboxFieldComponent

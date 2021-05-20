@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ToggleFieldComponent } from './toggle-field.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HumanizePipe } from '../../pipes';
 
 describe('ToggleFieldComponent', () => {
@@ -12,7 +11,6 @@ describe('ToggleFieldComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        MatSlideToggleModule,
         ReactiveFormsModule
       ],
       declarations: [

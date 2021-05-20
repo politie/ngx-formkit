@@ -1,7 +1,7 @@
 import { FieldType, FormKitFormConfig, FormKitValidators } from 'formkit';
 
 export type CheckboxesForm = {
-  checkboxes: boolean[];
+  checkboxes: number[];
 }
 
 export const checkboxesFormConfig: FormKitFormConfig<CheckboxesForm> = {
@@ -19,7 +19,6 @@ export const checkboxesFormConfig: FormKitFormConfig<CheckboxesForm> = {
         }
       ]),
       validators: [FormKitValidators.arrayMinChecked(2), FormKitValidators.arrayMaxChecked(2)],
-      value: [true, false],
       options: [
         {
           id: 1,

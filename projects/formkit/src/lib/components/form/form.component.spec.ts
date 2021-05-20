@@ -66,11 +66,11 @@ describe('FormComponent', () => {
 
   it('should not create if already created', () => {
     component.created = true;
-    expect(() => component.ngOnInit()).toThrowError('FormKit: Form is already created.');
+    expect(() => component.ngOnInit()).toThrowError('FormKit - Form is already created.');
   });
 
   describe('Possible [form] attribute errors', () => {
-    const errorMessage = 'FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.';
+    const errorMessage = 'FormKit - <formkit-form> has no FormGroup set in [form] attribute.';
 
     it('should not create if no form prop is supplied', () => {
       component.form = null as any;
@@ -84,7 +84,7 @@ describe('FormComponent', () => {
   });
 
   describe('Possible [config] attribute errors', () => {
-    const errorMessage = 'FormKit: <formkit-form> has no config set in [config] attribute.';
+    const errorMessage = 'FormKit - <formkit-form> has no config set in [config] attribute.';
     beforeEach(() => {
       component.form = new FormGroup({});
     });
@@ -101,7 +101,7 @@ describe('FormComponent', () => {
 
     it('should not create if fields definition is empty', () => {
       component.config = { fields: {} } as any;
-      expect(() => component.ngOnInit()).toThrowError('FormKit: <formkit-form> has no fields set in the [config] attribute');
+      expect(() => component.ngOnInit()).toThrowError('FormKit - <formkit-form> has no fields set in [config] attribute');
     });
   });
 

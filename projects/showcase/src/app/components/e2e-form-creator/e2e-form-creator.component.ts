@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
 import { FormComponent, IFormGroup } from 'formkit';
 import { FormGroup } from '@angular/forms';
 import { FormKitFormConfig } from '../../../../../formkit/src/lib';

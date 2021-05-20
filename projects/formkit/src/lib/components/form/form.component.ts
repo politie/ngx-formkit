@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  TemplateRef
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { merge, Observable, Subject, timer } from 'rxjs';
 
 import {
@@ -16,7 +7,6 @@ import {
   FormKitModuleConfig,
   FormUpdateType,
   FormValueTransformFunction,
-  ICheckboxesField,
   IField,
   IRepeatableField,
   IVisibleField
@@ -44,11 +34,8 @@ import { createFormControl, formGroupFromBlueprint, utilities } from '../../help
 })
 export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   @Input() readonly = false;
-  @Input() fieldsTemplate!: TemplateRef<any>;
-
-  @Input() form!: FormGroup;
   @Input() config!: FormKitFormConfig<T>;
-
+  @Input() form!: FormGroup;
   created = false;
 
   public transformedValues$!: Observable<T>;
@@ -118,31 +105,29 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     return this.form.valid;
   }
 
+  trackByFn(index: number, name: string) {
+    return name;
+  }
+
   ngOnDestroy() {
     this.destroy$.next(true);
   }
 
   private runSuppliedInputsChecks() {
     if (this.created) {
-      throw new Error('FormKit: Form is already created.');
+      this.throwError(`Form is already created.`);
     }
 
-    /**
-     * Check if there's a FormGroup passed in the [form] attribute / @Input()
-     */
     if (!this.form || !(this.form instanceof FormGroup)) {
-      throw new Error(`FormKit: <formkit-form> has no (valid) FormGroup set in [form] attribute.`);
+      this.throwError(`<formkit-form> has no FormGroup set in [form] attribute.`);
     }
 
     if (!this.config || (Object.keys(this.config).length === 0 && this.config.constructor === Object)) {
-      throw new Error(`FormKit: <formkit-form> has no config set in [config] attribute.`);
+      this.throwError(`<formkit-form> has no config set in [config] attribute.`);
     }
 
-    /**
-     * Check if there are fields set in the [fields] attribute / @Input()
-     */
     if (!this.config.fields || (Object.keys(this.config.fields).length === 0 && this.config.fields.constructor === Object)) {
-      throw new Error(`FormKit: <formkit-form> has no fields set in the [config] attribute.`);
+      this.throwError(`<formkit-form> has no fields set in [config] attribute.`);
     }
   }
 
@@ -253,16 +238,17 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
       };
 
       if (field.type === FieldType.Checkbox && field.hasOwnProperty('options')) {
-        const controls = (field as ICheckboxesField<any, any, any>).options.map((_, i) => {
-          const value = Array.isArray(field.value) && field.value[i] ? field.value[i] : false;
-
-          return createFormControl(value);
-        });
-
-        this.form.addControl(name, new FormArray(controls, options));
+        if (field.value && !Array.isArray(field.value)) {
+          this.throwError('Trying to add multiple checkboxes with a default value that is not of type Array.', name);
+        }
+        this.form.addControl(name, createFormControl(field.value || [], options));
       } else {
         this.form.addControl(name, createFormControl(field.value, options));
       }
     }
+  }
+
+  private throwError(message: string, fieldName?: string) {
+    throw new Error(`FormKit - ${fieldName ? 'Error in config for field with key ' + fieldName + ': ' : ''}${message}`);
   }
 }
