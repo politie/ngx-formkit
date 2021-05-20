@@ -93,7 +93,8 @@ export type IRepeatableField<Model, Level, FieldKey extends keyof Level> = IFiel
 
 export type ICheckboxField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Checkbox;
-  option: Options;
+  label: string;
+  description?: string;
 }
 
 export type ICheckboxesField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
