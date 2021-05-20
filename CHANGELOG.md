@@ -1,3 +1,10 @@
+# 2.2.0
+- UPDATED: The `checkboxes` field value now returns the `option id` value on checked, or `null` when the option at that index is not checked. This means you don't have to map the values to the `field option` values in your own code. Example: `['my-id-1', null, null, 'my-id-4']`. 
+- UPDATED: The `arrayMinChecked` and `arrayMaxChecked` validators are updated to validate the length of the array instead of length of truthy values in the array.
+- UPDATED: The `checkbox` field no longer requires a `option` property to be set. Instead, you can add a `label` and optional `description`. This change is made to allow the checkbox to have three states: `intermediate / null`, `checked / true` `unchecked / false`.
+- UPDATED: The Repeatable field type now uses `[string]: IField` for its `fields` property due to some limitations in the Typescript checker.
+- ADDED option to use `<formkit-form-field>` as standalone field. This way you don't need to use a `<formkit-form>` to use a single field (with validation & status updates).
+
 # 2.1.10
 - Fixed bug with `readonly` to be set if `formkit-form` is used inside `*ngIf`.
 

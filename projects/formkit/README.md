@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.1.10
+Current version: 2.2.0
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -121,11 +121,17 @@ Below is a rundown of each option per field object.
 
 ### Settings for specific field types
 
-#### CheckboxField
+#### CheckboxField (single)
 | Parameter | Type | Description
 |:---|:---|:---|
-| option | `Options` | If you want to render a single checkbox, use the `option` property. |
-| options | `Options[]` | If you want to render multiple checkboxes, use the `options` property. |
+| label* | `string` | Label for this checkbox |
+| description | `string` | If you want to render multiple checkboxes, use the `options` property. |
+
+#### CheckboxField (multiple)
+| Parameter | Type | Description
+|:---|:---|:---|
+| options* | `Options[]` | If you want to render multiple checkboxes, use the `options` property. |
+
 
 #### PasswordField
 | Parameter | Type | Description
@@ -167,7 +173,7 @@ Below is a rundown of each option per field object.
 | label | `string` | Label to render next to the toggle. |
 
 ### Status
-You can use the `status` property on a field to alter the status of a field dynamically, based on form values or `control` properties. The `status` property asks for a function that returns a object with `disabled`, `hidden` and `required` properties (all optional) that are of type `boolean`. The function has a `payload` paramater with the following properties:
+You can use the `status` property on a field to alter the status of a field dynamically, based on form values or `control` properties. The `status` property asks for a function that returns a object with `disabled`, `hidden` and `required` properties (all optional) that are of type `boolean`. The function has a `payload` parameter with the following properties:
 
 ```ts
 type payload = {
@@ -246,7 +252,7 @@ type payload = {
 }
 ```
 
-Each message in the returned messages array should have the following properties. Asterisk marked properties are required.
+Each message in the returned messages array should have at least a `show` and `text` property set. A `type` property can be set to change the type of message: Information (default), Warning, Error.
 
 | Property | Type | Description |
 |:---|:---|:---|
@@ -344,7 +350,6 @@ Example:
 | form* | `FormGroup` | The FormGroup to use for this form. | |
 | config* | `FormKitFormConfig<T>` | The configuration for this form. The configuration object for a form has the following properties: `fields`, where you add all fields to render for this form and `transforms`. Read more about [Transforming field values](#transforming-field-values). | |
 | readonly | `boolean` | Render the form in readonly mode | `false` |
-| fieldsTemplate | `TemplateRef` | If you want to render all the fields yourself, you can pass a `TemplateRef` to this input. See [Custom Forms](#custom-forms) for an example. | `DefaultFieldsTemplate` |
 
 *required
 
@@ -389,7 +394,7 @@ const config: FormKitFormConfig<UserForm> = {
 }
 ```
 
-The above example uses a shorthand to spread the object into the returned object. You can also use a different approach, as long as the key you want to transform returns either any value (including `null` or `''`) or `undefined`. If you return `undefined` for a key, the transform will be ignored, and the current value of the field will be untouched. In the example above, if the toggle is set to `false`, the `username` field value isn't touched.,
+The above example uses a shorthand to spread the object into the returned object. You can also use a different approach, as long as the key you want to transform returns either any value (including `null` or `''`) or `undefined`. If you return `undefined` for a key, the transform will be ignored, and the current value of the field will be untouched. In the example above, if the toggle is set to `false`, the `username` field value isn't touched.
 
 ## `FormComponent` properties
 
@@ -487,6 +492,42 @@ To get the most out of the form, you can use the following starting point for th
   grid-column: auto / span var(--column-span);
 }
 ```
+
+## Use Field Components without `FormKitForm`
+
+It is possible to use a component for a specific field type without the need of a `<formkit-form>`. In the example below, we add a `checkbox-field` to our template without using the `formkit-form`. This way, we can reuse the formkit-*-field components without all form logic provided by a `<formkit-form>`.
+
+```html
+<div class="my-component">
+  <formkit-checkbox-field [control]="control" [field]="field"></formkit-checkbox-field>
+</div>
+```
+
+In the class:
+
+```ts
+import { FieldType, ICheckboxField } from '@politie/formkit';
+import { FormControl } from '@angular/forms';
+
+export class MyComponent {
+  /**
+   * Provide a configuration for the [field] property
+   */
+  field: ICheckboxField<any, any, any> = {
+    type: FieldType.Checkbox,
+    label: 'This is a label'
+  }
+
+  /**
+   * Provide a standalone control
+   */ 
+  control = new FormControl(false);
+}
+```
+
+Now we can use this configuration to render a `formkit-checkbox-field` component inside our template.
+
+> Note: You won't have access to any messages or status functions when using a standalone component outside a `<formkit-form>` definition.
 
 ## Module configuration
 
@@ -600,28 +641,6 @@ export class CustomTextInputComponent extends FieldBaseComponent implements OnIn
 
 > Make sure that you add your component to the `entryComponents` in your  AppModule.
 
-## Custom Forms
-
-By default, `FormKit` renders all your fields automatically. If you want to have more control, you can supply a `TemplateRef` to the `fieldsTemplate` `@Input` property in `<formkit-form></formkit-form>`. Example:
-
-```html
-<formkit-form [form]="form" [config]="config" [fieldsTemplate]="#myCustomFieldsTemplate">
-  <ng-template #customFieldsTemplate let-fields="fields" let-keys="keys">
-    <formkit-form-field
-      *ngFor="let name of keys"
-      [form]="form"
-      [control]="form.controls[name]"
-      [name]="name"
-      [field]="$any(fields[name])">
-    </formkit-form-field>
-  </ng-template>
-</formkit-form>
-```
-
-Inside the template, you'll have access to two variables: `fields` and `keys`. The `fields` variable is the object with your `Field` definitions. The `keys` variable is a array containing all the `keys` in your `fields` definition, so you can easily loop over the fields with `*ngFor`. 
-
-> Make sure that your `<ng-template>` with the templateRef is placed within the `<formkit-form>`.
-
 ## Field Types
 The following field types are available (you can [add your own](#custom-components)):
 
@@ -643,10 +662,10 @@ The following field types are available (you can [add your own](#custom-componen
 FormKit ships with a few extra Validators:
 
 ### arrayMinChecked(`min: number`)
-Useful for checkbox lists (checks truthy values in the `control` value).
+Useful for checkbox lists (checks array length in the `control` value).
 
 ### arrayMaxChecked(`max: number`)
-Useful for checkbox lists (checks truthy values in the `control` value).
+Useful for checkbox lists (checks array length in the `control` value).
 
 These validators can be imported by importing the `FormKitValidators` class and calling one of the static methods:
 
