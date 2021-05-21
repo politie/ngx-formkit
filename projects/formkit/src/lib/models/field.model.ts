@@ -100,6 +100,7 @@ export type ICheckboxField<Model, Level, FieldKey extends keyof Level> = ISingle
 export type ICheckboxesField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
   type: FieldType.Checkbox;
   options: Options[];
+  value: any[];
 }
 
 export type ICustomField<Model, Level, FieldKey extends keyof Level> = ISingleFieldBase<Model, Level, FieldKey> & {
