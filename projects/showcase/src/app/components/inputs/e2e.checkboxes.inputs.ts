@@ -8,6 +8,7 @@ export const checkboxesFormConfig: FormKitFormConfig<CheckboxesForm> = {
   fields: {
     checkboxes: {
       type: FieldType.Checkbox,
+      value: [],
       messages: ({ errors }) => ([
         {
           show: errors.arrayminchecked,
