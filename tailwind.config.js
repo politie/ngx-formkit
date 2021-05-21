@@ -1,7 +1,5 @@
 const mode = process.env.TAILWIND_MODE === 'watch' ? 'jit' : 'aot';
 
-console.log('-----------', mode);
-
 module.exports = {
   mode: mode,
   purge: [
