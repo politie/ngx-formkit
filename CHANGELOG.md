@@ -1,3 +1,7 @@
+# 2.2.1
+- UPDATED: Updated the logic of `standalone` field check inside the `FormFieldComponent`. This will fix issues when using a standalone control inside a `FormGroup` that isn't created with `FormKitForm`.
+- UPDATED: Checkboxes field should be provided with array type value.
+
 # 2.2.0
 - UPDATED: The `checkboxes` field value now returns the `option id` value on checked, or `null` when the option at that index is not checked. This means you don't have to map the values to the `field option` values in your own code. Example: `['my-id-1', null, null, 'my-id-4']`. 
 - UPDATED: The `arrayMinChecked` and `arrayMaxChecked` validators are updated to validate the length of the array instead of length of truthy values in the array.

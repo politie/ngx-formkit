@@ -1,6 +1,6 @@
 # ngx-FormKit
 
-Current version: 2.2.0
+Current version: 2.2.1
 
 FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
@@ -130,6 +130,7 @@ Below is a rundown of each option per field object.
 #### CheckboxField (multiple)
 | Parameter | Type | Description
 |:---|:---|:---|
+| value* | `any[]` | Set the default value for this field |
 | options* | `Options[]` | If you want to render multiple checkboxes, use the `options` property. |
 
 
@@ -495,11 +496,19 @@ To get the most out of the form, you can use the following starting point for th
 
 ## Use Field Components without `FormKitForm`
 
-It is possible to use a component for a specific field type without the need of a `<formkit-form>`. In the example below, we add a `checkbox-field` to our template without using the `formkit-form`. This way, we can reuse the formkit-*-field components without all form logic provided by a `<formkit-form>`.
+By default, FormKit renders all fields automatically for you when you use `<formkit-form>`. If you want to have more control, you can use components from the `FormKit` library without using a `<formkit-form>` as well. You can use a specific field (like `<formkit-checkbox-field>`) without any logic like state and messages. If you want to use a field with messages and status, you need to render a `<formkit-form-field>`. This field will automatically render the right component based on the field type.
+
+In the example below, we add a `<formkit-checkbox-field>` to a FormGroup and to our template without using the `formkit-form`. This way, we can reuse the `<formkit-*-field>` components without all form logic provided by a `<formkit-form>`.
 
 ```html
 <div class="my-component">
-  <formkit-checkbox-field [control]="control" [field]="field"></formkit-checkbox-field>
+  <form [formGroup]="formGroup">
+    <!-- Regular control -->
+    <input type="text" [formControl]="formGroup.get('input')">
+    
+    <!-- formkit-field -->
+    <formkit-checkbox-field [control]="control" [field]="field"></formkit-checkbox-field>
+  </form>
 </div>
 ```
 
@@ -509,11 +518,16 @@ In the class:
 import { FieldType, ICheckboxField } from '@politie/formkit';
 import { FormControl } from '@angular/forms';
 
+type MyFormType = {
+  input: string;
+  checkbox: boolean;
+}
+
 export class MyComponent {
   /**
    * Provide a configuration for the [field] property
    */
-  field: ICheckboxField<any, any, any> = {
+  field: ICheckboxField<MyFormType, any, any> = {
     type: FieldType.Checkbox,
     label: 'This is a label'
   }
@@ -522,12 +536,20 @@ export class MyComponent {
    * Provide a standalone control
    */ 
   control = new FormControl(false);
+
+  /**
+   * Add it to the FormGroup
+   */
+  formGroup = new FormGroup({
+    input: new FormControl(''),
+    checkbox: this.control
+  });
 }
 ```
 
 Now we can use this configuration to render a `formkit-checkbox-field` component inside our template.
 
-> Note: You won't have access to any messages or status functions when using a standalone component outside a `<formkit-form>` definition.
+> Please note that you can't use `transforms` without using a `<formkit-form>`.
 
 ## Module configuration
 
