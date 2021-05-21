@@ -68,6 +68,7 @@ describe('FieldComponent', () => {
 
   describe('standalone fields', () => {
     beforeEach(() => {
+      TestBed.overrideProvider(FormService, { useValue: null });
       fixture = TestBed.createComponent(FormFieldComponent);
       component = fixture.componentInstance;
       component.control = new FormControl('initial-value');

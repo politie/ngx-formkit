@@ -21,7 +21,7 @@ import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { FieldStateService } from '../../services/field-state/field-state.service';
 import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -42,14 +42,14 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
    * Apply classes to the host component
    */
   @HostBinding('style.--column-span') get fieldWidth(): string {
-    return this.field.width ? this.field.width.toString() : '12';
+    return this.field?.width ? this.field.width.toString() : '12';
   };
 
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
       (this.hidden) ? 'hidden' : '',
-      (this.field.class) ? this.field.class.join(' ') : ''
+      (this.field?.class) ? this.field.class.join(' ') : ''
     ].filter(Boolean).join(' ');
   }
 
@@ -77,12 +77,20 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     super();
   }
 
+  private get rootControl(): AbstractControl {
+    return this.control.root;
+  }
+
   ngOnInit(): void {
-    if (!this.field || !this.control) {
-      return;
+    if (!this.control) {
+      throw new Error(`FormKit - no FormControl provided in <formkit-form-field> [control] attribute for field "${this.name || ''}"`);
     }
 
-    this.standaloneField = Boolean(this.control.root === this.control);
+    if (!this.field) {
+      throw new Error(`FormKit - no Field config provided in <formkit-form-field> [field] attribute property for field "${this.name || ''}"`);
+    }
+
+    this.standaloneField = Boolean(!this.formService);
 
     /**
      * Sadly, this is needed, since @HostBinding doesn't support async / Observable streams
@@ -149,12 +157,18 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     });
   }
 
+  /**
+   * Setup root control listener for standalone controls
+   * https://angular.io/api/forms/AbstractControl#root
+   */
   setupStandaloneEventListener() {
-    this.control.valueChanges.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(values => {
-      this.onAfterUpdateChecks(values);
-    });
+    if (this.rootControl) {
+      this.rootControl.valueChanges.pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(values => {
+        this.onAfterUpdateChecks(values);
+      });
+    }
   }
 
   /**
@@ -171,7 +185,7 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
           control: this.control,
           defaultMessages: this.config.messages,
           field: this.field,
-          values: this.standaloneField ? this.control.value : (this.control.root as FormGroup).getRawValue()
+          values: this.rootControl instanceof FormGroup ? this.rootControl.getRawValue() : this.rootControl.value
         });
       }
 
