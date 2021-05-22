@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "deploy": "ng build showcase --configuration production",
+    "deploy": "npm run build",
     "start": "ng serve",
     "build": "cross-env NODE_ENV=production && npm run build:lib && npm run build:app",
     "build:app": "ng build showcase --prod",
