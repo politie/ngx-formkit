@@ -1,4 +1,4 @@
-import { FieldType, FormKitFormConfig } from 'formkit';
+import { FieldType, FormKitFormConfig } from '@politie/ngx-formkit';
 import { Validators } from '@angular/forms';
 
 export type SelectForm = {

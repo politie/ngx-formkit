@@ -20,8 +20,12 @@
       "dom"
     ],
     "paths": {
-      "formkit": [
-        "dist/formkit/formkit",
+      "@politie/ngx-formkit/*": [
+        "projects/formkit/*",
+        "projects/formkit"
+      ],
+      "@politie/ngx-formkit": [
+        "dist/formkit/*",
         "dist/formkit"
       ]
     }

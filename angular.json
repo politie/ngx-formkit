@@ -42,7 +42,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "baseHref": "https://politie.github.io/ngx-formkit/",
             "outputPath": "dist/showcase",
             "index": "projects/showcase/src/index.html",
             "main": "projects/showcase/src/main.ts",
@@ -73,6 +72,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "baseHref": "https://politie.github.io/ngx-formkit/",
               "budgets": [
                 {
                   "type": "initial",

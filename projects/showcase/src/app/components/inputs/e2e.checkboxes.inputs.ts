@@ -1,4 +1,4 @@
-import { FieldType, FormKitFormConfig, FormKitValidators } from 'formkit';
+import { FieldType, FormKitFormConfig, FormKitValidators } from '@politie/ngx-formkit';
 
 export type CheckboxesForm = {
   checkboxes: number[];

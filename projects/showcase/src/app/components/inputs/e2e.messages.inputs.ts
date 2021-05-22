@@ -1,4 +1,4 @@
-import { FieldMessageType, FieldType, FormKitFormConfig } from 'formkit';
+import { FieldMessageType, FieldType, FormKitFormConfig } from '@politie/ngx-formkit';
 
 export type MessagesForm = {
   input: string;

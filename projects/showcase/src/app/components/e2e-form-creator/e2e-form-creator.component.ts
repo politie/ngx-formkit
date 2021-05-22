@@ -1,7 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
-import { FormComponent, IFormGroup } from 'formkit';
+import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { FormComponent, FormKitFormConfig, IFormGroup } from '@politie/ngx-formkit';
 import { FormGroup } from '@angular/forms';
-import { FormKitFormConfig } from '../../../../../formkit/src/lib';
 
 @Component({
   selector: 'app-e2e-form-creator',

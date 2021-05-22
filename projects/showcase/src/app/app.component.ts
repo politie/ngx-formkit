@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { FieldType, FormKitFormConfig, ICheckboxField } from '../../../formkit/src/lib';
+import { FieldType, FormKitFormConfig, ICheckboxField } from '@politie/ngx-formkit';
 import { checkboxFormConfig } from './components/inputs/e2e.checkbox.inputs';
 import { checkboxesFormConfig } from './components/inputs/e2e.checkboxes.inputs';
 import { layoutFormConfig } from './components/inputs/e2e.layout.inputs';

@@ -1,4 +1,4 @@
-import { FieldType, FormKitFormConfig } from 'formkit';
+import { FieldType, FormKitFormConfig } from '@politie/ngx-formkit';
 
 export type DateForm = {
   date: string;
