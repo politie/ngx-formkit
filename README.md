@@ -1,5 +1,7 @@
 # FormKit
 
+[![Build and Deploy](https://github.com/politie/ngx-formkit/actions/workflows/build-deploy.yml/badge.svg?branch=master)](https://github.com/politie/ngx-formkit/actions/workflows/build-deploy.yml)
+
 This repository is used to create the ngxFormKit library. For the readme, check [the readme in the /projects/formkit](/projects/formkit/) folder.
 
 ## Build the library
