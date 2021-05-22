@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "deploy": "ng build --prod --base-href=/angular-ci-cd/",
+    "deploy": "ng build --prod --base-url='https://politie.github.io/ngx-formkit/'",
     "start": "ng serve",
     "build": "cross-env NODE_ENV=production && npm run build:lib && npm run build:app",
     "build:app": "ng build showcase --prod",
