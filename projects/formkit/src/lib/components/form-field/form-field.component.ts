@@ -6,13 +6,14 @@ import {
   ComponentRef,
   HostBinding,
   Inject,
-  OnInit, Optional,
+  OnInit,
+  Optional,
   ViewChild
 } from '@angular/core';
 import { FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, distinctUntilChanged, map, subscribeOn, take, takeUntil } from 'rxjs/operators';
+import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
@@ -21,7 +22,7 @@ import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { FieldStateService } from '../../services/field-state/field-state.service';
 import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
-import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -180,6 +181,11 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
       delay(10),
       takeUntil(this.destroy$)
     ).subscribe(() => {
+      /**
+       * We check if the messages property isn't set to false
+       * to allow for default messages to pass through if the user
+       * hasn't set a messages property.
+       */
       if (this.field.messages !== false) {
         this.fieldMessagesService.updateVisibleMessages({
           control: this.control,
@@ -207,7 +213,10 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     this.fieldStateService.updateFieldState(this.control, this.field, values);
 
     /**
-     * Update the list of visible messages for this field
+     * Update the list of visible messages for this field.
+     * We check if the messages property isn't set to false
+     * to allow for default messages to pass through if the user
+     * hasn't set a messages property.
      */
     if (this.field.messages !== false) {
       this.fieldMessagesService.updateVisibleMessages({
