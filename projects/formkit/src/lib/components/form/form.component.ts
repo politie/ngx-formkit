@@ -94,6 +94,10 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
   }
 
+  reset() {
+    this.form.patchValue(this.initialValues, { onlySelf: false, emitEvent: true });
+  }
+
   /**
    * On submit, trigger the submitted$ observable. If the form isn't valid
    * and a form message is present, this will be displayed.
@@ -155,7 +159,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     );
 
     this.transformedValues$ = merge(this.fieldResetWatcher$, this.valueChanges$).pipe(
-      throttle(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.moduleConfig.updateDebounceTime) : 0)),
+      debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.moduleConfig.updateDebounceTime) : 0)),
       map(() => (this.config.transforms) ? this.transformFormValuesByFormTransformFunction(this.form.getRawValue()) : this.form.getRawValue()),
       share()
     );
