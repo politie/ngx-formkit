@@ -1,7 +1,8 @@
 <ng-container *ngIf="field">
-  <label class="inline-flex items-center form-toggle-wrapper">
-    <span class="form-toggle-toggle">
-      <input type="checkbox" class="form-toggle" [formControl]="control">
+  <label class="formkit-toggle-wrapper">
+    <input type="checkbox" [formControl]="control">
+    <span class="formkit-toggle">
+      <span class="formkit-toggle-indicator"></span>
     </span>
     <span class="form-toggle-label">{{ field.label ? field.label : name | humanize }}</span>
   </label>
