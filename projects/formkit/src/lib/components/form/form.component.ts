@@ -12,7 +12,7 @@ import {
   IVisibleField
 } from '../../models';
 
-import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
+import { debounce, filter, map, share, takeUntil, tap, throttle } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
@@ -155,7 +155,7 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
     );
 
     this.transformedValues$ = merge(this.fieldResetWatcher$, this.valueChanges$).pipe(
-      debounce(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.moduleConfig.updateDebounceTime) : 0)),
+      throttle(() => timer((this.formUpdateType === FormUpdateType.User) ? Math.min(Math.max(10, 2500), this.moduleConfig.updateDebounceTime) : 0)),
       map(() => (this.config.transforms) ? this.transformFormValuesByFormTransformFunction(this.form.getRawValue()) : this.form.getRawValue()),
       share()
     );

@@ -36,7 +36,11 @@ export type FieldMessage = {
   text: string
 }
 
-export type FieldMessagesFunction<T> = (payload: FieldMessageFunctionPayload<T>) => { show: boolean, type?: FieldMessageType, text: string }[];
+export type FieldMessagesFunction<T> = (payload: FieldMessageFunctionPayload<T>) => {
+  show: boolean,
+  type?: FieldMessageType,
+  text: string
+}[];
 
 type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   type: FieldType;
@@ -62,6 +66,7 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
    * Optional placeholder
    */
   placeholder?: string;
+  showMessagesIfControlIsUntouched?: true;
 
   messages?: false | FieldMessagesFunction<Model>;
 
