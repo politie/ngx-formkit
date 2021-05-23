@@ -9,6 +9,14 @@ html, body {
   @apply bg-gray-100;
 }
 
+.formkit-field {
+  @apply space-y-2;
+}
+
+.formkit-field-description {
+  @apply text-sm;
+}
+
 .formkit-field-notification {
   @apply text-sm;
 }
@@ -222,4 +230,80 @@ input[disabled] {
   @apply text-gray-400;
   @apply pointer-events-none;
   @apply cursor-not-allowed;
+}
+
+.formkit-toggle-wrapper {
+  @apply flex items-center cursor-pointer;
+}
+
+.formkit-toggle {
+  @apply flex-none relative bg-gray-200 ring-1 ring-gray-300 mr-3;
+  width: 44px;
+  height: 24px;
+  display: block;
+  border-radius: 46px;
+}
+
+.formkit-toggle:after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.formkit-toggle-wrapper input[type=checkbox]{
+  @apply sr-only;
+}
+
+.formkit-toggle-wrapper input:checked + .formkit-toggle {
+  @apply ring-green-600;
+  @apply bg-green-500;
+}
+
+.formkit-toggle-wrapper input:checked + .formkit-toggle:after {
+  /*@apply bg-green-500;*/
+  @apply bg-white;
+}
+
+.formkit-toggle-wrapper input:disabled + .formkit-toggle:after {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.formkit-toggle-wrapper input:checked + .formkit-toggle:after {
+  left: calc(100% - 2px);
+  transform: translateX(-100%);
+}
+
+.button {
+  @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+}
+
+.nav {
+  @apply flex space-x-2 items-center;
+}
+
+.nav > li a {
+  @apply block py-3 px-6 font-medium text-lg text-gray-100;
+}
+
+.nav > li a:hover:not(.active) {
+  @apply bg-gray-700;
+}
+
+.nav > li a.active {
+  @apply bg-gray-100 text-gray-800;
+}
+
+h2 {
+  @apply text-3xl font-bold text-gray-800 tracking-tight;
+}
+
+header h2 + p {
+  @apply text-xl;
 }

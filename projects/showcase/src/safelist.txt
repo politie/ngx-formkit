@@ -1,0 +1,8 @@
+This safelist is used by Tailwind to ensure some classes will remain in the outputted CSS (in JIT and AOT mode).
+
+form-checkbox
+form-radio
+form-input
+form-textarea
+form-select
+form-multiselect

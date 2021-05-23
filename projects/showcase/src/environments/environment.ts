@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  repoLink: 'https://github.com/politie/ngx-formkit/',
+  projectsPath: 'blob/master/projects/',
+  srcPath: 'showcase/src/app/'
 };
 
 /*
