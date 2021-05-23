@@ -8,6 +8,7 @@ export const messagesFormConfig: FormKitFormConfig<MessagesForm> = {
   fields: {
     input: {
       type: FieldType.Text,
+      showMessagesIfControlIsUntouched: true,
       messages: (payload) => ([
         {
           show: Boolean(!payload.values.input),

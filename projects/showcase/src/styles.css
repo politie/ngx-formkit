@@ -173,8 +173,11 @@ button[disabled] {
   opacity: .25;
 }
 
-.next-button {
-  @apply inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
+.checkbox-field-multiple {
+  @apply grid !important;
+  @apply grid-cols-1 md:grid-cols-4;
+  @apply gap-4;
+
 }
 
 .form-checkbox-wrapper,
@@ -253,7 +256,7 @@ input[disabled] {
   height: 20px;
   background: #fff;
   border-radius: 20px;
-  transition: 0.3s;
+  transition: 0.15s;
 }
 
 .formkit-toggle-wrapper input[type=checkbox]{
@@ -301,9 +304,9 @@ input[disabled] {
 }
 
 h2 {
-  @apply text-3xl font-bold text-gray-800 tracking-tight;
+  @apply text-4xl font-bold text-gray-800 tracking-tight;
 }
 
 header h2 + p {
-  @apply text-xl;
+  @apply text-lg;
 }

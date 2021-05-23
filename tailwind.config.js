@@ -3,7 +3,7 @@ const mode = process.env.TAILWIND_MODE === 'watch' ? 'jit' : 'aot';
 module.exports = {
   mode: mode,
   purge: [
-    './projects/showcase/**/*.{html,ts}',
+    './projects/**/*.{html,ts}',
     './projects/showcase/src/safelist.txt'
   ],
   theme: {

@@ -8,6 +8,11 @@ export type RequiredForm = {
 
 export const requiredFormConfig: FormKitFormConfig<RequiredForm> = {
   fields: {
+    checkbox: {
+      type: FieldType.Toggle,
+      value: false,
+      label: 'Toggle required text field'
+    },
     email: {
       type: FieldType.Email,
       header: {
@@ -18,11 +23,6 @@ export const requiredFormConfig: FormKitFormConfig<RequiredForm> = {
       status: ({values}) => ({
         required: values.checkbox
       })
-    },
-    checkbox: {
-      type: FieldType.Toggle,
-      value: false,
-      label: 'Toggle required text field'
     }
   }
 };

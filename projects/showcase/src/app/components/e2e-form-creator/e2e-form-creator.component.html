@@ -1,29 +1,41 @@
-<div class="max-w-4xl mx-auto mb-12">
-  <div class="shadow overflow-hidden sm:rounded-md">
-    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+<div class="max-w-4xl mx-auto mb-16 space-y-3" [attr.id]="'example-' + title.toLowerCase()">
+  <header class="space-y-0 pt-5">
+    <h3 class="text-2xl tracking-tight font-bold">{{ title | titlecase }}</h3>
+    <p>{{ message }}</p>
+  </header>
 
-      <header class="space-y-1">
-        <header class="text-3xl tracking-tight font-bold">{{ title | titlecase }}</header>
-        <p>{{ message }}</p>
-      </header>
+  <div class="overflow-hidden shadow-md bg-white">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-5">
+      <formkit-form #FormKitForm [form]="form" [config]="config">
+        <div submitClickedFormInvalid class="pt-6 text-sm text-red-500">
+          This message is shown if a submit attempt is done, but the form still has errors. You can use the <code>submitClickedFormInvalid</code>
+          directive for this message.
+        </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <formkit-form #FormKitForm [form]="form" [config]="config"></formkit-form>
-      </form>
+        <p class="text-sm text-red-500" submitClickedFormInvalid></p>
+      </formkit-form>
+    </form>
 
-      <ng-container *ngIf="debug">
+    <div class="border-t p-5" *ngIf="debug">
+      <div class="text-xs bg-gray-800 text-white p-3 rounded-sm">
         <pre>{{ form.getRawValue() | json }}</pre>
-      </ng-container>
+      </div>
     </div>
 
-    <div class="px-4 py-3 bg-gray-50 sm:px-6">
+    <div class="flex items-center space-x-4 justify-between bg-gray-50 px-5 py-3">
       <button
         data-cy-form-submit-button
         (click)="onSubmit()"
         type="button"
-        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        Save
+        class="button">
+        Save form
       </button>
+
+      <a
+        [href]="linkToInputs + 'e2e.' + title.toLowerCase() + '.inputs.ts'"
+        class="text-blue-500 font-bold text-sm"
+        target="_blank"
+        rel="noreferrer noopener">Configuration for this form (Github) →</a>
     </div>
   </div>
 </div>

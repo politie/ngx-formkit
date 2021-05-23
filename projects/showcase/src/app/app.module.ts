@@ -21,7 +21,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
       text: {
         loading: 'test loading'
       }
-    }),
+    })
+  ],
+  providers: [
+    {
+      provide: Window,
+      useValue: window
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -30,7 +30,7 @@ export const FORMKIT_DEFAULT_MESSAGES_NL: { [key: string]: string | ((error: any
 export const FORMKIT_MODULE_DEFAULT_CONFIG: Required<FormKitModuleConfig> = {
   messages: FORMKIT_DEFAULT_MESSAGES_EN,
 
-  updateDebounceTime: 200,
+  updateDebounceTime: 150,
 
   text: {
     loading: 'loading'

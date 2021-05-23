@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormComponent, FormKitFormConfig, IFormGroup } from '@politie/ngx-formkit';
 import { FormGroup } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-e2e-form-creator',
@@ -17,6 +18,14 @@ export class E2eFormCreatorComponent {
   form = new FormGroup({}) as IFormGroup<any>;
 
   constructor() { }
+
+  get linkToInputs() {
+    return `${environment.repoLink}${environment.projectsPath}${environment.srcPath}examples/`;
+  }
+
+  onReset() {
+    this.formComponent.reset();
+  }
 
   onSubmit() {
     if (this.formComponent.onSubmitClick()) {

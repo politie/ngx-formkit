@@ -8,6 +8,7 @@ export const checkboxesFormConfig: FormKitFormConfig<CheckboxesForm> = {
   fields: {
     checkboxes: {
       type: FieldType.Checkbox,
+      showMessagesIfControlIsUntouched: true,
       value: [],
       messages: ({ errors }) => ([
         {
