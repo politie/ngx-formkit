@@ -17,14 +17,12 @@ import { FORMKIT_MODULE_CONFIG_TOKEN, FORMKIT_MODULE_DEFAULT_CONFIG } from './co
 import { ToggleFieldComponent } from './components/toggle-field/toggle-field.component';
 import { FieldBaseDirective } from './directives/field-base/field-base.directive';
 import { TextFieldComponent } from './components/text-field/text-field.component';
-import { TextFieldModule } from '@angular/cdk/text-field';
 import { VisibleFieldKeysPipe } from './pipes/visible-field-keys.pipe';
 
 @NgModule({
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    TextFieldModule
+    ReactiveFormsModule
   ],
   declarations: [
     FormFieldDirective,

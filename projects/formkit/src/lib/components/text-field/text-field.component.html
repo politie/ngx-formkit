@@ -3,6 +3,7 @@
     #input
     class="form-input formkit-input"
     [type]="type"
-    [placeholder]="field.placeholder || field.header?.title || name || ''"
+    [attr.aria-label]="field.header?.title || (name | humanize)"
+    [placeholder]="field.placeholder || field.header?.title || (name | humanize) || ''"
     [formControl]="control">
 </ng-container>

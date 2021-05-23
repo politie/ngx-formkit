@@ -8,10 +8,10 @@ export const simpleFormConfig: FormKitFormConfig<SimpleForm> = {
   fields: {
     input: {
       type: FieldType.Text,
-      autofocus: true,
+      placeholder: 'Type here...',
       header: {
-        title: 'Simple',
-        tooltip: 'Lorem'
+        title: 'Regular text field',
+        description: 'This form just renders a textfield.'
       }
     }
   }

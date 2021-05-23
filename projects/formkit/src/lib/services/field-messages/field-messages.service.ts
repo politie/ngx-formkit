@@ -19,7 +19,7 @@ export class FieldMessagesService implements IFieldMessagesService {
     /**
      * Loop through the default error messages and set them
      */
-    if (payload.control.errors && payload.control.touched) {
+    if (payload.control.errors && (payload.control.touched || payload.field.showMessagesIfControlIsUntouched)) {
       for (const error of Object.keys(payload.control.errors).filter(s => payload.defaultMessages[s])) {
         const message = payload.defaultMessages[error];
 
@@ -33,15 +33,17 @@ export class FieldMessagesService implements IFieldMessagesService {
     /**
      * Payload for the show function parameter
      */
-    const callbackPayload = { control: payload.control, errors: payload.control.errors || {}, values: payload.values};
+    if (payload.control.touched || payload.field.showMessagesIfControlIsUntouched) {
+      const callbackPayload = { control: payload.control, errors: payload.control.errors || {}, values: payload.values};
 
-    if (payload.field.messages) {
-      messages = [
-        ...messages,
-        ...payload.field.messages(callbackPayload)
-          .filter(m => m.show)
-          .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }))
-      ];
+      if (payload.field.messages) {
+        messages = [
+          ...messages,
+          ...payload.field.messages(callbackPayload)
+            .filter(m => m.show)
+            .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }))
+        ];
+      }
     }
 
     /**

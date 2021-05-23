@@ -9,7 +9,7 @@ export type HiddenForm = {
 export const hiddenFormConfig: FormKitFormConfig<HiddenForm> = {
   fields: {
     checkbox: {
-      type: FieldType.Checkbox,
+      type: FieldType.Toggle,
       label: 'Hide text field'
     },
     input: {

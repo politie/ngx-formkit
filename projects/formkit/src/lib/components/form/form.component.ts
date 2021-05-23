@@ -12,7 +12,7 @@ import {
   IVisibleField
 } from '../../models';
 
-import { debounce, filter, map, share, takeUntil, tap } from 'rxjs/operators';
+import { debounce, filter, map, share, takeUntil, tap, throttle } from 'rxjs/operators';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormService } from '../../services/form.service';
 import { IFormComponent } from './form.component.model';
@@ -92,6 +92,10 @@ export class FormComponent<T> implements IFormComponent<T>, OnInit, OnDestroy {
   patch(patch: Partial<T>) {
     this.formUpdateType = FormUpdateType.Patch;
     this.form.patchValue(patch, { onlySelf: false, emitEvent: true });
+  }
+
+  reset() {
+    this.form.patchValue(this.initialValues, { onlySelf: false, emitEvent: true });
   }
 
   /**

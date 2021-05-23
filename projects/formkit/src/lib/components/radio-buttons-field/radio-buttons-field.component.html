@@ -6,10 +6,10 @@
         class="type-radio"
         [name]="name"
         [formControl]="control"
-        [id]="name + '_' + option.id"
+        [id]="name + '-' + option.id + '-' + i"
         [value]="option.id">
       <label
-        [for]="name + '_' + option.id"
+        [for]="name + '-' + option.id + '-' + i"
         class="formkit-radio-button-label"
         [ngClass]="{'formkit-radio-button-label-next' : i > 0}">
         <span class="formkit-radio-button-label-title">

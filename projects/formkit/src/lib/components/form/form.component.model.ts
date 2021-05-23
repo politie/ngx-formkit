@@ -1,8 +1,10 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface IFormComponent<T> {
   value$: Observable<Partial<T>>;
   created: boolean;
+
+  reset(): void
 
   patch(patch: Partial<T>): void
 

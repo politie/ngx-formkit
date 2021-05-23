@@ -8,7 +8,7 @@ export type DisabledForm = {
 export const disabledFormConfig: FormKitFormConfig<DisabledForm> = {
   fields: {
     checkbox: {
-      type: FieldType.Checkbox,
+      type: FieldType.Toggle,
       label: 'Disable text field'
     },
     text: {

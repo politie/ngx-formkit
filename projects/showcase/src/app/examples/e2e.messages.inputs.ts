@@ -2,16 +2,13 @@ import { FieldMessageType, FieldType, FormKitFormConfig } from '@politie/ngx-for
 
 export type MessagesForm = {
   input: string;
-  input2: string;
 }
 
 export const messagesFormConfig: FormKitFormConfig<MessagesForm> = {
   fields: {
-    input2: {
-      type: FieldType.Text
-    },
     input: {
       type: FieldType.Text,
+      showMessagesIfControlIsUntouched: true,
       messages: (payload) => ([
         {
           show: Boolean(!payload.values.input),

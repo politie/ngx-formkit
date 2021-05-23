@@ -4,7 +4,7 @@ module.exports = {
   mode: mode,
   purge: [
     './projects/**/*.{html,ts}',
-    './src/safelist.txt'
+    './projects/showcase/src/safelist.txt'
   ],
   theme: {
     screens: {
