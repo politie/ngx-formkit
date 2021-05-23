@@ -112,6 +112,7 @@ Below is a rundown of each option per field object.
 | header | `{ title?: string, description?: string, tooltip?: string }` | Object with properties to add a title, description or tooltip above the field. |
 | footer | `{ description?: string }` | Object with properties to add a description below the field (below the field messages). |
 | messages | `false` or `FieldMessagesFunction<T>` | A function that returns dynamic messages for this field. See [Field messages](#field-messages) for example usage. |
+| showMessagesIfControlIsUntouched | `boolean` | If you want to show messages, even if the control hasn't been touched, set this property to `true` (defaults to false). |
 | placeholder | `string` | Optional placeholder text for input fields (when the user sets focus on a field and the field value is empty, the placeholder is shown). |
 | resetFormOnChange | `false` | If true, all fields in the entire form (except this field) will reset to their default values on change of this field. After the change, one round of `afterUpdateValues` is run, to trigger transform and conditional hooks. Use with caution, since multiple usages of this property in one form may lead to `MAX_CALL_STACK_SIZE_EXCEEDED` errors. You can't use this property inside a Array Field type. |
 | status | `FieldStatusFunction<T>` | A function that should return a object with boolean properties for `hidden`, `disabled`, `required` status. See [Status](#status) for examples. |
@@ -313,6 +314,10 @@ const config: FormKitFormConfig<UserForm> = {
   }
 }
 ```
+
+#### Force message visibility
+
+By default, messages will only show when the control has the `touched` property set to true. This property is set when the user has interacted with a control and focus on the control is lost. If you want to show the message even if the control hasn't been touched yet, use the `showMessagesIfControlIsUntouched` on the field configuration.
 
 #### Disable all messages
 
