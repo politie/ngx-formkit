@@ -10,6 +10,9 @@ Since the FormKit library is built on top of [Angular Reactive Forms](https://an
 - Conditional visibility (based on the values of other fields in the form)
 - Conditional required property (based on the values other fields in the form).
 
+
+Demo / Live examples: [https://politie.github.io/ngx-formkit](https://politie.github.io/ngx-formkit)
+
 # Installation
 
 ```
