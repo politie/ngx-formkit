@@ -93,7 +93,7 @@ In your Component template, add the form by adding the `formkit-form` selector. 
 </form>
 ```
 
-That's it! You can now dive in the extensive set of configuration options and properties to alter the behavior of the form and form fields.
+That's it! You can now dive in the extensive set of configuration options and properties to alter the behavior of the form and form fields. You can also check the [Examples](https://politie.github.io/ngx-formkit) page to check out the different configurations.
 
 ## `Field` properties
 Each field object should at least have a `type` option set. The type property must be of type `FieldType` which is a `enum` type provided by the `FormKitModule`.
@@ -429,6 +429,8 @@ this.myFormKitForm.patch(...);
 | Method | Payload | Description | Returns |
 |:---|:---|:---|:---|
 | patch | `values` | Update the form values with the provided `values`. The values should be a `object` with { name: value } properties. This method is useful if you have fields set with the `resetFormOnChange` property, to bypass reset behaviour if you call `patchValue` on the `FormGroup` directly. | `void` |
+| triggerUpdateChecks | `values` (optional) | Trigger the update checks manually. Normally, this is done automatically on each change in the form. `void` |
+| reset |  | Resets the form values to the initial values. | `void` |
 | triggerUpdateChecks | `values` (optional) | Trigger the update checks manually. Normally, this is done automatically on each change in the form. `void` |
 
 > **Important:** If you want to use properties or methods on the `FormComponent` `ViewChild`, you should trigger them after Angular `AfterViewInit` checks are done, to prevent issues with input properties or methods that aren't defined yet. So, for example:
