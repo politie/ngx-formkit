@@ -6,7 +6,7 @@
     </h1>
 
     <ul class="nav pt-16" role="menu">
-      <li><a href="/" class="active">Form Examples</a></li>
+      <li><a href="#" class="active">Form Examples</a></li>
       <li><a [href]="urlToGithubReadme" target="_blank" rel="noreferrer noopener">Readme →</a></li>
     </ul>
   </div>
@@ -37,14 +37,6 @@
 
   <app-e2e-form-creator
     *ngFor="let example of statusForms; trackBy: trackByFn"
-    [debug]="debugControl.value === true"
-    [config]="example.formConfig"
-    [message]="example.message"
-    [title]="ExampleTypes[example.type]">
-  </app-e2e-form-creator>
-
-  <app-e2e-form-creator
-    *ngFor="let example of exampleForms; trackBy: trackByFn"
     [debug]="debugControl.value === true"
     [config]="example.formConfig"
     [message]="example.message"
