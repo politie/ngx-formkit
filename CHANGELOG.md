@@ -1,3 +1,10 @@
+# 2.2.2
+- FIXED: Placeholders derived from the field name are now Title cased.
+- ADDED: A `<formkit-form-field>` now adds a `is-disabled` class if the control inside the field is disabled.
+- ADDED: a `reset` method on the `<formkit-form>` component to reset the form to the initial values.
+- ADDED a page with examples: [FormKit examples](https://politie.github.io/ngx-formkit/).
+- UPDATED: Since all default error messages would check if the control is touched before adding the message, this behavior is added to the custom messages as well. If you want to force messages, even on untouched controls, you can use `showMessagesIfControlIsUntouched` for default messages and custom messages.
+
 # 2.2.1
 - UPDATED: Updated the logic of `standalone` field check inside the `FormFieldComponent`. This will fix issues when using a standalone control inside a `FormGroup` that isn't created with `FormKitForm`.
 - UPDATED: Checkboxes field should be provided with array type value.
