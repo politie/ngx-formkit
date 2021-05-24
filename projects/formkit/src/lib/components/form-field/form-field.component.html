@@ -16,7 +16,7 @@
 <!-- Field component will be rendered here -->
 <ng-template formkitFormField></ng-template>
 
-<ng-container *ngIf="fieldMessagesService.list$ | async as messages">
+<ng-container *ngIf="messages$ | async as messages">
   <div *ngIf="messages.length" class="formkit-field-messages">
     <div
       *ngFor="let message of messages"

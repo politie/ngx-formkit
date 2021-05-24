@@ -10,19 +10,19 @@ import {
   Optional,
   ViewChild
 } from '@angular/core';
-import { FieldMessageType, FieldType } from '../../models/field.model';
+import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, distinctUntilChanged, map, take, takeUntil } from 'rxjs/operators';
+import { delay, map, take, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
 import { FieldBaseDirective } from '../../directives/field-base/field-base.directive';
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
-import { FieldStateService } from '../../services/field-state/field-state.service';
-import { FieldMessagesService } from '../../services/field-messages/field-messages.service';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { merge, Observable, of } from 'rxjs';
+import { mergeError, removeError } from '../../helpers';
 
 /**
  * Since NgPackagr will complain about Required (which exists in Typescript), we add
@@ -32,11 +32,7 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 @Component({
   selector: 'formkit-form-field',
   templateUrl: './form-field.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    FieldMessagesService,
-    FieldStateService
-  ]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldComponent extends FieldBaseDirective implements IFormFieldComponent, OnInit {
   /**
@@ -49,6 +45,7 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
   @HostBinding('class') get fieldClasses(): string {
     return [
       'formkit-field',
+      (this.control.disabled) ? 'is-disabled' : '',
       (this.hidden) ? 'hidden' : '',
       (this.field?.class) ? this.field.class.join(' ') : ''
     ].filter(Boolean).join(' ');
@@ -62,16 +59,14 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
   FieldType = FieldType;
   FieldMessageType = FieldMessageType;
   componentRef!: ComponentRef<any>;
+  messages$!: Observable<FieldMessage[]>;
 
   private componentCdr!: ChangeDetectorRef;
   private hidden = false;
   private standaloneField = false;
 
   constructor(
-    public fieldMessagesService: FieldMessagesService,
-    public fieldStateService: FieldStateService,
     private resolver: ComponentFactoryResolver,
-    private cd: ChangeDetectorRef,
     @Optional() private formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
@@ -80,6 +75,38 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
 
   private get rootControl(): AbstractControl {
     return this.control.root;
+  }
+
+  /**
+   * Get either the observable of the rootControl (if the field is a standalone) or
+   * pipe into the formEvents$ observable for the valueChanges of the root control (FormGroup)
+   *
+   * @private
+   */
+  private get rootValueChanges$(): Observable<FormValues<any>> {
+    if (this.standaloneField) {
+      return this.rootControl.valueChanges;
+    } else {
+      return this.formService.formEvents$.pipe(map<FormEvent, FormValues<any>>(event => event.values));
+    }
+  }
+
+  /**
+   * We need a one time listener in order to respond to the untouched > touched change
+   * and update the status + messages accordingly.
+   *
+   * @private
+   */
+  private get oneTimeFormControlListener$(): Observable<FormValues<any>> {
+    return extractEvents(this.control).pipe(
+      take(1),
+      delay(10),
+      map(() => this.rootControl instanceof FormGroup ? this.rootControl.getRawValue() : this.rootControl.value)
+    );
+  }
+
+  private get rootAndFormControlValueChanges$(): Observable<FormValues<any>> {
+    return merge(this.rootValueChanges$, this.oneTimeFormControlListener$);
   }
 
   ngOnInit(): void {
@@ -93,27 +120,45 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
 
     this.standaloneField = Boolean(!this.formService);
 
-    /**
-     * Sadly, this is needed, since @HostBinding doesn't support async / Observable streams
-     * for setting class names:
-     * https://github.com/angular/angular/issues/19483
-     */
-    this.fieldStateService.visibilityChanges$.pipe(
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(hide => this.hidden = hide);
-
     this.renderFieldComponent();
-    this.setupOneTimeFormControlEventListener();
-
-    if (this.standaloneField) {
-      this.setupStandaloneEventListener();
-    } else {
-      this.setupFormEventListener();
-    }
 
     if (this.field.resetFormOnChange && !this.standaloneField) {
       this.setupResetListener();
+    }
+
+    this.messages$ = this.createMessagesObservable();
+
+    /**
+     * If the field has the status property to set to update status
+     * on a condition, pipe into the valueChanges$ observable and
+     * use the values to update the field state.
+     */
+    if (this.field.status && typeof this.field.status === 'function') {
+      this.rootAndFormControlValueChanges$.pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(values => this.updateFieldStatus(values));
+    }
+  }
+
+  /**
+   * Create a observable with messages for this field.
+   * We check the stream of valueChanges (either based on the FormService or root control)
+   * and a one time listener to handle the first focus lost event.
+   */
+  createMessagesObservable(): Observable<FieldMessage[]> {
+    if (this.field.messages === false) {
+      /**
+       * User doesn't want to have messages for this field,
+       * just return and complete a empty stream.
+       */
+      return of([]);
+    } else {
+      return this.rootAndFormControlValueChanges$.pipe(
+        map(values => ([
+          ...this.getVisibleDefaultMessages(),
+          ...this.getVisibleCustomMessages(values)
+        ]))
+      );
     }
   }
 
@@ -147,91 +192,89 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
   }
 
   /**
-   * Sets up a event listener for the form events$ observable.
+   * Returns the default messages that should be visible for the field based on the errors of the associated control
    */
-  setupFormEventListener() {
-    this.formService.formEvents$.pipe(
-      map<FormEvent, FormValues<any>>(event => event.values),
-      takeUntil(this.destroy$)
-    ).subscribe(values => {
-      this.onAfterUpdateChecks(values);
-    });
-  }
+  getVisibleDefaultMessages(): FieldMessage[] {
+    if (this.control.errors && (this.control.touched || this.field.showMessagesIfControlIsUntouched)) {
+      return Object.keys(this.control.errors).filter(s => this.config.messages[s]).map(error => {
+        const message = this.config.messages[error];
 
-  /**
-   * Setup root control listener for standalone controls
-   * https://angular.io/api/forms/AbstractControl#root
-   */
-  setupStandaloneEventListener() {
-    if (this.rootControl) {
-      this.rootControl.valueChanges.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(values => {
-        this.onAfterUpdateChecks(values);
+        return {
+          type: FieldMessageType.Error,
+          text: (typeof message === 'string') ? message : message((this.control.errors as ValidationErrors)[error])
+        };
       });
     }
+
+    return [];
   }
 
   /**
-   * Sets up a one time control listener to match messages with the current control state
-   */
-  setupOneTimeFormControlEventListener() {
-    extractEvents(this.control).pipe(
-      take(1),
-      delay(10),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      /**
-       * We check if the messages property isn't set to false
-       * to allow for default messages to pass through if the user
-       * hasn't set a messages property.
-       */
-      if (this.field.messages !== false) {
-        this.fieldMessagesService.updateVisibleMessages({
-          control: this.control,
-          defaultMessages: this.config.messages,
-          field: this.field,
-          values: this.rootControl instanceof FormGroup ? this.rootControl.getRawValue() : this.rootControl.value
-        });
-      }
-
-      if (this.componentCdr) {
-        this.componentCdr.markForCheck();
-      }
-    });
-  }
-
-  /**
-   * Checks to run after one of the fields in the form has changed.
+   * Return the current visible messages for the field, based on the current values of
+   * the rootControl.
    *
-   * @param values the current (raw) values in the form
+   * @param values
    */
-  onAfterUpdateChecks(values: FormValues<any>) {
-    /**
-     * Update the field state (disabled, required, hidden)
-     */
-    this.fieldStateService.updateFieldState(this.control, this.field, values);
+  getVisibleCustomMessages(values: FormValues<any>): FieldMessage[] {
+    if (this.field.messages && (this.control.touched || this.field.showMessagesIfControlIsUntouched)) {
+      const callbackPayload = { control: this.control, errors: this.control.errors || {}, values};
 
-    /**
-     * Update the list of visible messages for this field.
-     * We check if the messages property isn't set to false
-     * to allow for default messages to pass through if the user
-     * hasn't set a messages property.
-     */
-    if (this.field.messages !== false) {
-      this.fieldMessagesService.updateVisibleMessages({
-        control: this.control,
-        field: this.field,
-        defaultMessages: this.config.messages,
-        values
-      });
+      return this.field.messages(callbackPayload)
+        .filter(m => m.show)
+        .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }));
     }
 
-    /**
-     * Mark the component for check for the ChangeDetector
-     */
-    if (this.componentCdr) {
-      this.componentCdr.markForCheck();
+    return [];
+  }
+
+  /**
+   * Gets called if the field configuration has a `status` property set and
+   * when the valueChanges$ observable emits. Based on the result of the callback,
+   * we update the three statuses (hidden, disabled, required).
+   *
+   * @param values
+   */
+  updateFieldStatus(values: FormValues<any>): void {
+    const result = (this.field.status as any)({ control: this.control, errors: this.control.errors || {}, values });
+
+    if (typeof result.hidden !== 'undefined' && this.hidden !== result.hidden) {
+      this.updateHiddenStatus(result.hidden);
+    }
+
+    if (typeof result.disabled !== 'undefined') {
+      this.updateDisabledStatus(result.disabled);
+    }
+
+    if (typeof result.required !== 'undefined') {
+      this.updateRequiredStatus(result.required);
+    }
+  }
+
+  private updateHiddenStatus(match: boolean) {
+    this.hidden = match;
+  }
+
+  private updateDisabledStatus(match: boolean) {
+    if (match && this.control.enabled) {
+      this.control.disable({onlySelf: true, emitEvent: false});
+    } else if (!match && this.control.disabled) {
+      this.control.enable({onlySelf: true, emitEvent: false});
+    }
+  }
+
+  /**
+   * We use the mergeError / removeError helpers to make sure that
+   * other errors on the control aren't removed when removing or adding the
+   * required error.
+   *
+   * @param match boolean to indicate if the control is required
+   * @private
+   */
+  private updateRequiredStatus(match: boolean) {
+    if (match) {
+      this.control.setErrors(mergeError(this.control.errors, Validators.required(this.control)));
+    } else {
+     this.control.setErrors(removeError(this.control.errors, 'required'));
     }
   }
 }
