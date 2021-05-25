@@ -2,6 +2,7 @@
   <input
     #input
     class="form-input formkit-input"
+    [name]="name"
     [type]="type"
     [attr.aria-label]="field.header?.title || (name | humanize)"
     [placeholder]="field.placeholder || field.header?.title || (name | humanize) || ''"

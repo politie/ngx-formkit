@@ -1,6 +1,6 @@
 <ng-container *ngIf="field">
   <label class="inline-flex items-center form-radio-wrapper" *ngFor="let option of field.options; let i = index;">
-    <input class="form-radio" [id]="name + '-' + option.id + '-' + i" type="radio" [value]="option.id" [formControl]="control">
+    <input class="form-radio" [name]="name" [id]="name + '-' + option.id + '-' + i" type="radio" [value]="option.id" [formControl]="control">
     <span class="form-radio-label">{{ option.label }}</span>
   </label>
 </ng-container>

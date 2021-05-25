@@ -1,6 +1,7 @@
 <ng-container *ngIf="field">
   <select
     class="form-select formkit-input"
+    [name]="name"
     [formControl]="control"
     *ngIf="options$ | async as options"
     [compareWith]="compareFunction">

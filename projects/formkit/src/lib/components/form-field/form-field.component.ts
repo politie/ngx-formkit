@@ -109,13 +109,19 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     return merge(this.rootValueChanges$, this.oneTimeFormControlListener$);
   }
 
-  ngOnInit(): void {
-    if (!this.control) {
-      throw new Error(`FormKit - no FormControl provided in <formkit-form-field> [control] attribute for field "${this.name || ''}"`);
     }
 
+  ngOnInit(): void {
     if (!this.field) {
-      throw new Error(`FormKit - no Field config provided in <formkit-form-field> [field] attribute property for field "${this.name || ''}"`);
+      throw new TypeError(`FormKit - no [field] provided in <formkit-form-field> for field "${this.name}"`);
+    }
+
+    if (!this.name) {
+      throw new TypeError(`FormKit - no [name] provided in <formkit-form-field> for field ${FieldType[this.field.type]}`);
+    }
+
+    if (!this.control) {
+      throw new TypeError(`FormKit - no [control] provided in <formkit-form-field> for field "${this.name}" (${FieldType[this.field.type]})`);
     }
 
     this.standaloneField = Boolean(!this.formService);
