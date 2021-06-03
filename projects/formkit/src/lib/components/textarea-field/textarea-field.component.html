@@ -1,6 +1,7 @@
 <ng-container *ngIf="field">
   <textarea
     class="form-textarea formkit-input"
+    [name]="name"
     [formControl]="control"
     [placeholder]="field.placeholder || field.header?.title || (name | humanize) || ''"
     [rows]="field.rows || 4">

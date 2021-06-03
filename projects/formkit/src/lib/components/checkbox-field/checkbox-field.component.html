@@ -4,6 +4,7 @@
       <input
         type="checkbox"
         class="form-checkbox"
+        [name]="name"
         (change)="onCheckboxChange($any($event), option)"
         [checked]="control.value.indexOf(option.id) > -1">
       <span class="form-checkbox-label">
@@ -20,7 +21,7 @@
   <!-- Single checkbox -->
   <ng-container *ngIf="!field.options">
     <label class="inline-flex items-center form-checkbox-wrapper">
-      <input type="checkbox" class="form-checkbox" [formControl]="control">
+      <input type="checkbox" class="form-checkbox" [name]="name" [formControl]="control">
       <span class="form-checkbox-label">
         <span class="label">
           {{ field.label }}

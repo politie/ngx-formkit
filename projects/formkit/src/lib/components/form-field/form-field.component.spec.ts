@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { FormFieldComponent } from './form-field.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +15,9 @@ import { FormService } from '../../services';
 const field: ISingleField<any, any, any> = {
   type: FieldType.Radio,
   options: [],
+  status: (payload) => ({
+    required: payload.values.nonExist === true
+  }),
   messages: (payload) => ([
     {
       show: (payload.control.value !== 'initial-value'),
@@ -81,11 +84,13 @@ describe('FieldComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should run checks after value change', () => {
-      const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
+    it('should run checks after value change', fakeAsync(() => {
+      const spy = spyOn(component, 'updateFieldStatus').and.callFake(() => {});
       component.control.setValue('1234');
+
+      tick(500);
       expect(spy).toHaveBeenCalledWith('1234');
-    });
+    }));
   });
 
   describe('FormKitForm fields', () => {
@@ -107,13 +112,8 @@ describe('FieldComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should run onAfterUpdate checks', () => {
-      component.onAfterUpdateChecks({ testValue: 'test'});
-      expect(component.control.value).toEqual('initial-value');
-    });
-
     it('should run checks after subject has emitted', () => {
-      const spy = spyOn(component, 'onAfterUpdateChecks').and.callFake(() => {});
+      const spy = spyOn(component, 'updateFieldStatus').and.callFake(() => {});
 
       // @ts-ignore
       service.formEvents$.next({

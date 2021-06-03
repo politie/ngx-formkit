@@ -1,7 +1,5 @@
 @import 'tailwindcss/base';
-
 @import 'tailwindcss/components';
-
 @import 'tailwindcss/utilities';
 
 html, body {
@@ -9,14 +7,9 @@ html, body {
   @apply bg-gray-100;
 }
 
-.formkit-field {
-  @apply space-y-2;
-}
-
-.formkit-field-description {
-  @apply text-sm;
-}
-
+/**
+ * Notification
+ */
 .formkit-field-notification {
   @apply text-sm;
 }
@@ -28,14 +21,6 @@ html, body {
 .formkit-field-notification.disabled,
 .formkit-field-notification.information {
   @apply text-gray-500;
-}
-
-.mat-form-field {
-  @apply w-full;
-}
-
-.mat-form-field-wrapper {
-  @apply pb-0;
 }
 
 /**
@@ -50,18 +35,17 @@ html, body {
   @apply gap-4;
   @apply grid;
   @apply w-full;
-
-  grid-template-columns: repeat(12, 1fr);
+  @apply grid-cols-12;
 }
 
 .formkit-field {
   grid-column: auto / span var(--column-span);
+  @apply grid gap-3 grid-cols-1;
 }
 
-:host {
-  display: block;
-}
-
+/**
+ * Header setup
+ */
 .formkit-field-header-inner {
   display: flex;
   align-items: center;
@@ -71,8 +55,8 @@ html, body {
   @apply text-xl font-medium tracking-tight;
 }
 
-.formkit-field-tooltip {
-  @apply flex ml-1 items-center justify-center w-6 h-6 cursor-pointer text-gray-500 hover:text-black;
+.formkit-field-description {
+  @apply text-sm;
 }
 
 formkit-radio-field .form-radio-wrapper:not(:last-child) {
@@ -177,7 +161,6 @@ button[disabled] {
   @apply grid !important;
   @apply grid-cols-1 md:grid-cols-4;
   @apply gap-4;
-
 }
 
 .form-checkbox-wrapper,
@@ -208,8 +191,7 @@ button[disabled] {
 }
 
 .formkit-field-tooltip {
-  @apply relative;
-  @apply z-20;
+  @apply flex ml-1 items-center justify-center w-6 h-6 cursor-pointer text-gray-500 hover:text-black relative z-20;
 }
 
 .formkit-field-tooltip:hover:after {
@@ -269,7 +251,6 @@ input[disabled] {
 }
 
 .formkit-toggle-wrapper input:checked + .formkit-toggle:after {
-  /*@apply bg-green-500;*/
   @apply bg-white;
 }
 
