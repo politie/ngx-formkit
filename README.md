@@ -2,7 +2,7 @@
 
 [![Build and Deploy](https://github.com/politie/ngx-formkit/actions/workflows/build-deploy.yml/badge.svg?branch=master)](https://github.com/politie/ngx-formkit/actions/workflows/build-deploy.yml)
 
-FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `FormComponent` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `FormComponent` as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
+FormKit is an Angular Library built to make form handling in Angular a breeze. It allows you to create strongly typed forms in your code, without the hassle of working with templates. FormKit provides a `<formkit-form>` component that you can use to display the form and respond to events.  It provides methods to call FormKit logic from within your host component, by using the `<formkit-form>` component as a [@ViewChild](https://angular.io/api/core/ViewChild) reference.
 
 Since the FormKit library is built on top of [Angular Reactive Forms](https://angular.io/guide/reactive-forms), you can use all the built in [Validators](https://angular.io/api/forms/Validators) as well as [custom validator functions](https://angular.io/guide/form-validation#adding-custom-validators-to-reactive-forms). FormKit has dynamic and conditional callback functions per defined `Field`, like:
 
@@ -10,13 +10,13 @@ Since the FormKit library is built on top of [Angular Reactive Forms](https://an
 - Conditional visibility (based on the values of other fields in the form)
 - Conditional required property (based on the values other fields in the form).
 
-
-Demo / Live examples: [https://politie.github.io/ngx-formkit](https://politie.github.io/ngx-formkit)
+## Demo / Live examples
+[https://politie.github.io/ngx-formkit](https://politie.github.io/ngx-formkit)
 
 # Installation
 
 ```
-npm i @politie/formkit
+npm i @politie/ngx-formkit
 ```
 
 This will install the FormKit library as a dependency in your project.

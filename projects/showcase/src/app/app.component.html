@@ -43,14 +43,6 @@
     [title]="ExampleTypes[example.type]">
   </app-e2e-form-creator>
 
-  <app-e2e-form-creator
-    *ngFor="let example of exampleForms; trackBy: trackByFn"
-    [debug]="debugControl.value === true"
-    [config]="example.formConfig"
-    [message]="example.message"
-    [title]="ExampleTypes[example.type]">
-  </app-e2e-form-creator>
-
   <header class="pt-12 pb-6 space-y-1">
     <h2>Available field types</h2>
     <p>13 types, a hidden type and a custom type to choose from.</p>

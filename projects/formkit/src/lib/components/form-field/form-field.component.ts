@@ -13,7 +13,7 @@ import {
 import { FieldMessage, FieldMessageType, FieldType } from '../../models/field.model';
 import { extractEvents } from '../../helpers/extract-events/extract-events.helpers';
 import { FormEvent, FormValues } from '../../models/form.model';
-import { delay, map, take, takeUntil } from 'rxjs/operators';
+import { delay, filter, map, share, takeUntil } from 'rxjs/operators';
 import { FormFieldDirective } from '../../directives';
 import { FORMKIT_MODULE_CONFIG_TOKEN } from '../../config/config.token';
 import { FormKitModuleConfig } from '../../models/config.model';
@@ -21,7 +21,7 @@ import { FieldBaseDirective } from '../../directives/field-base/field-base.direc
 import { FormService } from '../../services/form.service';
 import { IFormFieldComponent } from './form-field.component.model';
 import { AbstractControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { merge, Observable, of } from 'rxjs';
+import { merge, Observable, of, zip } from 'rxjs';
 import { mergeError, removeError } from '../../helpers';
 
 /**
@@ -67,6 +67,7 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
 
   constructor(
     private resolver: ComponentFactoryResolver,
+    private cd: ChangeDetectorRef,
     @Optional() private formService: FormService,
     @Inject(FORMKIT_MODULE_CONFIG_TOKEN) private config: Required<FormKitModuleConfig>
   ) {
@@ -99,17 +100,69 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
    */
   private get oneTimeFormControlListener$(): Observable<FormValues<any>> {
     return extractEvents(this.control).pipe(
-      take(1),
+      filter(() => this.control.untouched),
       delay(10),
       map(() => this.rootControl instanceof FormGroup ? this.rootControl.getRawValue() : this.rootControl.value)
     );
   }
 
-  private get rootAndFormControlValueChanges$(): Observable<FormValues<any>> {
-    return merge(this.rootValueChanges$, this.oneTimeFormControlListener$);
+  private get valueChanges$(): Observable<FormValues<any>> {
+    return merge(this.rootValueChanges$, this.oneTimeFormControlListener$).pipe(share());
   }
 
-    }
+  private get visibleDefaultMessages$(): Observable<FieldMessage[]> {
+    return this.valueChanges$.pipe(
+      map(() => this.control.errors),
+      map(errors => {
+        if (!errors || (errors && this.control.untouched && !this.field.showMessagesIfControlIsUntouched)) {
+          return [];
+        }
+
+        return Object.keys(errors).filter(s => this.config.messages[s]).map(error => {
+          const message = this.config.messages[error];
+
+          return {
+            type: FieldMessageType.Error,
+            text: (typeof message === 'string') ? message : message((this.control.errors as ValidationErrors)[error])
+          };
+        });
+      })
+    );
+  }
+
+  /**
+   * Return the current visible messages for the field, based on the current values of
+   * the rootControl. We want to make sure that even if there are no messages to show the
+   * observable still emits, so we use the first map() operator to check if we need to
+   * loop through the messages and if so, return the filtered list of messages (based
+   * on the 'show' property on the message itself) to the next map() operator.
+   */
+  private get visibleMessages$(): Observable<FieldMessage[]> {
+    return this.valueChanges$.pipe(
+      /**
+       * In the first stage, we get the custom messages for this field and filter them based on the show property
+       */
+      map(values => {
+        if (!this.field.messages || (this.control.untouched && !this.field.showMessagesIfControlIsUntouched)) {
+          return [];
+        }
+
+        return this.field.messages({
+          control: this.control,
+          errors: this.control.errors || {}, values
+        }).filter(message => message.show);
+      }),
+
+      /**
+       * Since we don't always know if a type is set on the message, map each custom message and add the
+       * Information type if a type isn't set
+       */
+      map(messages => messages.map(({ type, text }) => ({
+        type: type ? type : FieldMessageType.Information,
+        text
+      })))
+    );
+  }
 
   ngOnInit(): void {
     if (!this.field) {
@@ -132,7 +185,22 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
       this.setupResetListener();
     }
 
-    this.messages$ = this.createMessagesObservable();
+    /**
+     * If the field config is set to false,
+     * just return and complete a empty stream.
+     */
+    if (this.field.messages === false) {
+      this.messages$ = of([]);
+    } else {
+      /**
+       * We need a combination of both the visible default messages
+       * and the list of custom messages when they both have emitted (at least once),
+       * so we use the zip operator.
+       */
+      this.messages$ = zip(this.visibleDefaultMessages$, this.visibleMessages$).pipe(
+        map(([defaultMessages, customMessages]) => ([...defaultMessages, ...customMessages]))
+      );
+    }
 
     /**
      * If the field has the status property to set to update status
@@ -140,31 +208,19 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
      * use the values to update the field state.
      */
     if (this.field.status && typeof this.field.status === 'function') {
-      this.rootAndFormControlValueChanges$.pipe(
+      this.valueChanges$.pipe(
         takeUntil(this.destroy$)
-      ).subscribe(values => this.updateFieldStatus(values));
+      ).subscribe(values => {
+        this.updateFieldStatus(values);
+      });
     }
-  }
 
-  /**
-   * Create a observable with messages for this field.
-   * We check the stream of valueChanges (either based on the FormService or root control)
-   * and a one time listener to handle the first focus lost event.
-   */
-  createMessagesObservable(): Observable<FieldMessage[]> {
-    if (this.field.messages === false) {
-      /**
-       * User doesn't want to have messages for this field,
-       * just return and complete a empty stream.
-       */
-      return of([]);
-    } else {
-      return this.rootAndFormControlValueChanges$.pipe(
-        map(values => ([
-          ...this.getVisibleDefaultMessages(),
-          ...this.getVisibleCustomMessages(values)
-        ]))
-      );
+    /**
+     * If there's a reference to the rendered field ChangeDetectorRef,
+     * call on it valueChanges$ changes
+     */
+    if (this.componentCdr) {
+      this.valueChanges$.pipe(takeUntil(this.destroy$)).subscribe(() => this.componentCdr.markForCheck());
     }
   }
 
@@ -195,42 +251,6 @@ export class FormFieldComponent extends FieldBaseDirective implements IFormField
     ).subscribe(value => {
       this.formService.triggerFormResetByControl(value);
     });
-  }
-
-  /**
-   * Returns the default messages that should be visible for the field based on the errors of the associated control
-   */
-  getVisibleDefaultMessages(): FieldMessage[] {
-    if (this.control.errors && (this.control.touched || this.field.showMessagesIfControlIsUntouched)) {
-      return Object.keys(this.control.errors).filter(s => this.config.messages[s]).map(error => {
-        const message = this.config.messages[error];
-
-        return {
-          type: FieldMessageType.Error,
-          text: (typeof message === 'string') ? message : message((this.control.errors as ValidationErrors)[error])
-        };
-      });
-    }
-
-    return [];
-  }
-
-  /**
-   * Return the current visible messages for the field, based on the current values of
-   * the rootControl.
-   *
-   * @param values
-   */
-  getVisibleCustomMessages(values: FormValues<any>): FieldMessage[] {
-    if (this.field.messages && (this.control.touched || this.field.showMessagesIfControlIsUntouched)) {
-      const callbackPayload = { control: this.control, errors: this.control.errors || {}, values};
-
-      return this.field.messages(callbackPayload)
-        .filter(m => m.show)
-        .map(({ type, text }) => ({ type: type ? type : FieldMessageType.Information, text }));
-    }
-
-    return [];
   }
 
   /**
