@@ -77,6 +77,10 @@ type IFieldBase<Model, Level, FieldKey extends keyof Level> = {
   }
 
   updateOn?: 'change' | 'blur' | 'submit';
+
+  data?: {
+    [key: string]: any;
+  }
 }
 
 type ISingleFieldBase<Model, Level, FieldKey extends keyof Level> = IFieldBase<Model, Level, FieldKey> & {

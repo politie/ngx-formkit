@@ -112,6 +112,7 @@ Below is a rundown of each option per field object.
 | type* | `FieldType` | The type of field to render. See [Field Types](#field-types) for available field types. |
 | class | `string[]` | Add additional CSS classes which will be placed on the `<formkit-form-field>` in the HTML. |
 | component | `any` | If you'd like to render a custom component for this field, add the class here. See See [Custom components](#custom-components) for example usage. |
+| data | `{key: string: any}` | If you need to have extra properties, add them here. |
 | header | `{ title?: string, description?: string, tooltip?: string }` | Object with properties to add a title, description or tooltip above the field. |
 | footer | `{ description?: string }` | Object with properties to add a description below the field (below the field messages). |
 | messages | `false` or `FieldMessagesFunction<T>` | A function that returns dynamic messages for this field. See [Field messages](#field-messages) for example usage. |

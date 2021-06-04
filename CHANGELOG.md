@@ -1,3 +1,6 @@
+# 2.2.3
+- ADDED: `data` property to be used for custom data that's not provided by the Field config interface.
+
 # 2.2.2
 - FIXED: Placeholders derived from the field name are now Title cased.
 - ADDED: A `<formkit-form-field>` now adds a `is-disabled` class if the control inside the field is disabled.
